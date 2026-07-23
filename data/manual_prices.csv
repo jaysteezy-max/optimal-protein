@@ -1,0 +1,6 @@
+chain,item,pnw_price_usd,as_of,notes
+# Optional overrides: a real till-verified PNW price for a specific item.
+# When a row matches (chain slug + exact item name from items.csv), this price
+# is used AS-IS — no uplift applied — and the item is marked "verified".
+# Example:
+# chipotle,Chicken Burrito Bowl,10.75,2026-07-20,Mill Plain Blvd store

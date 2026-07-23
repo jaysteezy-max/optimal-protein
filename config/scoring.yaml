@@ -1,0 +1,17 @@
+# Scoring configuration — edit here, then re-run: python3 build_rankings.py
+#
+# Weights must sum to 1.0. Each metric is normalized so the best item in the
+# list = 100, then blended by these weights into the Value Score.
+weights:
+  protein_per_dollar: 0.60   # bang-for-buck
+  protein_density: 0.40      # lean bias: protein per 100 calories
+
+# Items below this protein threshold are excluded from the rankings.
+protein_threshold_g: 25
+
+# Flat uplift applied to national-average prices to approximate PNW pricing.
+# Prices are NOT store-verified; this is a deliberate approximation.
+pnw_uplift_pct: 10
+
+# Prepared-food sales tax is excluded from all prices (varies across the PNW:
+# WA taxes prepared food, OR has no sales tax).

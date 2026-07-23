@@ -1,0 +1,90 @@
+# The 20 chains in scope (top PNW fast food / fast casual).
+#
+# puller:
+#   auto    — pull_nutrition.py has a fetcher for this chain (best-effort;
+#             chain sites change without notice)
+#   curated — nutrition maintained by hand in data/items.csv, optionally
+#             refreshed from a hand-saved data/raw/nutrition/<slug>_curated.json
+#
+# nutrition_url is the official source of truth for protein/calories.
+chains:
+  - slug: chick-fil-a
+    name: Chick-fil-A
+    nutrition_url: https://www.chick-fil-a.com/menu
+    puller: curated
+  - slug: chipotle
+    name: Chipotle
+    nutrition_url: https://www.chipotle.com/nutrition-calculator
+    puller: auto
+  - slug: wendys
+    name: Wendy's
+    nutrition_url: https://www.wendys.com/nutrition-information
+    puller: curated
+  - slug: mcdonalds
+    name: McDonald's
+    nutrition_url: https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html
+    puller: auto
+  - slug: taco-bell
+    name: Taco Bell
+    nutrition_url: https://www.tacobell.com/nutrition/info
+    puller: auto
+  - slug: jamba
+    name: Jamba
+    nutrition_url: https://www.jamba.com/nutrition
+    puller: curated
+  - slug: subway
+    name: Subway
+    nutrition_url: https://www.subway.com/en-us/menunutrition/nutrition
+    puller: curated
+  - slug: panda-express
+    name: Panda Express
+    nutrition_url: https://www.pandaexpress.com/nutritioninformation
+    puller: auto
+  - slug: kfc
+    name: KFC
+    nutrition_url: https://www.kfc.com/nutrition
+    puller: curated
+  - slug: popeyes
+    name: Popeyes
+    nutrition_url: https://www.popeyes.com/nutrition
+    puller: curated
+  - slug: arbys
+    name: Arby's
+    nutrition_url: https://www.arbys.com/nutrition
+    puller: curated
+  - slug: carls-jr
+    name: Carl's Jr.
+    nutrition_url: https://www.carlsjr.com/nutrition
+    puller: curated
+  - slug: jack-in-the-box
+    name: Jack in the Box
+    nutrition_url: https://www.jackinthebox.com/nutrition
+    puller: curated
+  - slug: jersey-mikes
+    name: Jersey Mike's
+    nutrition_url: https://www.jerseymikes.com/menu/nutrition
+    puller: curated
+  - slug: qdoba
+    name: Qdoba
+    nutrition_url: https://www.qdoba.com/nutrition
+    puller: curated
+  - slug: burgerville
+    name: Burgerville
+    nutrition_url: https://www.burgerville.com/nutrition
+    puller: curated
+  - slug: in-n-out
+    name: In-N-Out
+    nutrition_url: https://www.in-n-out.com/menu/nutritional-info
+    puller: curated
+  - slug: five-guys
+    name: Five Guys
+    nutrition_url: https://www.fiveguys.com/nutrition-allergens-and-sensitivities
+    puller: curated
+  - slug: cava
+    name: Cava
+    nutrition_url: https://cava.com/nutrition
+    puller: curated
+  - slug: raising-canes
+    name: Raising Cane's
+    nutrition_url: https://www.raisingcanes.com/nutrition
+    puller: curated

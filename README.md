@@ -63,9 +63,21 @@ Branch: `main`, folder `/docs`. The page URL then works as a phone bookmark.
 
 ## Data honesty
 
-- Nutrition values were seeded July 2026 from official chain nutrition
-  pages via research; rows marked `seeded — verify` (or `seeded ESTIMATE`
-  where the chain publishes less standardized data) haven't been re-checked
-  against a live pull yet.
+- The **20 ranking-driving items** (each chain's best pick) were
+  cross-verified on 2026-07-23 against multiple nutrition databases
+  (fastfoodnutrition, mynetdiary, CalorieKing, fatsecret) — those rows are
+  marked `web-verified` in `source`. The official chain sites block automated
+  access from this environment, so these are third-party-corroborated, not
+  pulled from the chains directly; treat a razor-thin gap between two items
+  as a tie until you confirm in-app.
+- **Remaining rows** are still `seeded — verify` (or `seeded ESTIMATE` where
+  the chain publishes less standardized data) from research, not yet
+  re-checked.
+- **Jamba** currently has no item ≥ 25 g protein — its Protein Berry Workout
+  is ~20 g at 16 oz. Add a larger size to `data/items.csv` if you want Jamba
+  back in the rankings.
+- **Prices** everywhere are still national-average + PNW uplift, not
+  till-verified — the honest weak spot. Fix them in `data/items.csv` or
+  `data/manual_prices.csv` as you confirm real prices.
 - Items with no reliable price appear in the output flagged, never silently
   dropped.

@@ -1,12 +1,12 @@
-# Protein Value Rankings — PNW
+# Protein Value Rankings (PNW)
 
-_Generated 2026-07-23. Prices = national average + 10% PNW uplift, **not till-verified** — confirm in store. Tax excluded, app deals excluded._
+Generated 2026-07-23. Prices are national averages + 10% PNW uplift, not till-verified — confirm in store. Sales tax and app deals excluded.
 
-_Score = 60% protein-per-$ + 40% protein density, each normalized to best-in-list = 100._
+Value Score = 60% protein-per-dollar + 40% protein density, each normalized to the best item in the list (=100).
 
 ## Best pick per chain
 
-| Chain | Order this | Price | Protein | Score |
+| Chain | Order | Price | Protein | Score |
 |---|---|---|---|---|
 | Raising Cane's | 6 Chicken Fingers (a la carte) | $11.54 | 78 g | 81.0 |
 | KFC | Original Recipe Chicken Breast | $6.04 | 39 g | 78.4 |

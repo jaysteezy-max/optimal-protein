@@ -70,6 +70,9 @@ def load_items(chains):
         it["calories"] = float(it["calories"])
         raw_price = (it.get("national_price_usd") or "").strip()
         it["national_price_usd"] = float(raw_price) if raw_price else None
+        raw_sat = (it.get("sat_fat_g") or "").strip()
+        it["sat_fat_g"] = float(raw_sat) if raw_sat else None
+        it["verified"] = "web-verified" in (it.get("source") or "")
     return items
 
 
@@ -92,7 +95,8 @@ def compute(scoring, chains, items, overrides):
     threshold = scoring["protein_threshold_g"]
     uplift = 1 + scoring["pnw_uplift_pct"] / 100.0
     w_ppd = scoring["weights"]["protein_per_dollar"]
-    w_pd = scoring["weights"]["protein_density"]
+    w_lean = scoring["weights"]["leanness"]
+    w_sat = scoring["weights"]["sat_fat"]
 
     rows = []
     for it in items:
@@ -117,6 +121,8 @@ def compute(scoring, chains, items, overrides):
             "item": it["item"],
             "protein_g": it["protein_g"],
             "calories": it["calories"],
+            "sat_fat_g": it["sat_fat_g"],
+            "verified": it["verified"],
             "price": price,
             "price_kind": price_kind,
             "price_national": price_national,
@@ -124,27 +130,52 @@ def compute(scoring, chains, items, overrides):
             "notes": (it.get("notes") or "").strip(),
             "protein_per_dollar": round(it["protein_g"] / price, 2) if price else None,
             "protein_per_100cal": round(it["protein_g"] / (it["calories"] / 100.0), 2),
+            # % of calories that come from protein (4 cal per gram)
+            "leanness_pct": round(100 * it["protein_g"] * 4 / it["calories"], 1),
+            "satfat_per_g": (round(it["sat_fat_g"] / it["protein_g"], 3)
+                             if it["sat_fat_g"] is not None else None),
         })
 
-    priced = [r for r in rows if r["price"] is not None]
-    if not priced:
-        sys.exit("no priced items — nothing to rank")
-    max_ppd = max(r["protein_per_dollar"] for r in priced)
-    max_pd = max(r["protein_per_100cal"] for r in rows)
+    # HARD RULE: only web-verified rows with sat-fat data and a price are
+    # scored. Everything else is listed but unranked until verified.
+    def eligible(r):
+        return r["verified"] and r["sat_fat_g"] is not None and r["price"] is not None
+
+    scored = [r for r in rows if eligible(r)]
+    if not scored:
+        sys.exit("no verified, priced items with sat-fat data — nothing to rank")
+    max_ppd = max(r["protein_per_dollar"] for r in scored)
+    max_lean = max(r["leanness_pct"] for r in scored)
+    sat_ratios = [r["satfat_per_g"] for r in scored]
+    sat_min, sat_max = min(sat_ratios), max(sat_ratios)
 
     for r in rows:
-        r["density_norm"] = round(100 * r["protein_per_100cal"] / max_pd, 1)
-        if r["price"] is not None:
+        if eligible(r):
             r["ppd_norm"] = round(100 * r["protein_per_dollar"] / max_ppd, 1)
-            r["value_score"] = round(w_ppd * r["ppd_norm"] + w_pd * r["density_norm"], 1)
+            r["lean_norm"] = round(100 * r["leanness_pct"] / max_lean, 1)
+            # penalty scaled so cleanest = 100, fattiest = 0
+            if sat_max > sat_min:
+                r["satfat_norm"] = round(
+                    100 * (sat_max - r["satfat_per_g"]) / (sat_max - sat_min), 1)
+            else:
+                r["satfat_norm"] = 100.0
+            r["value_score"] = round(w_ppd * r["ppd_norm"] + w_lean * r["lean_norm"]
+                                     + w_sat * r["satfat_norm"], 1)
+            r["unranked_reason"] = None
         else:
             r["ppd_norm"] = None
+            r["lean_norm"] = None
+            r["satfat_norm"] = None
             r["value_score"] = None
+            if not r["verified"] or r["sat_fat_g"] is None:
+                r["unranked_reason"] = "awaiting verification"
+            else:
+                r["unranked_reason"] = "no price"
 
-    # scored items ranked first; unpriced items flagged at the bottom
+    # scored items ranked first; unverified/unpriced flagged at the bottom
     rows.sort(key=lambda r: (r["value_score"] is None,
                              -(r["value_score"] or 0),
-                             -r["protein_per_100cal"]))
+                             -r["leanness_pct"]))
     for i, r in enumerate(rows):
         r["rank"] = i + 1 if r["value_score"] is not None else None
     return rows
@@ -173,6 +204,9 @@ def write_json(scoring, regions_cfg, rows, path):
             "weights": scoring["weights"],
             "protein_threshold_g": scoring["protein_threshold_g"],
             "pnw_uplift_pct": scoring["pnw_uplift_pct"],
+            "hard_rule": ("Only web-verified rows with sat-fat data are "
+                          "scored; seeded rows are listed unranked as "
+                          "awaiting verification."),
             "caveat": ("Prices are national averages + regional uplift, not "
                        "till-verified. Sales tax excluded. App deals excluded. "
                        "Rankings are region-invariant; only displayed prices "
@@ -198,8 +232,11 @@ def write_markdown(scoring, rows, best, path):
         "confirm in store. Sales tax and app deals excluded.",
         "",
         f"Value Score = {int(scoring['weights']['protein_per_dollar']*100)}% "
-        f"protein-per-dollar + {int(scoring['weights']['protein_density']*100)}% "
-        "protein density, each normalized to the best item in the list (=100).",
+        f"protein-per-dollar + {int(scoring['weights']['leanness']*100)}% "
+        f"leanness (% calories from protein) + "
+        f"{int(scoring['weights']['sat_fat']*100)}% low-saturated-fat, "
+        "each scaled so the best scored item = 100. **Only web-verified items "
+        "are scored** — seeded rows are listed unranked until verified.",
         "",
         "## Best pick per chain",
         "",
@@ -213,17 +250,19 @@ def write_markdown(scoring, rows, best, path):
         "",
         "## Full rankings",
         "",
-        "| # | Chain | Item | Price | Protein | Cal | Prot/$ | Prot/100cal | Score |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "| # | Chain | Item | Price | Protein | Cal | Sat fat | Prot/$ | Lean % | Score |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in rows:
         rank = r["rank"] if r["rank"] is not None else "–"
         ppd = r["protein_per_dollar"] if r["protein_per_dollar"] is not None else "—"
-        score = r["value_score"] if r["value_score"] is not None else "no price"
+        sat = f"{r['sat_fat_g']:g} g" if r["sat_fat_g"] is not None else "—"
+        score = (r["value_score"] if r["value_score"] is not None
+                 else r["unranked_reason"])
         lines.append(
             f"| {rank} | {r['chain_name']} | {r['item']} | {fmt_price(r)} "
-            f"| {r['protein_g']:g} g | {r['calories']:g} | {ppd} "
-            f"| {r['protein_per_100cal']} | {score} |")
+            f"| {r['protein_g']:g} g | {r['calories']:g} | {sat} | {ppd} "
+            f"| {r['leanness_pct']:g}% | {score} |")
     lines.append("")
     path.write_text("\n".join(lines))
 
@@ -238,24 +277,24 @@ HTML_TEMPLATE = """<!doctype html>
   :root{
     --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --muted2:#86868b;
     --line:#e5e5ea; --hair:#ebebf0; --blue:#0071e3; --blue-soft:#e8f1fd;
-    --good:#1a8f4c; --shadow:0 4px 22px rgba(0,0,0,.06); --radius:18px;
+    --good:#1a8f4c; --warn:#c93400; --shadow:0 4px 22px rgba(0,0,0,.06); --radius:18px;
   }
   @media (prefers-color-scheme:dark){
     :root{
       --bg:#000000; --card:#1c1c1e; --ink:#f5f5f7; --muted:#98989d; --muted2:#8e8e93;
       --line:#2c2c2e; --hair:#2c2c2e; --blue:#0a84ff; --blue-soft:#0a2540;
-      --good:#30d158; --shadow:0 4px 22px rgba(0,0,0,.5);
+      --good:#30d158; --warn:#ff9f0a; --shadow:0 4px 22px rgba(0,0,0,.5);
     }
   }
   :root[data-theme="light"]{
     --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --muted2:#86868b;
     --line:#e5e5ea; --hair:#ebebf0; --blue:#0071e3; --blue-soft:#e8f1fd;
-    --good:#1a8f4c; --shadow:0 4px 22px rgba(0,0,0,.06);
+    --good:#1a8f4c; --warn:#c93400; --shadow:0 4px 22px rgba(0,0,0,.06);
   }
   :root[data-theme="dark"]{
     --bg:#000000; --card:#1c1c1e; --ink:#f5f5f7; --muted:#98989d; --muted2:#8e8e93;
     --line:#2c2c2e; --hair:#2c2c2e; --blue:#0a84ff; --blue-soft:#0a2540;
-    --good:#30d158; --shadow:0 4px 22px rgba(0,0,0,.5);
+    --good:#30d158; --warn:#ff9f0a; --shadow:0 4px 22px rgba(0,0,0,.5);
   }
   *{box-sizing:border-box;margin:0}
   html{-webkit-text-size-adjust:100%}
@@ -365,6 +404,8 @@ HTML_TEMPLATE = """<!doctype html>
   .bar i{display:block; height:100%; border-radius:4px; background:var(--blue);
     width:0; transition:width .5s cubic-bezier(.32,.72,0,1)}
   .bar.g i{background:var(--good)}
+  .bar.w i{background:var(--warn)}
+  .pend{font-size:10.5px; font-weight:590; color:var(--muted2)}
   .eq{margin-top:14px; padding-top:13px; border-top:1px solid var(--hair);
     font-size:13px; color:var(--muted); text-align:center; font-variant-numeric:tabular-nums}
   .eq b{color:var(--ink); font-weight:600}
@@ -390,8 +431,9 @@ HTML_TEMPLATE = """<!doctype html>
   <h1>Gains for Less</h1>
   <div class="sub">Ranked by protein, not hype</div>
   <div class="meta">__SUBTITLE__</div>
-  <div class="caveat">Regional price estimates &mdash; <b>not till-verified</b>.
-  Before tax and app deals. Tap any item for the full breakdown.</div>
+  <div class="caveat">Only verified items are ranked. Regional price estimates
+  &mdash; <b>not till-verified</b>. Before tax and app deals. Tap any item for
+  the full breakdown.</div>
 </header>
 <div class="controls">
   <select id="chain" aria-label="Filter by chain"><option value="">All chains</option></select>
@@ -418,6 +460,7 @@ HTML_TEMPLATE = """<!doctype html>
 <script src="anime.min.js"></script>
 <script>
 const DATA = __DATA__;
+const W_PPD = __WPPD__, W_LEAN = __WLEAN__, W_SAT = __WSAT__;  // integer percents
 
 /* Motion: anime.js drives staggering, springs, number tweens and the sheet
    timeline. Everything degrades: under prefers-reduced-motion, or if
@@ -425,8 +468,7 @@ const DATA = __DATA__;
 const RM = matchMedia('(prefers-reduced-motion:reduce)').matches;
 const AN = () => (!RM && window.anime) ? window.anime : null;
 const IOS_EASE = 'cubicBezier(.32,.72,0,1)';
-const W_PPD = __WPPD__, W_PD = __WPD__;              // integer percents (e.g. 60, 40)
-const TOTAL = DATA.items.length;
+const TOTAL = DATA.items.filter(i => i.value_score != null).length;  // ranked count
 DATA.items.forEach((it, k) => it._id = k);
 
 const chainSel = document.getElementById('chain');
@@ -497,12 +539,13 @@ function render(mode){
     const pos = scored ? (slug ? idx + 1 : i.rank) : '·';
     const price = money(priceOf(i)) || 'no price';
     const best = idx === 0 && !slug && scored ? '<div class="best">Best value</div>' : '';
+    const pend = scored ? '' : `<div class="pend">${i.unranked_reason === 'no price' ? 'No price yet' : 'Awaiting verification'}</div>`;
     return `<button class="row${idx===0&&scored?' top':''}" data-id="${i._id}">
       <span class="rk">${pos}</span>
       <span class="main">
         <span class="nm">${esc(i.item)}</span>
         <span class="ch">${esc(i.chain_name)} · ${i.protein_g}g · <span class="pr">${price}</span></span>
-        ${best}
+        ${best}${pend}
       </span>
       <span class="sc${scored?'':' no'}">${scored ? i.value_score.toFixed(1) : '—'}</span>
       ${CHEV}
@@ -537,8 +580,6 @@ function sheetHTML(i){
   const scored = i.value_score != null;
   const rPrice = priceOf(i);
   const price = money(rPrice);
-  const ppdN = i.ppd_norm, densN = i.density_norm;
-  const fP = (W_PPD/100), fD = (W_PD/100);
   const cost100 = (rPrice!=null) ? (100/i.protein_g)*rPrice : null;
   const mult100 = (100/i.protein_g);
   const per25 = (rPrice!=null) ? (25/i.protein_g)*rPrice : null;
@@ -549,16 +590,32 @@ function sheetHTML(i){
       <div class="panel-h">Score breakdown</div>
       <div class="brk">
         <div class="brk-top"><span class="brk-name">Value per dollar <span class="w">· ${W_PPD}%</span></span>
-          <span class="brk-val">${ppdN.toFixed(1)}</span></div>
-        <div class="bar"><i data-w="${Math.max(2,Math.min(100,ppdN))}"></i></div>
+          <span class="brk-val">${i.ppd_norm.toFixed(1)}</span></div>
+        <div class="bar"><i data-w="${Math.max(2,Math.min(100,i.ppd_norm))}"></i></div>
       </div>
       <div class="brk">
-        <div class="brk-top"><span class="brk-name">Protein density <span class="w">· ${W_PD}%</span></span>
-          <span class="brk-val">${densN.toFixed(1)}</span></div>
-        <div class="bar g"><i data-w="${Math.max(2,Math.min(100,densN))}"></i></div>
+        <div class="brk-top"><span class="brk-name">Leanness <span class="w">· ${W_LEAN}%</span></span>
+          <span class="brk-val">${i.lean_norm.toFixed(1)}</span></div>
+        <div class="bar g"><i data-w="${Math.max(2,Math.min(100,i.lean_norm))}"></i></div>
       </div>
-      <div class="eq">${fP.toFixed(1)} × ${ppdN.toFixed(1)} &nbsp;+&nbsp; ${fD.toFixed(1)} × ${densN.toFixed(1)} &nbsp;=&nbsp; <b>${i.value_score.toFixed(1)}</b></div>
-    </div>` : '';
+      <div class="brk">
+        <div class="brk-top"><span class="brk-name">Low sat fat <span class="w">· ${W_SAT}%</span></span>
+          <span class="brk-val">${i.satfat_norm.toFixed(1)}</span></div>
+        <div class="bar w"><i data-w="${Math.max(2,Math.min(100,i.satfat_norm))}"></i></div>
+      </div>
+      <div class="eq">${(W_PPD/100).toFixed(1)} × ${i.ppd_norm.toFixed(1)}
+        &nbsp;+&nbsp; ${(W_LEAN/100).toFixed(1)} × ${i.lean_norm.toFixed(1)}
+        &nbsp;+&nbsp; ${(W_SAT/100).toFixed(1)} × ${i.satfat_norm.toFixed(1)}
+        &nbsp;=&nbsp; <b>${i.value_score.toFixed(1)}</b></div>
+    </div>` : `
+    <div class="panel">
+      <div class="panel-h">Not ranked yet</div>
+      <div style="font-size:13.5px; color:var(--muted); line-height:1.5">${
+        i.unranked_reason === 'no price'
+          ? 'Verified, but no confirmed price yet — it can\\u2019t be scored on value until one lands.'
+          : 'Only web-verified items are scored. This item\\u2019s nutrition and saturated fat haven\\u2019t been independently verified yet, so it\\u2019s listed but not ranked.'
+      }</div>
+    </div>`;
 
   const derived = (rPrice!=null) ? `
     <div class="derived">
@@ -575,7 +632,8 @@ function sheetHTML(i){
     </div>` : '';
 
   const head = `
-    <div class="sh-rank">${scored ? `#${i.rank} of ${TOTAL} · top ${pctTop}%` : 'Unranked'}</div>
+    <div class="sh-rank">${scored ? `#${i.rank} of ${TOTAL} · top ${pctTop}%`
+      : (i.unranked_reason === 'no price' ? 'Unranked · no price' : 'Unranked · awaiting verification')}</div>
     <div class="sh-name" id="sh-name">${esc(i.item)}</div>
     <div class="sh-ch">${esc(i.chain_name)}</div>
     <div class="sh-hero">
@@ -591,9 +649,9 @@ function sheetHTML(i){
         <div class="spec"><b>${i.protein_g} g</b><span>Protein</span></div>
         <div class="spec"><b>${i.calories}</b><span>Calories</span></div>
         <div class="spec"><b>${price || '—'}</b><span>Price</span></div>
+        <div class="spec"><b>${i.sat_fat_g != null ? i.sat_fat_g + ' g' : '—'}</b><span>Sat fat</span></div>
+        <div class="spec"><b>${i.leanness_pct}%</b><span>Cals from protein</span></div>
         <div class="spec"><b>${ppdOf(i) ?? '—'}</b><span>g / dollar</span></div>
-        <div class="spec"><b>${i.protein_per_100cal}</b><span>g / 100 cal</span></div>
-        <div class="spec"><b>${Math.round(i.calories / (i.protein_g||1))}</b><span>cal / g protein</span></div>
       </div>
     </div>
     ${derived}
@@ -721,9 +779,10 @@ def write_html(scoring, regions_cfg, rows, path):
     today = date.today().isoformat()
     n_chains = len({r["chain"] for r in rows})
     n_ranked = sum(1 for r in rows if r["rank"])
+    n_pending = sum(1 for r in rows if r["unranked_reason"] == "awaiting verification")
     top = rows[0]
-    subtitle = (f"{n_ranked} items ≥ {scoring['protein_threshold_g']} g protein "
-                f"across {n_chains} chains · updated {today}")
+    subtitle = (f"{n_ranked} verified picks ranked · {n_pending} awaiting "
+                f"verification · {n_chains} chains · updated {today}")
     footer = (f"Top pick: {top['chain_name']} — {top['item']} "
               f"(score {top['value_score']}). Generated {today} from data/items.csv.")
     regions_payload = {
@@ -737,7 +796,8 @@ def write_html(scoring, regions_cfg, rows, path):
             .replace("__FOOTER__", footer)
             .replace("__UPLIFT__", str(scoring["pnw_uplift_pct"]))
             .replace("__WPPD__", str(int(scoring["weights"]["protein_per_dollar"] * 100)))
-            .replace("__WPD__", str(int(scoring["weights"]["protein_density"] * 100)))
+            .replace("__WLEAN__", str(int(scoring["weights"]["leanness"] * 100)))
+            .replace("__WSAT__", str(int(scoring["weights"]["sat_fat"] * 100)))
             .replace("__REGIONS__", json.dumps(regions_payload, separators=(",", ":")))
             .replace("__DATA__", json.dumps({"items": rows}, separators=(",", ":"))))
     path.write_text(html)

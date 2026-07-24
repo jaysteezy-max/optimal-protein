@@ -1,82 +1,82 @@
-chain,item,protein_g,calories,national_price_usd,source,pulled_date,notes
-chick-fil-a,Grilled Chicken Sandwich,28,390,6.85,official nutrition (seeded — verify),2026-07-23,
-chick-fil-a,Spicy Chicken Sandwich,29,460,5.95,official nutrition (seeded — verify),2026-07-23,
-chick-fil-a,Grilled Nuggets (12 ct),38,200,9.09,web-verified 2026-07-23,2026-07-23,leanest item on menu
-chick-fil-a,Chick-fil-A Nuggets (12 ct),40,380,6.55,official nutrition (seeded — verify),2026-07-23,
-chick-fil-a,Grilled Cool Wrap,42,350,9.75,official nutrition (seeded — verify),2026-07-23,no dressing
-chick-fil-a,Spicy Southwest Salad,33,450,10.15,official nutrition (seeded — verify),2026-07-23,with grilled chicken; no dressing
-chipotle,Chicken Burrito Bowl,48,665,9.60,official nutrition calculator (seeded — verify),2026-07-23,"chicken, white rice, black beans, fajita veg, salsa"
-chipotle,Double Chicken Burrito Bowl,81,760,13.10,web-verified 2026-07-23,2026-07-23,double-protein build (rice/beans/salsa)
-chipotle,Chicken Burrito,54,975,9.60,official nutrition calculator (seeded — verify),2026-07-23,same fillings + tortilla
-chipotle,Steak Burrito Bowl,38,640,10.70,official nutrition calculator (seeded — verify),2026-07-23,"steak, rice, beans, fajita veg, salsa"
-chipotle,Chicken Salad Bowl,42,400,9.60,official nutrition calculator (seeded — verify),2026-07-23,"supergreens, chicken, beans, salsa — no rice; no dressing"
-wendys,Dave's Single,30,590,6.29,official nutrition (seeded — verify),2026-07-23,
-wendys,Dave's Double,48,810,7.89,official nutrition (seeded — verify),2026-07-23,
-wendys,Grilled Chicken Sandwich,34,350,6.19,web-verified 2026-07-23,2026-07-23,lean pick
-wendys,Spicy Chicken Sandwich,28,500,6.09,official nutrition (seeded — verify),2026-07-23,
-wendys,Baconator,57,950,8.99,official nutrition (seeded — verify),2026-07-23,
-wendys,Crispy Chicken Nuggets (10 pc),27,470,5.79,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,Quarter Pounder with Cheese,30,520,6.29,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,Double Quarter Pounder with Cheese,48,740,8.19,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,Big Mac,25,590,5.99,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,McCrispy,26,470,5.79,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,Double Cheeseburger,25,450,3.99,web-verified 2026-07-23,2026-07-23,value-menu sleeper
-taco-bell,Chicken Quesadilla,27,510,5.79,official nutrition (seeded — verify),2026-07-23,
-taco-bell,Grilled Cheese Burrito (Seasoned Beef),26,720,5.49,official nutrition (seeded — verify),2026-07-23,
-taco-bell,Double Steak Grilled Cheese Burrito,40,910,7.49,web-verified 2026-07-23,2026-07-23,regular
-taco-bell,Power Menu Bowl (Chicken),26,470,6.99,official nutrition (seeded — verify),2026-07-23,lean pick
-jamba,Protein Berry Workout (Whey; 16 oz),20,285,8.29,web-verified 2026-07-23,2026-07-23,16oz falls below 25g threshold — only larger sizes qualify
-subway,Footlong Rotisserie-Style Chicken,58,700,11.29,web-verified 2026-07-23,2026-07-23,no cheese/sauce in base
-subway,Footlong Oven Roasted Turkey,36,540,10.19,official nutrition (seeded — verify),2026-07-23,
-subway,Footlong Steak & Cheese,51,720,11.49,official nutrition (seeded — verify),2026-07-23,
-subway,Footlong Meatball Marinara,42,960,9.29,official nutrition (seeded — verify),2026-07-23,
-subway,6-inch Rotisserie-Style Chicken,29,360,7.29,official nutrition (seeded — verify),2026-07-23,
-panda-express,Grilled Teriyaki Chicken (entree),33,275,6.70,web-verified 2026-07-23,2026-07-23,a la carte entree (6 oz)
-panda-express,Grilled Teriyaki Chicken Bowl + Super Greens,42,430,9.60,official nutrition (seeded — verify),2026-07-23,bowl combo; lean pick
-panda-express,Original Orange Chicken (entree),25,490,6.70,official nutrition (seeded — verify),2026-07-23,a la carte medium entree
-kfc,Original Recipe Chicken Breast,39,390,5.49,web-verified 2026-07-23,2026-07-23,single piece a la carte
-kfc,KFC Chicken Sandwich,34,650,5.99,official nutrition (seeded — verify),2026-07-23,
-kfc,Tenders (3 pc),27,390,5.99,official nutrition (seeded — verify),2026-07-23,
-kfc,Famous Bowl,26,740,5.99,official nutrition (seeded — verify),2026-07-23,
-popeyes,Classic Chicken Sandwich,28,700,5.49,official nutrition (seeded — verify),2026-07-23,
-popeyes,Blackened Chicken Sandwich,32,550,5.99,official nutrition (seeded — verify),2026-07-23,
-popeyes,Blackened Tenders (5 pc),43,280,8.49,official nutrition (seeded — verify),2026-07-23,not breaded — density standout
-popeyes,Fried Chicken Breast,35,380,4.99,web-verified 2026-07-23,2026-07-23,single piece a la carte
-arbys,Double Roast Beef,34,510,7.19,official nutrition (seeded — verify),2026-07-23,
-arbys,Half Pound Roast Beef,48,610,8.79,web-verified 2026-07-23,2026-07-23,
-arbys,Classic Beef 'n Cheddar,26,450,6.49,official nutrition (seeded — verify),2026-07-23,
-arbys,Roast Turkey Ranch & Bacon Sandwich,44,800,8.99,official nutrition (seeded — verify),2026-07-23,
-arbys,Smokehouse Brisket Sandwich,32,600,8.49,official nutrition (seeded — verify),2026-07-23,
-carls-jr,Super Star with Cheese,46,930,8.99,official nutrition (seeded — verify),2026-07-23,
-carls-jr,Charbroiled Chicken Club,34,560,8.49,official nutrition (seeded — verify),2026-07-23,
-carls-jr,Charbroiled BBQ Chicken Sandwich,33,400,6.99,official nutrition (seeded — verify),2026-07-23,lean pick
-carls-jr,Big Carl,47,930,7.49,web-verified 2026-07-23,2026-07-23,
-jack-in-the-box,Double Jack,46,830,7.99,web-verified 2026-07-23,2026-07-23,
-jack-in-the-box,Chicken Fajita Pita,26,320,6.79,official nutrition (seeded — verify),2026-07-23,classic lean pick
-jack-in-the-box,Sourdough Jack,30,730,7.69,official nutrition (seeded — verify),2026-07-23,
-jack-in-the-box,Jumbo Jack,25,540,5.99,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#7 Turkey & Provolone (Regular),33,590,10.75,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#13 Original Italian (Regular),37,830,11.25,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#17 Mike's Famous Philly (Regular),42,700,11.95,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#8 Club Sub (Regular),38,750,12.25,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#7 Turkey Sub in a Tub,30,490,10.75,web-verified 2026-07-23,2026-07-23,regular tub w/ toppings; order dry to cut cals
-qdoba,Chicken Burrito Bowl,45,700,10.25,official nutrition (seeded — verify),2026-07-23,queso/guac included in price
-qdoba,Chicken Protein Bowl,60,700,12.10,web-verified 2026-07-23,2026-07-23,double protein build
-qdoba,Steak Burrito Bowl,36,700,11.45,official nutrition (seeded — verify),2026-07-23,
-burgerville,Colossal Cheeseburger,35,640,9.39,official nutrition (seeded ESTIMATE — verify),2026-07-23,PNW-only chain; data less standardized
-burgerville,Double Beef Cheeseburger,25,480,7.49,web-verified 2026-07-23,2026-07-23,was overstated when seeded
-burgerville,Turkey Burger,26,500,8.29,official nutrition (seeded ESTIMATE — verify),2026-07-23,
-burgerville,Crispy Chicken Sandwich,26,560,8.99,official nutrition (seeded ESTIMATE — verify),2026-07-23,
-in-n-out,Double-Double,37,670,5.90,official nutrition (seeded — verify),2026-07-23,
-in-n-out,Double-Double Protein Style,33,520,5.90,official nutrition (seeded — verify),2026-07-23,lettuce wrap; lean pick
-in-n-out,3x3,52,860,7.35,web-verified 2026-07-23,2026-07-23,not-so-secret menu
-five-guys,Hamburger,39,700,10.99,official nutrition (seeded — verify),2026-07-23,two patties standard
-five-guys,Cheeseburger,43,840,11.99,official nutrition (seeded — verify),2026-07-23,
-five-guys,Bacon Cheeseburger,47,1060,12.99,web-verified 2026-07-23,2026-07-23,two patties + bacon
-cava,Grilled Chicken Bowl,38,620,12.35,official nutrition (seeded — verify),2026-07-23,"chicken, supergreens, rice, hummus"
-cava,Double Chicken Bowl,64,780,16.50,web-verified 2026-07-23,2026-07-23,double grilled chicken
-cava,Spicy Lamb Meatball Bowl,30,700,13.05,official nutrition (seeded — verify),2026-07-23,
-cava,Grilled Steak Bowl,33,650,13.55,official nutrition (seeded — verify),2026-07-23,
-raising-canes,Chicken Fingers (3 pc a la carte),39,390,5.49,official nutrition (seeded ESTIMATE — verify),2026-07-23,~13g protein per finger
-raising-canes,The Box Combo (4 fingers),52,1250,10.99,official nutrition (seeded ESTIMATE — verify),2026-07-23,combo incl. fries/toast/slaw/drink
-raising-canes,6 Chicken Fingers (a la carte),78,780,10.49,web-verified 2026-07-23,2026-07-23,~13g protein per finger
+chain,item,protein_g,calories,sat_fat_g,national_price_usd,source,pulled_date,notes
+chick-fil-a,Grilled Chicken Sandwich,28,390,,6.85,official nutrition (seeded — verify),2026-07-23,
+chick-fil-a,Spicy Chicken Sandwich,29,460,,5.95,official nutrition (seeded — verify),2026-07-23,
+chick-fil-a,Grilled Nuggets (12 ct),38,200,0.75,9.09,web-verified 2026-07-24,2026-07-23,leanest item on menu; sat scaled from official 8-ct (0.5g)
+chick-fil-a,Chick-fil-A Nuggets (12 ct),40,380,,6.55,official nutrition (seeded — verify),2026-07-23,
+chick-fil-a,Grilled Cool Wrap,42,350,,9.75,official nutrition (seeded — verify),2026-07-23,no dressing
+chick-fil-a,Spicy Southwest Salad,33,450,,10.15,official nutrition (seeded — verify),2026-07-23,with grilled chicken; no dressing
+chipotle,Chicken Burrito Bowl,48,665,,9.60,official nutrition calculator (seeded — verify),2026-07-23,"chicken, white rice, black beans, fajita veg, salsa"
+chipotle,Double Chicken Burrito Bowl,81,760,7,13.10,web-verified 2026-07-24,2026-07-23,double-protein build (rice/beans/salsa); sat = 2x chicken (3g ea) + white rice (1g)
+chipotle,Chicken Burrito,54,975,,9.60,official nutrition calculator (seeded — verify),2026-07-23,same fillings + tortilla
+chipotle,Steak Burrito Bowl,38,640,,10.70,official nutrition calculator (seeded — verify),2026-07-23,"steak, rice, beans, fajita veg, salsa"
+chipotle,Chicken Salad Bowl,42,400,,9.60,official nutrition calculator (seeded — verify),2026-07-23,"supergreens, chicken, beans, salsa — no rice; no dressing"
+wendys,Dave's Single,30,590,,6.29,official nutrition (seeded — verify),2026-07-23,
+wendys,Dave's Double,48,810,,7.89,official nutrition (seeded — verify),2026-07-23,
+wendys,Grilled Chicken Sandwich,34,350,1.5,6.19,web-verified 2026-07-24,2026-07-23,lean pick
+wendys,Spicy Chicken Sandwich,28,500,,6.09,official nutrition (seeded — verify),2026-07-23,
+wendys,Baconator,57,950,,8.99,official nutrition (seeded — verify),2026-07-23,
+wendys,Crispy Chicken Nuggets (10 pc),27,470,,5.79,official nutrition (seeded — verify),2026-07-23,
+mcdonalds,Quarter Pounder with Cheese,30,520,,6.29,official nutrition (seeded — verify),2026-07-23,
+mcdonalds,Double Quarter Pounder with Cheese,48,740,,8.19,official nutrition (seeded — verify),2026-07-23,
+mcdonalds,Big Mac,25,590,,5.99,official nutrition (seeded — verify),2026-07-23,
+mcdonalds,McCrispy,26,470,,5.79,official nutrition (seeded — verify),2026-07-23,
+mcdonalds,Double Cheeseburger,25,450,11,3.99,web-verified 2026-07-24,2026-07-23,value-menu sleeper
+taco-bell,Chicken Quesadilla,27,510,,5.79,official nutrition (seeded — verify),2026-07-23,
+taco-bell,Grilled Cheese Burrito (Seasoned Beef),26,720,,5.49,official nutrition (seeded — verify),2026-07-23,
+taco-bell,Double Steak Grilled Cheese Burrito,40,910,17,7.49,web-verified 2026-07-24,2026-07-23,regular
+taco-bell,Power Menu Bowl (Chicken),26,470,,6.99,official nutrition (seeded — verify),2026-07-23,lean pick
+jamba,Protein Berry Workout (Whey; 16 oz),20,285,,8.29,web-verified 2026-07-23,2026-07-23,16oz falls below 25g threshold — only larger sizes qualify
+subway,Footlong Rotisserie-Style Chicken,58,700,3,11.29,web-verified 2026-07-24,2026-07-23,no cheese/sauce in base
+subway,Footlong Oven Roasted Turkey,36,540,,10.19,official nutrition (seeded — verify),2026-07-23,
+subway,Footlong Steak & Cheese,51,720,,11.49,official nutrition (seeded — verify),2026-07-23,
+subway,Footlong Meatball Marinara,42,960,,9.29,official nutrition (seeded — verify),2026-07-23,
+subway,6-inch Rotisserie-Style Chicken,29,360,,7.29,official nutrition (seeded — verify),2026-07-23,
+panda-express,Grilled Teriyaki Chicken (entree),33,275,3,6.70,web-verified 2026-07-24,2026-07-23,a la carte entree (6 oz)
+panda-express,Grilled Teriyaki Chicken Bowl + Super Greens,42,430,,9.60,official nutrition (seeded — verify),2026-07-23,bowl combo; lean pick
+panda-express,Original Orange Chicken (entree),25,490,,6.70,official nutrition (seeded — verify),2026-07-23,a la carte medium entree
+kfc,Original Recipe Chicken Breast,39,390,4,5.49,web-verified 2026-07-24,2026-07-23,single piece a la carte
+kfc,KFC Chicken Sandwich,34,650,,5.99,official nutrition (seeded — verify),2026-07-23,
+kfc,Tenders (3 pc),27,390,,5.99,official nutrition (seeded — verify),2026-07-23,
+kfc,Famous Bowl,26,740,,5.99,official nutrition (seeded — verify),2026-07-23,
+popeyes,Classic Chicken Sandwich,28,700,,5.49,official nutrition (seeded — verify),2026-07-23,
+popeyes,Blackened Chicken Sandwich,32,550,,5.99,official nutrition (seeded — verify),2026-07-23,
+popeyes,Blackened Tenders (5 pc),43,280,,8.49,official nutrition (seeded — verify),2026-07-23,not breaded — density standout
+popeyes,Fried Chicken Breast,35,380,8,4.99,web-verified 2026-07-24,2026-07-23,single piece a la carte
+arbys,Double Roast Beef,34,510,,7.19,official nutrition (seeded — verify),2026-07-23,
+arbys,Half Pound Roast Beef,48,610,12,8.79,web-verified 2026-07-24,2026-07-23,
+arbys,Classic Beef 'n Cheddar,26,450,,6.49,official nutrition (seeded — verify),2026-07-23,
+arbys,Roast Turkey Ranch & Bacon Sandwich,44,800,,8.99,official nutrition (seeded — verify),2026-07-23,
+arbys,Smokehouse Brisket Sandwich,32,600,,8.49,official nutrition (seeded — verify),2026-07-23,
+carls-jr,Super Star with Cheese,46,930,,8.99,official nutrition (seeded — verify),2026-07-23,
+carls-jr,Charbroiled Chicken Club,34,560,,8.49,official nutrition (seeded — verify),2026-07-23,
+carls-jr,Charbroiled BBQ Chicken Sandwich,33,400,,6.99,official nutrition (seeded — verify),2026-07-23,lean pick
+carls-jr,Big Carl,47,930,23,7.49,web-verified 2026-07-24,2026-07-23,
+jack-in-the-box,Double Jack,46,830,22,7.99,web-verified 2026-07-24,2026-07-23,
+jack-in-the-box,Chicken Fajita Pita,26,320,,6.79,official nutrition (seeded — verify),2026-07-23,classic lean pick
+jack-in-the-box,Sourdough Jack,30,730,,7.69,official nutrition (seeded — verify),2026-07-23,
+jack-in-the-box,Jumbo Jack,25,540,,5.99,official nutrition (seeded — verify),2026-07-23,
+jersey-mikes,#7 Turkey & Provolone (Regular),33,590,,10.75,official nutrition (seeded — verify),2026-07-23,
+jersey-mikes,#13 Original Italian (Regular),37,830,,11.25,official nutrition (seeded — verify),2026-07-23,
+jersey-mikes,#17 Mike's Famous Philly (Regular),42,700,,11.95,official nutrition (seeded — verify),2026-07-23,
+jersey-mikes,#8 Club Sub (Regular),38,750,,12.25,official nutrition (seeded — verify),2026-07-23,
+jersey-mikes,#7 Turkey Sub in a Tub,30,490,10,10.75,web-verified 2026-07-24,2026-07-23,regular tub w/ toppings; order dry to cut cals; sat incl. oil dressing (490-cal build)
+qdoba,Chicken Burrito Bowl,45,700,,10.25,official nutrition (seeded — verify),2026-07-23,queso/guac included in price
+qdoba,Chicken Protein Bowl,60,700,9,12.10,web-verified 2026-07-24,2026-07-23,double protein build
+qdoba,Steak Burrito Bowl,36,700,,11.45,official nutrition (seeded — verify),2026-07-23,
+burgerville,Colossal Cheeseburger,35,640,,9.39,official nutrition (seeded ESTIMATE — verify),2026-07-23,PNW-only chain; data less standardized
+burgerville,Double Beef Cheeseburger,25,480,9,7.49,web-verified 2026-07-24,2026-07-23,was overstated when seeded
+burgerville,Turkey Burger,26,500,,8.29,official nutrition (seeded ESTIMATE — verify),2026-07-23,
+burgerville,Crispy Chicken Sandwich,26,560,,8.99,official nutrition (seeded ESTIMATE — verify),2026-07-23,
+in-n-out,Double-Double,37,670,,5.90,official nutrition (seeded — verify),2026-07-23,
+in-n-out,Double-Double Protein Style,33,520,,5.90,official nutrition (seeded — verify),2026-07-23,lettuce wrap; lean pick
+in-n-out,3x3,52,860,26,7.35,web-verified 2026-07-24,2026-07-23,not-so-secret menu
+five-guys,Hamburger,39,700,,10.99,official nutrition (seeded — verify),2026-07-23,two patties standard
+five-guys,Cheeseburger,43,840,,11.99,official nutrition (seeded — verify),2026-07-23,
+five-guys,Bacon Cheeseburger,47,1060,25,12.99,web-verified 2026-07-24,2026-07-23,two patties + bacon
+cava,Grilled Chicken Bowl,38,620,,12.35,official nutrition (seeded — verify),2026-07-23,"chicken, supergreens, rice, hummus"
+cava,Double Chicken Bowl,64,780,7,16.50,web-verified 2026-07-24,2026-07-23,double grilled chicken; sat = 2x chicken (3g ea) + sides (~1g)
+cava,Spicy Lamb Meatball Bowl,30,700,,13.05,official nutrition (seeded — verify),2026-07-23,
+cava,Grilled Steak Bowl,33,650,,13.55,official nutrition (seeded — verify),2026-07-23,
+raising-canes,Chicken Fingers (3 pc a la carte),39,390,,5.49,official nutrition (seeded ESTIMATE — verify),2026-07-23,~13g protein per finger
+raising-canes,The Box Combo (4 fingers),52,1250,,10.99,official nutrition (seeded ESTIMATE — verify),2026-07-23,combo incl. fries/toast/slaw/drink
+raising-canes,6 Chicken Fingers (a la carte),78,780,6,10.49,web-verified 2026-07-24,2026-07-23,~13g protein per finger; sat = 1g per finger

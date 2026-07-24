@@ -8,6 +8,22 @@ week-to-week data updates.
 ## [Unreleased]
 
 ### Added
+- **Score v2.** The Value Score is now three terms — 50% protein-per-dollar,
+  30% leanness (% of calories from protein), 20% low-saturated-fat — replacing
+  the old value+density blend. A locked hard rule scores **only web-verified
+  items with saturated-fat data**; seeded rows are listed but unranked with an
+  "awaiting verification" state. New `sat_fat_g` column in `data/items.csv`.
+- **Sort options.** Sort the list by value score, most protein, protein per
+  dollar, leanest, or lowest price (control in the list header).
+- **Compare mode.** Tap "Compare", pick any two items, and see their metrics
+  side by side with the better value highlighted on each row.
+- **Budget mode.** Enter a dollar amount (and optionally a chain) to get the
+  single item and the best same-chain combo that maximize protein within it.
+- **Chain view.** Filtering to one chain marks its top pick "Order this"; the
+  chain name in an item's detail sheet is now a tappable "see all from this
+  chain" shortcut.
+- **Social/SEO.** Open Graph + Twitter card meta and a generated `docs/og.png`
+  so shared links unfurl, an inline SVG favicon, and a description/theme-color.
 - **Motion.** anime.js (v3.2.2, vendored into `docs/` to keep the page
   offline-capable and CDN-free) now drives six animations: staggered list
   entrance on load and filter changes, a "Best value" badge pop, a score

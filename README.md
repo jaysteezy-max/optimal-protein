@@ -14,9 +14,20 @@ protein-for-the-money order?
 
 ## 📐 How it's scored
 
-**Value Score = 60% protein-per-dollar + 40% protein density** (protein per 100
-cal), each normalized so the best item in the list = 100. Weights live in
+**Value Score = 50% protein-per-dollar + 30% leanness + 20% low-saturated-fat.**
+Leanness is the share of calories that come from protein (`protein_g × 4 /
+calories`); the sat-fat term rewards less saturated fat per gram of protein.
+Each term is scaled so the best scored item = 100; weights live in
 `config/scoring.yaml`. On the page, tap any item to see the exact math.
+
+**Only web-verified items are ranked.** Rows still marked `seeded — verify` are
+listed but held out of the scoring until their nutrition (including saturated
+fat) is confirmed — so no unverified data reaches the numbers. The board grows
+as more items are verified.
+
+The page also lets you **sort** (value, protein, per-dollar, leanest, price),
+**compare** any two items side by side, and run a **budget** ("most protein for
+$X, optionally at one chain").
 
 ## 🗂️ How it works
 
@@ -40,7 +51,9 @@ pull_prices.py            validate / refresh the regional multipliers
 > design tokens and conventions are documented in **[design.md](design.md)**.
 > Animations use [anime.js](https://animejs.com), vendored at
 > `docs/anime.min.js` (committed, not rebuilt) so the page works offline; they
-> switch off automatically under `prefers-reduced-motion`.
+> switch off automatically under `prefers-reduced-motion`. The social-share
+> image `docs/og.png` is a committed asset (the build doesn't regenerate it);
+> re-render it if the branding changes.
 
 ## 🔄 Updating
 

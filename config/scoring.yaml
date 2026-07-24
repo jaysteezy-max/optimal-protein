@@ -1,10 +1,19 @@
 # Scoring configuration — edit here, then re-run: python3 build_rankings.py
 #
-# Weights must sum to 1.0. Each metric is normalized so the best item in the
-# list = 100, then blended by these weights into the Value Score.
+# Score v2: three terms, weights must sum to 1.0.
+#   protein_per_dollar — bang-for-buck (normalized best = 100)
+#   leanness           — % of calories from protein (protein_g x 4 / calories),
+#                        normalized best = 100
+#   sat_fat            — saturated-fat penalty: sat fat per gram of protein,
+#                        scaled so lowest = 100, highest = 0
 weights:
-  protein_per_dollar: 0.60   # bang-for-buck
-  protein_density: 0.40      # lean bias: protein per 100 calories
+  protein_per_dollar: 0.50
+  leanness: 0.30
+  sat_fat: 0.20
+
+# HARD RULE (locked — see BACKLOG.md): only rows whose source is web-verified
+# AND that have sat_fat_g data are scored. Seeded rows appear unranked as
+# "awaiting verification" until they're verified.
 
 # Items below this protein threshold are excluded from the rankings.
 protein_threshold_g: 25

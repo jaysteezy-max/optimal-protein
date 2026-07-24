@@ -70,6 +70,9 @@ def load_items(chains):
         it["calories"] = float(it["calories"])
         raw_price = (it.get("national_price_usd") or "").strip()
         it["national_price_usd"] = float(raw_price) if raw_price else None
+        raw_sat = (it.get("sat_fat_g") or "").strip()
+        it["sat_fat_g"] = float(raw_sat) if raw_sat else None
+        it["verified"] = "web-verified" in (it.get("source") or "")
     return items
 
 
@@ -92,7 +95,8 @@ def compute(scoring, chains, items, overrides):
     threshold = scoring["protein_threshold_g"]
     uplift = 1 + scoring["pnw_uplift_pct"] / 100.0
     w_ppd = scoring["weights"]["protein_per_dollar"]
-    w_pd = scoring["weights"]["protein_density"]
+    w_lean = scoring["weights"]["leanness"]
+    w_sat = scoring["weights"]["sat_fat"]
 
     rows = []
     for it in items:
@@ -117,6 +121,8 @@ def compute(scoring, chains, items, overrides):
             "item": it["item"],
             "protein_g": it["protein_g"],
             "calories": it["calories"],
+            "sat_fat_g": it["sat_fat_g"],
+            "verified": it["verified"],
             "price": price,
             "price_kind": price_kind,
             "price_national": price_national,
@@ -124,27 +130,52 @@ def compute(scoring, chains, items, overrides):
             "notes": (it.get("notes") or "").strip(),
             "protein_per_dollar": round(it["protein_g"] / price, 2) if price else None,
             "protein_per_100cal": round(it["protein_g"] / (it["calories"] / 100.0), 2),
+            # % of calories that come from protein (4 cal per gram)
+            "leanness_pct": round(100 * it["protein_g"] * 4 / it["calories"], 1),
+            "satfat_per_g": (round(it["sat_fat_g"] / it["protein_g"], 3)
+                             if it["sat_fat_g"] is not None else None),
         })
 
-    priced = [r for r in rows if r["price"] is not None]
-    if not priced:
-        sys.exit("no priced items — nothing to rank")
-    max_ppd = max(r["protein_per_dollar"] for r in priced)
-    max_pd = max(r["protein_per_100cal"] for r in rows)
+    # HARD RULE: only web-verified rows with sat-fat data and a price are
+    # scored. Everything else is listed but unranked until verified.
+    def eligible(r):
+        return r["verified"] and r["sat_fat_g"] is not None and r["price"] is not None
+
+    scored = [r for r in rows if eligible(r)]
+    if not scored:
+        sys.exit("no verified, priced items with sat-fat data — nothing to rank")
+    max_ppd = max(r["protein_per_dollar"] for r in scored)
+    max_lean = max(r["leanness_pct"] for r in scored)
+    sat_ratios = [r["satfat_per_g"] for r in scored]
+    sat_min, sat_max = min(sat_ratios), max(sat_ratios)
 
     for r in rows:
-        r["density_norm"] = round(100 * r["protein_per_100cal"] / max_pd, 1)
-        if r["price"] is not None:
+        if eligible(r):
             r["ppd_norm"] = round(100 * r["protein_per_dollar"] / max_ppd, 1)
-            r["value_score"] = round(w_ppd * r["ppd_norm"] + w_pd * r["density_norm"], 1)
+            r["lean_norm"] = round(100 * r["leanness_pct"] / max_lean, 1)
+            # penalty scaled so cleanest = 100, fattiest = 0
+            if sat_max > sat_min:
+                r["satfat_norm"] = round(
+                    100 * (sat_max - r["satfat_per_g"]) / (sat_max - sat_min), 1)
+            else:
+                r["satfat_norm"] = 100.0
+            r["value_score"] = round(w_ppd * r["ppd_norm"] + w_lean * r["lean_norm"]
+                                     + w_sat * r["satfat_norm"], 1)
+            r["unranked_reason"] = None
         else:
             r["ppd_norm"] = None
+            r["lean_norm"] = None
+            r["satfat_norm"] = None
             r["value_score"] = None
+            if not r["verified"] or r["sat_fat_g"] is None:
+                r["unranked_reason"] = "awaiting verification"
+            else:
+                r["unranked_reason"] = "no price"
 
-    # scored items ranked first; unpriced items flagged at the bottom
+    # scored items ranked first; unverified/unpriced flagged at the bottom
     rows.sort(key=lambda r: (r["value_score"] is None,
                              -(r["value_score"] or 0),
-                             -r["protein_per_100cal"]))
+                             -r["leanness_pct"]))
     for i, r in enumerate(rows):
         r["rank"] = i + 1 if r["value_score"] is not None else None
     return rows
@@ -173,6 +204,9 @@ def write_json(scoring, regions_cfg, rows, path):
             "weights": scoring["weights"],
             "protein_threshold_g": scoring["protein_threshold_g"],
             "pnw_uplift_pct": scoring["pnw_uplift_pct"],
+            "hard_rule": ("Only web-verified rows with sat-fat data are "
+                          "scored; seeded rows are listed unranked as "
+                          "awaiting verification."),
             "caveat": ("Prices are national averages + regional uplift, not "
                        "till-verified. Sales tax excluded. App deals excluded. "
                        "Rankings are region-invariant; only displayed prices "
@@ -198,8 +232,11 @@ def write_markdown(scoring, rows, best, path):
         "confirm in store. Sales tax and app deals excluded.",
         "",
         f"Value Score = {int(scoring['weights']['protein_per_dollar']*100)}% "
-        f"protein-per-dollar + {int(scoring['weights']['protein_density']*100)}% "
-        "protein density, each normalized to the best item in the list (=100).",
+        f"protein-per-dollar + {int(scoring['weights']['leanness']*100)}% "
+        f"leanness (% calories from protein) + "
+        f"{int(scoring['weights']['sat_fat']*100)}% low-saturated-fat, "
+        "each scaled so the best scored item = 100. **Only web-verified items "
+        "are scored** — seeded rows are listed unranked until verified.",
         "",
         "## Best pick per chain",
         "",
@@ -213,17 +250,19 @@ def write_markdown(scoring, rows, best, path):
         "",
         "## Full rankings",
         "",
-        "| # | Chain | Item | Price | Protein | Cal | Prot/$ | Prot/100cal | Score |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "| # | Chain | Item | Price | Protein | Cal | Sat fat | Prot/$ | Lean % | Score |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in rows:
         rank = r["rank"] if r["rank"] is not None else "–"
         ppd = r["protein_per_dollar"] if r["protein_per_dollar"] is not None else "—"
-        score = r["value_score"] if r["value_score"] is not None else "no price"
+        sat = f"{r['sat_fat_g']:g} g" if r["sat_fat_g"] is not None else "—"
+        score = (r["value_score"] if r["value_score"] is not None
+                 else r["unranked_reason"])
         lines.append(
             f"| {rank} | {r['chain_name']} | {r['item']} | {fmt_price(r)} "
-            f"| {r['protein_g']:g} g | {r['calories']:g} | {ppd} "
-            f"| {r['protein_per_100cal']} | {score} |")
+            f"| {r['protein_g']:g} g | {r['calories']:g} | {sat} | {ppd} "
+            f"| {r['leanness_pct']:g}% | {score} |")
     lines.append("")
     path.write_text("\n".join(lines))
 
@@ -234,28 +273,42 @@ HTML_TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Protein Value — PNW</title>
+<meta name="description" content="The best protein-per-dollar fast-food orders across the Pacific Northwest. Only verified items are ranked.">
+<meta name="theme-color" content="#0071e3">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230071e3'/%3E%3Crect x='13' y='34' width='9' height='16' rx='2.5' fill='white'/%3E%3Crect x='27.5' y='25' width='9' height='25' rx='2.5' fill='white'/%3E%3Crect x='42' y='15' width='9' height='35' rx='2.5' fill='white'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Protein Value Tracker — Gains for Less">
+<meta property="og:description" content="The best protein-per-dollar fast-food orders across the PNW. Only verified items are ranked.">
+<meta property="og:url" content="https://jaysteezy-max.github.io/optimal-protein/">
+<meta property="og:image" content="https://jaysteezy-max.github.io/optimal-protein/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Protein Value Tracker — Gains for Less">
+<meta name="twitter:description" content="The best protein-per-dollar fast-food orders across the PNW. Only verified items are ranked.">
+<meta name="twitter:image" content="https://jaysteezy-max.github.io/optimal-protein/og.png">
 <style>
   :root{
     --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --muted2:#86868b;
     --line:#e5e5ea; --hair:#ebebf0; --blue:#0071e3; --blue-soft:#e8f1fd;
-    --good:#1a8f4c; --shadow:0 4px 22px rgba(0,0,0,.06); --radius:18px;
+    --good:#1a8f4c; --warn:#c93400; --shadow:0 4px 22px rgba(0,0,0,.06); --radius:18px;
   }
   @media (prefers-color-scheme:dark){
     :root{
       --bg:#000000; --card:#1c1c1e; --ink:#f5f5f7; --muted:#98989d; --muted2:#8e8e93;
       --line:#2c2c2e; --hair:#2c2c2e; --blue:#0a84ff; --blue-soft:#0a2540;
-      --good:#30d158; --shadow:0 4px 22px rgba(0,0,0,.5);
+      --good:#30d158; --warn:#ff9f0a; --shadow:0 4px 22px rgba(0,0,0,.5);
     }
   }
   :root[data-theme="light"]{
     --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --muted2:#86868b;
     --line:#e5e5ea; --hair:#ebebf0; --blue:#0071e3; --blue-soft:#e8f1fd;
-    --good:#1a8f4c; --shadow:0 4px 22px rgba(0,0,0,.06);
+    --good:#1a8f4c; --warn:#c93400; --shadow:0 4px 22px rgba(0,0,0,.06);
   }
   :root[data-theme="dark"]{
     --bg:#000000; --card:#1c1c1e; --ink:#f5f5f7; --muted:#98989d; --muted2:#8e8e93;
     --line:#2c2c2e; --hair:#2c2c2e; --blue:#0a84ff; --blue-soft:#0a2540;
-    --good:#30d158; --shadow:0 4px 22px rgba(0,0,0,.5);
+    --good:#30d158; --warn:#ff9f0a; --shadow:0 4px 22px rgba(0,0,0,.5);
   }
   *{box-sizing:border-box;margin:0}
   html{-webkit-text-size-adjust:100%}
@@ -329,6 +382,7 @@ HTML_TEMPLATE = """<!doctype html>
     max-height:90vh; display:flex; flex-direction:column; touch-action:none;
     transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1)}
   .sheet.open{transform:translateY(0)}
+  .sheet[hidden],.m-sheet[hidden]{display:none}  /* [hidden] must beat the flex above */
   .handle{width:38px; height:5px; border-radius:3px; background:var(--muted2); opacity:.4;
     margin:8px auto 2px; flex:none; cursor:grab; touch-action:none}
   .sheet-close{position:absolute; top:12px; right:14px; width:30px; height:30px; border:0;
@@ -344,6 +398,13 @@ HTML_TEMPLATE = """<!doctype html>
     color:var(--muted2)}
   .sh-name{font-size:24px; font-weight:600; letter-spacing:-.02em; line-height:1.1; margin-top:8px}
   .sh-ch{font-size:14px; color:var(--muted); margin-top:3px}
+  .sh-chlink{display:inline-flex; align-items:center; gap:7px; background:none; border:0;
+    font:inherit; font-size:14px; color:var(--muted); cursor:pointer; padding:2px 0;
+    -webkit-tap-highlight-color:transparent}
+  .sh-chsee{display:inline-flex; align-items:center; gap:3px; font-size:12px; font-weight:600;
+    color:var(--blue)}
+  .sh-chsee .chev{width:6px; height:10px; color:var(--blue); opacity:1}
+  .sh-chlink:focus-visible{outline:2px solid var(--blue); outline-offset:2px; border-radius:6px}
   .sh-hero{display:flex; align-items:baseline; gap:10px; margin-top:16px}
   .sh-score{font-size:52px; font-weight:300; letter-spacing:-.03em; line-height:1}
   .sh-scorelbl{font-size:12px; font-weight:500; letter-spacing:.04em; text-transform:uppercase;
@@ -365,6 +426,8 @@ HTML_TEMPLATE = """<!doctype html>
   .bar i{display:block; height:100%; border-radius:4px; background:var(--blue);
     width:0; transition:width .5s cubic-bezier(.32,.72,0,1)}
   .bar.g i{background:var(--good)}
+  .bar.w i{background:var(--warn)}
+  .pend{font-size:10.5px; font-weight:590; color:var(--muted2)}
   .eq{margin-top:14px; padding-top:13px; border-top:1px solid var(--hair);
     font-size:13px; color:var(--muted); text-align:center; font-variant-numeric:tabular-nums}
   .eq b{color:var(--ink); font-weight:600}
@@ -379,8 +442,76 @@ HTML_TEMPLATE = """<!doctype html>
     background:var(--blue-soft); color:var(--ink); font-size:13.5px; line-height:1.45}
   .tip svg{flex:none; color:var(--blue); margin-top:1px}
   .sh-foot{font-size:11.5px; color:var(--muted2); margin-top:18px; line-height:1.5; text-align:center}
+  /* ---- toolbar: count + sort + actions ---- */
+  .listbar{display:flex; align-items:center; gap:10px; padding:14px 6px 8px}
+  .listbar .count{padding:0; flex:1; min-width:0}
+  .sortwrap{position:relative; flex:none}
+  #sort{font-size:12px; font-weight:590; color:var(--ink); background:transparent;
+    border:0; box-shadow:none; padding:4px 20px 4px 8px; width:auto; border-radius:8px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8' fill='none' stroke='%2386868b' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 6px center}
+  #sort:focus{outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 20%,transparent)}
+  .actions{display:flex; gap:8px; padding:0 6px 14px}
+  .act{flex:1; font:inherit; font-size:13px; font-weight:590; letter-spacing:-.01em;
+    color:var(--blue); background:var(--blue-soft); border:0; border-radius:11px;
+    padding:10px 12px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    gap:6px; -webkit-tap-highlight-color:transparent; transition:transform .12s ease}
+  .act:active{transform:scale(.97)}
+  .act:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+  .act svg{flex:none}
+  .act.on{background:var(--blue); color:#fff}
+  /* compare selection state on rows */
+  .row.cmp{cursor:pointer}
+  .row.picked{background:color-mix(in srgb,var(--blue) 9%,transparent)}
+  .row .tick{width:22px; height:22px; border-radius:50%; border:2px solid var(--muted2);
+    display:none; place-items:center; flex:none; color:#fff}
+  body.compare .row .chev{display:none}
+  body.compare .row .tick{display:grid}
+  body.compare .row.picked .tick{background:var(--blue); border-color:var(--blue)}
+  body.compare .row .tick svg{opacity:0}
+  body.compare .row.picked .tick svg{opacity:1}
+  .order-badge{display:inline-block; font-size:10.5px; font-weight:600; letter-spacing:.02em;
+    color:var(--good); background:color-mix(in srgb,var(--good) 15%,transparent);
+    border-radius:6px; padding:1px 6px; margin-top:5px}
+  /* ---- lightweight secondary modal (compare / budget) ---- */
+  .m-sheet{position:fixed; left:0; right:0; bottom:0; z-index:45; margin:0 auto; max-width:600px;
+    background:var(--bg); border-radius:22px 22px 0 0; box-shadow:0 -8px 40px rgba(0,0,0,.28);
+    max-height:92vh; display:flex; flex-direction:column;
+    transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1)}
+  .m-sheet.open{transform:translateY(0)}
+  .m-head{flex:none; display:flex; align-items:center; padding:18px 20px 12px; gap:12px}
+  .m-head h2{font-size:20px; font-weight:600; letter-spacing:-.02em; flex:1}
+  .m-body{flex:1; min-height:0; overflow-y:auto; padding:0 20px 30px; -webkit-overflow-scrolling:touch}
+  .cmp-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .cmp-col{background:var(--card); border:1px solid var(--hair); border-radius:14px; padding:14px}
+  .cmp-col h3{font-size:15px; font-weight:600; letter-spacing:-.01em; line-height:1.2}
+  .cmp-col .cc{font-size:12px; color:var(--muted); margin:2px 0 12px}
+  .cmp-metric{padding:8px 0; border-top:1px solid var(--hair)}
+  .cmp-metric .cm-l{font-size:11px; color:var(--muted2); font-weight:500}
+  .cmp-metric .cm-v{font-size:16px; font-weight:600; letter-spacing:-.01em}
+  .cmp-metric.win .cm-v{color:var(--good)}
+  .fld{margin-bottom:14px}
+  .fld label{display:block; font-size:12px; font-weight:600; letter-spacing:.02em;
+    text-transform:uppercase; color:var(--muted2); margin-bottom:7px}
+  .fld input,.fld select{width:100%; padding:11px 13px; border:1px solid var(--line);
+    border-radius:12px; background:var(--card); color:var(--ink); font-size:16px;
+    font-family:inherit; -webkit-appearance:none; appearance:none}
+  .fld input:focus,.fld select:focus{outline:none; border-color:var(--blue);
+    box-shadow:0 0 0 3.5px color-mix(in srgb,var(--blue) 22%,transparent)}
+  .b-result{margin-top:4px}
+  .b-pick{background:var(--card); border:1px solid var(--hair); border-radius:14px;
+    padding:15px; margin-bottom:10px; display:grid; grid-template-columns:1fr auto; gap:10px;
+    align-items:center}
+  .b-pick .bp-h{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--blue); margin-bottom:5px}
+  .b-pick.combo .bp-h{color:var(--good)}
+  .b-pick .bp-n{font-size:15px; font-weight:590; letter-spacing:-.01em; line-height:1.25}
+  .b-pick .bp-c{font-size:12px; color:var(--muted); margin-top:3px}
+  .b-pick .bp-p{font-size:22px; font-weight:600; letter-spacing:-.02em; text-align:right}
+  .b-pick .bp-pl{font-size:10.5px; color:var(--muted2); text-align:right}
+  .b-empty{color:var(--muted); font-size:14px; text-align:center; padding:24px 0; line-height:1.5}
   @media (prefers-reduced-motion:reduce){
-    .sheet,.backdrop,.bar i{transition:none}
+    .sheet,.backdrop,.bar i,.m-sheet{transition:none}
   }
 </style>
 </head>
@@ -390,20 +521,49 @@ HTML_TEMPLATE = """<!doctype html>
   <h1>Gains for Less</h1>
   <div class="sub">Ranked by protein, not hype</div>
   <div class="meta">__SUBTITLE__</div>
-  <div class="caveat">Regional price estimates &mdash; <b>not till-verified</b>.
-  Before tax and app deals. Tap any item for the full breakdown.</div>
+  <div class="caveat">Only verified items are ranked. Regional price estimates
+  &mdash; <b>not till-verified</b>. Before tax and app deals. Tap any item for
+  the full breakdown.</div>
 </header>
 <div class="controls">
   <select id="chain" aria-label="Filter by chain"><option value="">All chains</option></select>
   <input id="q" type="search" placeholder="Search items…" aria-label="Search items">
   <select id="region" aria-label="Pricing region"></select>
 </div>
-<div class="count" id="count"></div>
+<div class="listbar">
+  <div class="count" id="count"></div>
+  <div class="sortwrap">
+    <select id="sort" aria-label="Sort by">
+      <option value="score">Sort: Value score</option>
+      <option value="protein">Sort: Most protein</option>
+      <option value="ppd">Sort: Protein per $</option>
+      <option value="lean">Sort: Leanest</option>
+      <option value="price">Sort: Lowest price</option>
+    </select>
+  </div>
+</div>
+<div class="actions">
+  <button class="act" id="cmpBtn" aria-pressed="false">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 1v14M3 5l-2 3 2 3M13 5l2 3-2 3"/></svg>
+    Compare</button>
+  <button class="act" id="budgetBtn">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v14M11 4H6.5a2.5 2.5 0 000 5h3a2.5 2.5 0 010 5H4"/></svg>
+    Budget</button>
+</div>
 <div class="list" id="list"></div>
 <p class="empty" id="empty" hidden>No items match.</p>
 <footer>__FOOTER__</footer>
 
 <div class="backdrop" id="backdrop" hidden></div>
+<div class="m-sheet" id="mSheet" role="dialog" aria-modal="true" aria-labelledby="mTitle" hidden>
+  <div class="m-head">
+    <h2 id="mTitle"></h2>
+    <button class="sheet-close" id="mClose" aria-label="Close" style="position:static">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>
+    </button>
+  </div>
+  <div class="m-body" id="mBody"></div>
+</div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-name" hidden>
   <div class="sheet-grab" id="sheetGrab">
     <div class="handle" id="handle"></div>
@@ -418,6 +578,7 @@ HTML_TEMPLATE = """<!doctype html>
 <script src="anime.min.js"></script>
 <script>
 const DATA = __DATA__;
+const W_PPD = __WPPD__, W_LEAN = __WLEAN__, W_SAT = __WSAT__;  // integer percents
 
 /* Motion: anime.js drives staggering, springs, number tweens and the sheet
    timeline. Everything degrades: under prefers-reduced-motion, or if
@@ -425,8 +586,7 @@ const DATA = __DATA__;
 const RM = matchMedia('(prefers-reduced-motion:reduce)').matches;
 const AN = () => (!RM && window.anime) ? window.anime : null;
 const IOS_EASE = 'cubicBezier(.32,.72,0,1)';
-const W_PPD = __WPPD__, W_PD = __WPD__;              // integer percents (e.g. 60, 40)
-const TOTAL = DATA.items.length;
+const TOTAL = DATA.items.filter(i => i.value_score != null).length;  // ranked count
 DATA.items.forEach((it, k) => it._id = k);
 
 const chainSel = document.getElementById('chain');
@@ -434,6 +594,8 @@ const q = document.getElementById('q');
 const list = document.getElementById('list');
 const empty = document.getElementById('empty');
 const count = document.getElementById('count');
+const cmpSel = new Set();      // item ids chosen for compare
+let compareMode = false;
 
 [...new Map(DATA.items.map(i => [i.chain, i.chain_name])).entries()]
   .sort((a, b) => a[1].localeCompare(b[1]))
@@ -485,34 +647,62 @@ function ppdOf(i){
 
 const CHEV = '<svg class="chev" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg>';
 
+const TICK = '<span class="tick"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5l3.5 3.5L12 3.5"/></svg></span>';
+
+// sort keys: scored items always sort ahead of pending ones
+const SORTS = {
+  score:   {label:'ranked by value',   key:i => i.value_score,        dir:-1},
+  protein: {label:'most protein',      key:i => i.protein_g,          dir:-1},
+  ppd:     {label:'protein per dollar',key:i => ppdOf(i),             dir:-1},
+  lean:    {label:'leanest',           key:i => i.leanness_pct,       dir:-1},
+  price:   {label:'lowest price',      key:i => priceOf(i),           dir:+1},
+};
+const sortSel = document.getElementById('sort');
+
 function render(mode){
   const slug = chainSel.value, term = q.value.trim().toLowerCase();
+  const sort = SORTS[sortSel.value] || SORTS.score;
   const rows = DATA.items.filter(i =>
     (!slug || i.chain === slug) &&
     (!term || (i.item + ' ' + i.chain_name).toLowerCase().includes(term)));
+  // scored first, then the chosen metric; nulls sink to the bottom
+  rows.sort((a, b) => {
+    const sa = a.value_score != null, sb = b.value_score != null;
+    if (sa !== sb) return sa ? -1 : 1;
+    const ka = sort.key(a), kb = sort.key(b);
+    if (ka == null && kb == null) return 0;
+    if (ka == null) return 1;
+    if (kb == null) return -1;
+    return (ka - kb) * sort.dir;
+  });
   count.textContent = rows.length + (rows.length === 1 ? ' item' : ' items')
-    + (slug ? ' · ' + chainSel.options[chainSel.selectedIndex].text : ' · ranked by value');
+    + (slug ? ' · ' + chainSel.options[chainSel.selectedIndex].text : ' · ' + sort.label);
+  const byScore = sortSel.value === 'score';
   list.innerHTML = rows.map((i, idx) => {
     const scored = i.value_score != null;
-    const pos = scored ? (slug ? idx + 1 : i.rank) : '·';
+    const pos = scored ? (byScore && !slug ? i.rank : idx + 1) : '·';
     const price = money(priceOf(i)) || 'no price';
-    const best = idx === 0 && !slug && scored ? '<div class="best">Best value</div>' : '';
-    return `<button class="row${idx===0&&scored?' top':''}" data-id="${i._id}">
+    // top of an all-chains value sort = best value; top of a single-chain view = order this
+    const badge = idx === 0 && scored && byScore
+      ? (slug ? '<div class="order-badge">Order this</div>' : '<div class="best">Best value</div>')
+      : '';
+    const pend = scored ? '' : `<div class="pend">${i.unranked_reason === 'no price' ? 'No price yet' : 'Awaiting verification'}</div>`;
+    return `<button class="row cmp${idx===0&&scored&&byScore&&!slug?' top':''}${cmpSel.has(i._id)?' picked':''}" data-id="${i._id}">
       <span class="rk">${pos}</span>
       <span class="main">
         <span class="nm">${esc(i.item)}</span>
         <span class="ch">${esc(i.chain_name)} · ${i.protein_g}g · <span class="pr">${price}</span></span>
-        ${best}
+        ${badge}${pend}
       </span>
       <span class="sc${scored?'':' no'}">${scored ? i.value_score.toFixed(1) : '—'}</span>
-      ${CHEV}
+      ${TICK}${CHEV}
     </button>`;
   }).join('');
   empty.hidden = rows.length > 0;
   list.hidden = rows.length === 0;
 
   const anm = AN();
-  if (!anm) return;
+  if (!anm || mode === 'quiet') return;   // 'quiet' = compare-selection toggle
   if (mode === 'prices'){
     // region change: only the prices changed, so only the prices move
     anm({targets:'#list .pr', translateY:[9,0], opacity:[0,1],
@@ -537,8 +727,6 @@ function sheetHTML(i){
   const scored = i.value_score != null;
   const rPrice = priceOf(i);
   const price = money(rPrice);
-  const ppdN = i.ppd_norm, densN = i.density_norm;
-  const fP = (W_PPD/100), fD = (W_PD/100);
   const cost100 = (rPrice!=null) ? (100/i.protein_g)*rPrice : null;
   const mult100 = (100/i.protein_g);
   const per25 = (rPrice!=null) ? (25/i.protein_g)*rPrice : null;
@@ -549,16 +737,32 @@ function sheetHTML(i){
       <div class="panel-h">Score breakdown</div>
       <div class="brk">
         <div class="brk-top"><span class="brk-name">Value per dollar <span class="w">· ${W_PPD}%</span></span>
-          <span class="brk-val">${ppdN.toFixed(1)}</span></div>
-        <div class="bar"><i data-w="${Math.max(2,Math.min(100,ppdN))}"></i></div>
+          <span class="brk-val">${i.ppd_norm.toFixed(1)}</span></div>
+        <div class="bar"><i data-w="${Math.max(2,Math.min(100,i.ppd_norm))}"></i></div>
       </div>
       <div class="brk">
-        <div class="brk-top"><span class="brk-name">Protein density <span class="w">· ${W_PD}%</span></span>
-          <span class="brk-val">${densN.toFixed(1)}</span></div>
-        <div class="bar g"><i data-w="${Math.max(2,Math.min(100,densN))}"></i></div>
+        <div class="brk-top"><span class="brk-name">Leanness <span class="w">· ${W_LEAN}%</span></span>
+          <span class="brk-val">${i.lean_norm.toFixed(1)}</span></div>
+        <div class="bar g"><i data-w="${Math.max(2,Math.min(100,i.lean_norm))}"></i></div>
       </div>
-      <div class="eq">${fP.toFixed(1)} × ${ppdN.toFixed(1)} &nbsp;+&nbsp; ${fD.toFixed(1)} × ${densN.toFixed(1)} &nbsp;=&nbsp; <b>${i.value_score.toFixed(1)}</b></div>
-    </div>` : '';
+      <div class="brk">
+        <div class="brk-top"><span class="brk-name">Low sat fat <span class="w">· ${W_SAT}%</span></span>
+          <span class="brk-val">${i.satfat_norm.toFixed(1)}</span></div>
+        <div class="bar w"><i data-w="${Math.max(2,Math.min(100,i.satfat_norm))}"></i></div>
+      </div>
+      <div class="eq">${(W_PPD/100).toFixed(1)} × ${i.ppd_norm.toFixed(1)}
+        &nbsp;+&nbsp; ${(W_LEAN/100).toFixed(1)} × ${i.lean_norm.toFixed(1)}
+        &nbsp;+&nbsp; ${(W_SAT/100).toFixed(1)} × ${i.satfat_norm.toFixed(1)}
+        &nbsp;=&nbsp; <b>${i.value_score.toFixed(1)}</b></div>
+    </div>` : `
+    <div class="panel">
+      <div class="panel-h">Not ranked yet</div>
+      <div style="font-size:13.5px; color:var(--muted); line-height:1.5">${
+        i.unranked_reason === 'no price'
+          ? 'Verified, but no confirmed price yet — it can\\u2019t be scored on value until one lands.'
+          : 'Only web-verified items are scored. This item\\u2019s nutrition and saturated fat haven\\u2019t been independently verified yet, so it\\u2019s listed but not ranked.'
+      }</div>
+    </div>`;
 
   const derived = (rPrice!=null) ? `
     <div class="derived">
@@ -575,9 +779,11 @@ function sheetHTML(i){
     </div>` : '';
 
   const head = `
-    <div class="sh-rank">${scored ? `#${i.rank} of ${TOTAL} · top ${pctTop}%` : 'Unranked'}</div>
+    <div class="sh-rank">${scored ? `#${i.rank} of ${TOTAL} · top ${pctTop}%`
+      : (i.unranked_reason === 'no price' ? 'Unranked · no price' : 'Unranked · awaiting verification')}</div>
     <div class="sh-name" id="sh-name">${esc(i.item)}</div>
-    <div class="sh-ch">${esc(i.chain_name)}</div>
+    <button class="sh-ch sh-chlink" data-chain="${esc(i.chain)}">${esc(i.chain_name)}
+      <span class="sh-chsee">See all ${CHEV}</span></button>
     <div class="sh-hero">
       <div class="sh-score">${scored ? i.value_score.toFixed(1) : '—'}</div>
       <div class="sh-scorelbl">value<br>score</div>
@@ -591,9 +797,9 @@ function sheetHTML(i){
         <div class="spec"><b>${i.protein_g} g</b><span>Protein</span></div>
         <div class="spec"><b>${i.calories}</b><span>Calories</span></div>
         <div class="spec"><b>${price || '—'}</b><span>Price</span></div>
+        <div class="spec"><b>${i.sat_fat_g != null ? i.sat_fat_g + ' g' : '—'}</b><span>Sat fat</span></div>
+        <div class="spec"><b>${i.leanness_pct}%</b><span>Cals from protein</span></div>
         <div class="spec"><b>${ppdOf(i) ?? '—'}</b><span>g / dollar</span></div>
-        <div class="spec"><b>${i.protein_per_100cal}</b><span>g / 100 cal</span></div>
-        <div class="spec"><b>${Math.round(i.calories / (i.protein_g||1))}</b><span>cal / g protein</span></div>
       </div>
     </div>
     ${derived}
@@ -657,11 +863,147 @@ function closeSheet(){
 }
 
 list.addEventListener('click', e => {
-  const row = e.target.closest('.row'); if(row) openSheet(+row.dataset.id);
+  const row = e.target.closest('.row'); if(!row) return;
+  const id = +row.dataset.id;
+  if (compareMode){ toggleCompare(id, row); return; }
+  openSheet(id);
 });
-backdrop.addEventListener('click', closeSheet);
+backdrop.addEventListener('click', () => { if(!sheet.hidden) closeSheet(); if(!mSheet.hidden) closeModal(); });
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
-document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidden) closeSheet(); });
+// tapping the chain name in the sheet → filter the list to that chain (best-to-worst)
+document.getElementById('sheetHead').addEventListener('click', e => {
+  const link = e.target.closest('.sh-chlink'); if(!link) return;
+  chainSel.value = link.dataset.chain; sortSel.value = 'score';
+  closeSheet(); render(); window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'});
+});
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Escape') return;
+  if(!sheet.hidden) closeSheet(); else if(!mSheet.hidden) closeModal();
+});
+
+/* ---------------- secondary modal (compare / budget) ---------------- */
+const mSheet = document.getElementById('mSheet');
+const mBody = document.getElementById('mBody');
+const mTitle = document.getElementById('mTitle');
+function openModal(title, html){
+  lastFocus = document.activeElement;
+  mTitle.textContent = title;
+  mBody.innerHTML = html;
+  backdrop.hidden = false; mSheet.hidden = false;
+  requestAnimationFrame(() => { backdrop.classList.add('open'); mSheet.classList.add('open'); mBody.scrollTop = 0; });
+  document.getElementById('mClose').focus();
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){
+  backdrop.classList.remove('open'); mSheet.classList.remove('open');
+  document.body.style.overflow = '';
+  const done = () => { backdrop.hidden = true; mSheet.hidden = true; mSheet.removeEventListener('transitionend', done); };
+  mSheet.addEventListener('transitionend', done);
+  if (RM) done();
+  if (lastFocus) lastFocus.focus();
+}
+document.getElementById('mClose').addEventListener('click', closeModal);
+
+/* ---------------- compare mode ---------------- */
+const cmpBtn = document.getElementById('cmpBtn');
+function setCompareMode(on){
+  compareMode = on;
+  document.body.classList.toggle('compare', on);
+  cmpBtn.classList.toggle('on', on);
+  cmpBtn.setAttribute('aria-pressed', on);
+  cmpBtn.lastChild.textContent = on ? ' Cancel' : ' Compare';
+  if (!on){ cmpSel.clear(); render(); }
+}
+function toggleCompare(id, row){
+  if (cmpSel.has(id)) cmpSel.delete(id);
+  else { if (cmpSel.size >= 2){ const first = cmpSel.values().next().value; cmpSel.delete(first); } cmpSel.add(id); }
+  render('quiet');
+  if (cmpSel.size === 2) showCompare();
+}
+cmpBtn.addEventListener('click', () => setCompareMode(!compareMode));
+
+function cmpRow(label, a, b, fmt, better){
+  const va = a, vb = b;
+  const winA = better != null && va != null && vb != null && (better > 0 ? va > vb : va < vb) && va !== vb;
+  const winB = better != null && va != null && vb != null && (better > 0 ? vb > va : vb < va) && va !== vb;
+  return {label, a:fmt(va), b:fmt(vb), winA, winB};
+}
+function showCompare(){
+  const [x, y] = [...cmpSel].map(id => DATA.items[id]);
+  const px = priceOf(x), py = priceOf(y);
+  const metrics = [
+    cmpRow('Value score', x.value_score, y.value_score, v => v==null?'—':v.toFixed(1), +1),
+    cmpRow('Protein', x.protein_g, y.protein_g, v => v+' g', +1),
+    cmpRow('Price', px, py, v => v==null?'—':money(v), -1),
+    cmpRow('Protein / $', ppdOf(x), ppdOf(y), v => v==null?'—':v.toFixed(1), +1),
+    cmpRow('Calories', x.calories, y.calories, v => ''+v, -1),
+    cmpRow('Cals from protein', x.leanness_pct, y.leanness_pct, v => v+'%', +1),
+    cmpRow('Sat fat', x.sat_fat_g, y.sat_fat_g, v => v==null?'—':v+' g', -1),
+  ];
+  const col = (it, side) => `
+    <div class="cmp-col">
+      <h3>${esc(it.item)}</h3><div class="cc">${esc(it.chain_name)}</div>
+      ${metrics.map(m => `<div class="cmp-metric${m['win'+side]?' win':''}">
+        <div class="cm-l">${m.label}</div><div class="cm-v">${m[side==='A'?'a':'b']}</div></div>`).join('')}
+    </div>`;
+  openModal('Compare', `<div class="cmp-grid">${col(x,'A')}${col(y,'B')}</div>
+    <p class="b-empty" style="padding-top:16px">Green marks the better value on each row. Prices shown for ${esc(regionByCode[regionSel.value].name)}.</p>`);
+}
+
+/* ---------------- budget mode ---------------- */
+const budgetBtn = document.getElementById('budgetBtn');
+budgetBtn.addEventListener('click', showBudget);
+function showBudget(){
+  const chainOpts = [...new Map(DATA.items.map(i => [i.chain, i.chain_name])).entries()]
+    .sort((a,b) => a[1].localeCompare(b[1]))
+    .map(([s,n]) => `<option value="${s}">${esc(n)}</option>`).join('');
+  openModal('Budget', `
+    <div class="fld"><label for="bAmt">Budget</label>
+      <input id="bAmt" type="number" inputmode="decimal" min="1" step="0.50" value="10" placeholder="10.00"></div>
+    <div class="fld"><label for="bChain">Chain (optional)</label>
+      <select id="bChain"><option value="">Any chain</option>${chainOpts}</select></div>
+    <div class="b-result" id="bResult"></div>`);
+  const amt = document.getElementById('bAmt'), ch = document.getElementById('bChain'), res = document.getElementById('bResult');
+  const run = () => { res.innerHTML = budgetSolve(parseFloat(amt.value), ch.value); };
+  amt.addEventListener('input', run); ch.addEventListener('change', run); run();
+}
+// pick the single item, and the best 1–3 item combo, that maximize protein within budget
+function budgetSolve(budget, chainSlug){
+  if (!(budget > 0)) return '<p class="b-empty">Enter a budget to see the most protein you can get.</p>';
+  const pool = DATA.items.filter(i => (!chainSlug || i.chain === chainSlug) && priceOf(i) != null && priceOf(i) <= budget);
+  if (!pool.length) return `<p class="b-empty">Nothing on the menu fits ${money(budget)}${chainSlug?' at that chain':''}. Try a bigger budget.</p>`;
+  const single = pool.slice().sort((a,b) => b.protein_g - a.protein_g)[0];
+  // greedy combo: repeatedly add the highest-protein item that still fits (same chain if one is set)
+  let best = null;
+  const comber = (startChain) => {
+    const items = DATA.items.filter(i => i.chain === startChain && priceOf(i) != null);
+    let spent = 0, prot = 0, picks = [];
+    const avail = items.slice().sort((a,b) => (b.protein_g/priceOf(b)) - (a.protein_g/priceOf(a)));
+    for (let n=0; n<3; n++){
+      const nxt = avail.find(i => spent + priceOf(i) <= budget);
+      if (!nxt) break;
+      picks.push(nxt); spent += priceOf(nxt); prot += nxt.protein_g;
+      avail.splice(avail.indexOf(nxt), 1);
+    }
+    return picks.length ? {picks, spent, prot} : null;
+  };
+  const chains = chainSlug ? [chainSlug] : [...new Set(pool.map(i => i.chain))];
+  for (const c of chains){ const r = comber(c); if (r && (!best || r.prot > best.prot)) best = r; }
+
+  const singleCard = `<div class="b-pick"><div><div class="bp-h">Best single item</div>
+      <div class="bp-n">${esc(single.item)}</div>
+      <div class="bp-c">${esc(single.chain_name)} · ${money(priceOf(single))}</div></div>
+      <div><div class="bp-p">${single.protein_g} g</div><div class="bp-pl">protein</div></div></div>`;
+  let comboCard = '';
+  if (best && best.picks.length > 1 && best.prot > single.protein_g){
+    const names = best.picks.map(p => esc(p.item)).join(' + ');
+    comboCard = `<div class="b-pick combo"><div><div class="bp-h">Most protein · ${best.picks.length} items, one chain</div>
+      <div class="bp-n">${names}</div>
+      <div class="bp-c">${esc(best.picks[0].chain_name)} · ${money(best.spent)}</div></div>
+      <div><div class="bp-p">${best.prot} g</div><div class="bp-pl">protein</div></div></div>`;
+  }
+  return singleCard + comboCard;
+}
 
 /* Swipe gesture for the sheet. The initial direction of a swipe decides the
    whole gesture: swiping DOWN always drags the sheet down to dismiss (it never
@@ -673,7 +1015,8 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidd
   let y0 = null, scroll0 = 0, mode = null, dy = 0, headerGrab = false;
 
   function onDown(e){
-    if (e.target.closest('#sheetClose')) return;
+    // let real controls receive their click (pointer capture would steal it)
+    if (e.target.closest('#sheetClose') || e.target.closest('.sh-chlink')) return;
     y0 = e.clientY; scroll0 = sheetBody.scrollTop; mode = null; dy = 0;
     headerGrab = !!e.target.closest('#sheetGrab');
     sheet.setPointerCapture(e.pointerId);
@@ -708,8 +1051,9 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidd
   sheet.addEventListener('pointercancel', onUp);
 })();
 
-chainSel.onchange = render;
-q.oninput = render;
+chainSel.onchange = () => render();
+q.oninput = () => render();
+sortSel.onchange = () => render();
 render();
 </script>
 </body>
@@ -721,9 +1065,10 @@ def write_html(scoring, regions_cfg, rows, path):
     today = date.today().isoformat()
     n_chains = len({r["chain"] for r in rows})
     n_ranked = sum(1 for r in rows if r["rank"])
+    n_pending = sum(1 for r in rows if r["unranked_reason"] == "awaiting verification")
     top = rows[0]
-    subtitle = (f"{n_ranked} items ≥ {scoring['protein_threshold_g']} g protein "
-                f"across {n_chains} chains · updated {today}")
+    subtitle = (f"{n_ranked} verified picks ranked · {n_pending} awaiting "
+                f"verification · {n_chains} chains · updated {today}")
     footer = (f"Top pick: {top['chain_name']} — {top['item']} "
               f"(score {top['value_score']}). Generated {today} from data/items.csv.")
     regions_payload = {
@@ -737,7 +1082,8 @@ def write_html(scoring, regions_cfg, rows, path):
             .replace("__FOOTER__", footer)
             .replace("__UPLIFT__", str(scoring["pnw_uplift_pct"]))
             .replace("__WPPD__", str(int(scoring["weights"]["protein_per_dollar"] * 100)))
-            .replace("__WPD__", str(int(scoring["weights"]["protein_density"] * 100)))
+            .replace("__WLEAN__", str(int(scoring["weights"]["leanness"] * 100)))
+            .replace("__WSAT__", str(int(scoring["weights"]["sat_fat"] * 100)))
             .replace("__REGIONS__", json.dumps(regions_payload, separators=(",", ":")))
             .replace("__DATA__", json.dumps({"items": rows}, separators=(",", ":"))))
     path.write_text(html)

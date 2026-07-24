@@ -3,4 +3,4 @@ chain,item,pnw_price_usd,as_of,notes
 # When a row matches (chain slug + exact item name from items.csv), this price
 # is used AS-IS — no uplift applied — and the item is marked "verified".
 # Example:
-# chipotle,Chicken Burrito Bowl,10.75,2026-07-20,Mill Plain Blvd store
+# chipotle,Chicken Burrito Bowl,10.75,2026-07-20,confirmed in-app

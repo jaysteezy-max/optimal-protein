@@ -18,12 +18,12 @@
    "calories": 780.0,
    "price": 11.54,
    "price_kind": "national +uplift",
-   "notes": "",
+   "notes": "~13g protein per finger",
    "protein_per_dollar": 6.76,
    "protein_per_100cal": 10.0,
-   "density_norm": 55.2,
+   "density_norm": 52.6,
    "ppd_norm": 100.0,
-   "value_score": 82.1,
+   "value_score": 81.0,
    "rank": 1
   },
   {
@@ -37,9 +37,9 @@
    "notes": "single piece a la carte",
    "protein_per_dollar": 6.46,
    "protein_per_100cal": 10.0,
-   "density_norm": 55.2,
+   "density_norm": 52.6,
    "ppd_norm": 95.6,
-   "value_score": 79.4,
+   "value_score": 78.4,
    "rank": 2
   },
   {
@@ -53,9 +53,9 @@
    "notes": "~13g protein per finger",
    "protein_per_dollar": 6.46,
    "protein_per_100cal": 10.0,
-   "density_norm": 55.2,
+   "density_norm": 52.6,
    "ppd_norm": 95.6,
-   "value_score": 79.4,
+   "value_score": 78.4,
    "rank": 3
   },
   {
@@ -69,10 +69,26 @@
    "notes": "single piece a la carte",
    "protein_per_dollar": 6.38,
    "protein_per_100cal": 9.21,
-   "density_norm": 50.9,
+   "density_norm": 48.5,
    "ppd_norm": 94.4,
-   "value_score": 77.0,
+   "value_score": 76.0,
    "rank": 4
+  },
+  {
+   "chain": "chick-fil-a",
+   "chain_name": "Chick-fil-A",
+   "item": "Grilled Nuggets (12 ct)",
+   "protein_g": 38.0,
+   "calories": 200.0,
+   "price": 10.0,
+   "price_kind": "national +uplift",
+   "notes": "leanest item on menu",
+   "protein_per_dollar": 3.8,
+   "protein_per_100cal": 19.0,
+   "density_norm": 100.0,
+   "ppd_norm": 56.2,
+   "value_score": 73.7,
+   "rank": 5
   },
   {
    "chain": "popeyes",
@@ -85,26 +101,26 @@
    "notes": "not breaded \u2014 density standout",
    "protein_per_dollar": 4.6,
    "protein_per_100cal": 15.36,
-   "density_norm": 84.9,
+   "density_norm": 80.8,
    "ppd_norm": 68.0,
-   "value_score": 74.8,
-   "rank": 5
+   "value_score": 73.1,
+   "rank": 6
   },
   {
-   "chain": "chick-fil-a",
-   "chain_name": "Chick-fil-A",
-   "item": "Grilled Nuggets (12 ct)",
-   "protein_g": 38.0,
-   "calories": 210.0,
-   "price": 10.0,
+   "chain": "chipotle",
+   "chain_name": "Chipotle",
+   "item": "Double Chicken Burrito Bowl",
+   "protein_g": 81.0,
+   "calories": 760.0,
+   "price": 14.41,
    "price_kind": "national +uplift",
-   "notes": "leanest item on menu",
-   "protein_per_dollar": 3.8,
-   "protein_per_100cal": 18.1,
-   "density_norm": 100.0,
-   "ppd_norm": 56.2,
-   "value_score": 73.7,
-   "rank": 6
+   "notes": "double-protein build (rice/beans/salsa)",
+   "protein_per_dollar": 5.62,
+   "protein_per_100cal": 10.66,
+   "density_norm": 56.1,
+   "ppd_norm": 83.1,
+   "value_score": 72.3,
+   "rank": 7
   },
   {
    "chain": "chick-fil-a",
@@ -117,57 +133,41 @@
    "notes": "",
    "protein_per_dollar": 5.55,
    "protein_per_100cal": 10.53,
-   "density_norm": 58.2,
+   "density_norm": 55.4,
    "ppd_norm": 82.1,
-   "value_score": 72.5,
-   "rank": 7
-  },
-  {
-   "chain": "chipotle",
-   "chain_name": "Chipotle",
-   "item": "Double Chicken Burrito Bowl",
-   "protein_g": 80.0,
-   "calories": 845.0,
-   "price": 14.41,
-   "price_kind": "national +uplift",
-   "notes": "same build + double chicken",
-   "protein_per_dollar": 5.55,
-   "protein_per_100cal": 9.47,
-   "density_norm": 52.3,
-   "ppd_norm": 82.1,
-   "value_score": 70.2,
+   "value_score": 71.4,
    "rank": 8
-  },
-  {
-   "chain": "panda-express",
-   "chain_name": "Panda Express",
-   "item": "Grilled Teriyaki Chicken (entree)",
-   "protein_g": 36.0,
-   "calories": 300.0,
-   "price": 7.37,
-   "price_kind": "national +uplift",
-   "notes": "a la carte medium entree",
-   "protein_per_dollar": 4.88,
-   "protein_per_100cal": 12.0,
-   "density_norm": 66.3,
-   "ppd_norm": 72.2,
-   "value_score": 69.8,
-   "rank": 9
   },
   {
    "chain": "in-n-out",
    "chain_name": "In-N-Out",
    "item": "3x3",
-   "protein_g": 50.0,
-   "calories": 800.0,
+   "protein_g": 52.0,
+   "calories": 860.0,
    "price": 8.09,
    "price_kind": "national +uplift",
    "notes": "not-so-secret menu",
-   "protein_per_dollar": 6.18,
-   "protein_per_100cal": 6.25,
-   "density_norm": 34.5,
-   "ppd_norm": 91.4,
-   "value_score": 68.6,
+   "protein_per_dollar": 6.43,
+   "protein_per_100cal": 6.05,
+   "density_norm": 31.8,
+   "ppd_norm": 95.1,
+   "value_score": 69.8,
+   "rank": 9
+  },
+  {
+   "chain": "panda-express",
+   "chain_name": "Panda Express",
+   "item": "Grilled Teriyaki Chicken (entree)",
+   "protein_g": 33.0,
+   "calories": 275.0,
+   "price": 7.37,
+   "price_kind": "national +uplift",
+   "notes": "a la carte entree (6 oz)",
+   "protein_per_dollar": 4.48,
+   "protein_per_100cal": 12.0,
+   "density_norm": 63.2,
+   "ppd_norm": 66.3,
+   "value_score": 65.1,
    "rank": 10
   },
   {
@@ -175,15 +175,15 @@
    "chain_name": "Wendy's",
    "item": "Grilled Chicken Sandwich",
    "protein_g": 34.0,
-   "calories": 370.0,
+   "calories": 350.0,
    "price": 6.81,
    "price_kind": "national +uplift",
    "notes": "lean pick",
    "protein_per_dollar": 4.99,
-   "protein_per_100cal": 9.19,
-   "density_norm": 50.8,
+   "protein_per_100cal": 9.71,
+   "density_norm": 51.1,
    "ppd_norm": 73.8,
-   "value_score": 64.6,
+   "value_score": 64.7,
    "rank": 11
   },
   {
@@ -197,9 +197,9 @@
    "notes": "",
    "protein_per_dollar": 5.76,
    "protein_per_100cal": 6.0,
-   "density_norm": 33.1,
+   "density_norm": 31.6,
    "ppd_norm": 85.2,
-   "value_score": 64.4,
+   "value_score": 63.8,
    "rank": 12
   },
   {
@@ -213,9 +213,9 @@
    "notes": "value-menu sleeper",
    "protein_per_dollar": 5.69,
    "protein_per_100cal": 5.56,
-   "density_norm": 30.7,
+   "density_norm": 29.3,
    "ppd_norm": 84.2,
-   "value_score": 62.8,
+   "value_score": 62.2,
    "rank": 13
   },
   {
@@ -229,9 +229,9 @@
    "notes": "",
    "protein_per_dollar": 5.7,
    "protein_per_100cal": 5.52,
-   "density_norm": 30.5,
+   "density_norm": 29.1,
    "ppd_norm": 84.3,
-   "value_score": 62.8,
+   "value_score": 62.2,
    "rank": 14
   },
   {
@@ -245,10 +245,26 @@
    "notes": "",
    "protein_per_dollar": 5.53,
    "protein_per_100cal": 5.93,
-   "density_norm": 32.8,
+   "density_norm": 31.2,
    "ppd_norm": 81.8,
-   "value_score": 62.2,
+   "value_score": 61.6,
    "rank": 15
+  },
+  {
+   "chain": "carls-jr",
+   "chain_name": "Carl's Jr.",
+   "item": "Big Carl",
+   "protein_g": 47.0,
+   "calories": 930.0,
+   "price": 8.24,
+   "price_kind": "national +uplift",
+   "notes": "",
+   "protein_per_dollar": 5.7,
+   "protein_per_100cal": 5.05,
+   "density_norm": 26.6,
+   "ppd_norm": 84.3,
+   "value_score": 61.2,
+   "rank": 16
   },
   {
    "chain": "mcdonalds",
@@ -261,10 +277,26 @@
    "notes": "",
    "protein_per_dollar": 5.33,
    "protein_per_100cal": 6.49,
-   "density_norm": 35.9,
+   "density_norm": 34.2,
    "ppd_norm": 78.8,
-   "value_score": 61.6,
-   "rank": 16
+   "value_score": 61.0,
+   "rank": 17
+  },
+  {
+   "chain": "arbys",
+   "chain_name": "Arby's",
+   "item": "Half Pound Roast Beef",
+   "protein_g": 48.0,
+   "calories": 610.0,
+   "price": 9.67,
+   "price_kind": "national +uplift",
+   "notes": "",
+   "protein_per_dollar": 4.96,
+   "protein_per_100cal": 7.87,
+   "density_norm": 41.4,
+   "ppd_norm": 73.4,
+   "value_score": 60.6,
+   "rank": 18
   },
   {
    "chain": "chick-fil-a",
@@ -277,26 +309,26 @@
    "notes": "no dressing",
    "protein_per_dollar": 3.91,
    "protein_per_100cal": 12.0,
-   "density_norm": 66.3,
+   "density_norm": 63.2,
    "ppd_norm": 57.8,
-   "value_score": 61.2,
-   "rank": 17
+   "value_score": 60.0,
+   "rank": 19
   },
   {
    "chain": "subway",
    "chain_name": "Subway",
    "item": "Footlong Rotisserie-Style Chicken",
    "protein_g": 58.0,
-   "calories": 720.0,
+   "calories": 700.0,
    "price": 12.42,
    "price_kind": "national +uplift",
    "notes": "no cheese/sauce in base",
    "protein_per_dollar": 4.67,
-   "protein_per_100cal": 8.06,
-   "density_norm": 44.5,
+   "protein_per_100cal": 8.29,
+   "density_norm": 43.6,
    "ppd_norm": 69.1,
-   "value_score": 59.3,
-   "rank": 18
+   "value_score": 58.9,
+   "rank": 20
   },
   {
    "chain": "in-n-out",
@@ -309,10 +341,42 @@
    "notes": "lettuce wrap; lean pick",
    "protein_per_dollar": 5.08,
    "protein_per_100cal": 6.35,
-   "density_norm": 35.1,
+   "density_norm": 33.4,
    "ppd_norm": 75.1,
-   "value_score": 59.1,
-   "rank": 19
+   "value_score": 58.4,
+   "rank": 21
+  },
+  {
+   "chain": "qdoba",
+   "chain_name": "Qdoba",
+   "item": "Chicken Protein Bowl",
+   "protein_g": 60.0,
+   "calories": 700.0,
+   "price": 13.31,
+   "price_kind": "national +uplift",
+   "notes": "double protein build",
+   "protein_per_dollar": 4.51,
+   "protein_per_100cal": 8.57,
+   "density_norm": 45.1,
+   "ppd_norm": 66.7,
+   "value_score": 58.1,
+   "rank": 22
+  },
+  {
+   "chain": "jack-in-the-box",
+   "chain_name": "Jack in the Box",
+   "item": "Double Jack",
+   "protein_g": 46.0,
+   "calories": 830.0,
+   "price": 8.79,
+   "price_kind": "national +uplift",
+   "notes": "",
+   "protein_per_dollar": 5.23,
+   "protein_per_100cal": 5.54,
+   "density_norm": 29.2,
+   "ppd_norm": 77.4,
+   "value_score": 58.1,
+   "rank": 23
   },
   {
    "chain": "chipotle",
@@ -325,26 +389,10 @@
    "notes": "supergreens, chicken, beans, salsa \u2014 no rice; no dressing",
    "protein_per_dollar": 3.98,
    "protein_per_100cal": 10.5,
-   "density_norm": 58.0,
+   "density_norm": 55.3,
    "ppd_norm": 58.9,
-   "value_score": 58.5,
-   "rank": 20
-  },
-  {
-   "chain": "qdoba",
-   "chain_name": "Qdoba",
-   "item": "Chicken Protein Bowl",
-   "protein_g": 60.0,
-   "calories": 750.0,
-   "price": 13.31,
-   "price_kind": "national +uplift",
-   "notes": "double protein build",
-   "protein_per_dollar": 4.51,
-   "protein_per_100cal": 8.0,
-   "density_norm": 44.2,
-   "ppd_norm": 66.7,
-   "value_score": 57.7,
-   "rank": 21
+   "value_score": 57.5,
+   "rank": 24
   },
   {
    "chain": "chipotle",
@@ -357,10 +405,10 @@
    "notes": "same fillings + tortilla",
    "protein_per_dollar": 5.11,
    "protein_per_100cal": 5.54,
-   "density_norm": 30.6,
+   "density_norm": 29.2,
    "ppd_norm": 75.6,
-   "value_score": 57.6,
-   "rank": 22
+   "value_score": 57.0,
+   "rank": 25
   },
   {
    "chain": "kfc",
@@ -373,10 +421,10 @@
    "notes": "",
    "protein_per_dollar": 5.16,
    "protein_per_100cal": 5.23,
-   "density_norm": 28.9,
+   "density_norm": 27.5,
    "ppd_norm": 76.3,
-   "value_score": 57.3,
-   "rank": 23
+   "value_score": 56.8,
+   "rank": 26
   },
   {
    "chain": "panda-express",
@@ -389,42 +437,10 @@
    "notes": "bowl combo; lean pick",
    "protein_per_dollar": 3.98,
    "protein_per_100cal": 9.77,
-   "density_norm": 54.0,
+   "density_norm": 51.4,
    "ppd_norm": 58.9,
-   "value_score": 56.9,
-   "rank": 24
-  },
-  {
-   "chain": "carls-jr",
-   "chain_name": "Carl's Jr.",
-   "item": "Big Carl",
-   "protein_g": 43.0,
-   "calories": 920.0,
-   "price": 8.24,
-   "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 5.22,
-   "protein_per_100cal": 4.67,
-   "density_norm": 25.8,
-   "ppd_norm": 77.2,
-   "value_score": 56.6,
-   "rank": 25
-  },
-  {
-   "chain": "carls-jr",
-   "chain_name": "Carl's Jr.",
-   "item": "Charbroiled BBQ Chicken Sandwich",
-   "protein_g": 33.0,
-   "calories": 400.0,
-   "price": 7.69,
-   "price_kind": "national +uplift",
-   "notes": "lean pick",
-   "protein_per_dollar": 4.29,
-   "protein_per_100cal": 8.25,
-   "density_norm": 45.6,
-   "ppd_norm": 63.5,
-   "value_score": 56.3,
-   "rank": 26
+   "value_score": 55.9,
+   "rank": 27
   },
   {
    "chain": "chipotle",
@@ -437,26 +453,26 @@
    "notes": "chicken, white rice, black beans, fajita veg, salsa",
    "protein_per_dollar": 4.55,
    "protein_per_100cal": 7.22,
-   "density_norm": 39.9,
+   "density_norm": 38.0,
    "ppd_norm": 67.3,
-   "value_score": 56.3,
-   "rank": 27
+   "value_score": 55.6,
+   "rank": 28
   },
   {
-   "chain": "arbys",
-   "chain_name": "Arby's",
-   "item": "Half Pound Roast Beef",
-   "protein_g": 44.0,
-   "calories": 610.0,
-   "price": 9.67,
+   "chain": "carls-jr",
+   "chain_name": "Carl's Jr.",
+   "item": "Charbroiled BBQ Chicken Sandwich",
+   "protein_g": 33.0,
+   "calories": 400.0,
+   "price": 7.69,
    "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 4.55,
-   "protein_per_100cal": 7.21,
-   "density_norm": 39.8,
-   "ppd_norm": 67.3,
-   "value_score": 56.3,
-   "rank": 28
+   "notes": "lean pick",
+   "protein_per_dollar": 4.29,
+   "protein_per_100cal": 8.25,
+   "density_norm": 43.4,
+   "ppd_norm": 63.5,
+   "value_score": 55.5,
+   "rank": 29
   },
   {
    "chain": "popeyes",
@@ -469,10 +485,10 @@
    "notes": "",
    "protein_per_dollar": 4.86,
    "protein_per_100cal": 5.82,
-   "density_norm": 32.2,
+   "density_norm": 30.6,
    "ppd_norm": 71.9,
-   "value_score": 56.0,
-   "rank": 29
+   "value_score": 55.4,
+   "rank": 30
   },
   {
    "chain": "chick-fil-a",
@@ -485,10 +501,26 @@
    "notes": "",
    "protein_per_dollar": 4.43,
    "protein_per_100cal": 6.3,
-   "density_norm": 34.8,
+   "density_norm": 33.2,
    "ppd_norm": 65.5,
-   "value_score": 53.2,
-   "rank": 30
+   "value_score": 52.6,
+   "rank": 31
+  },
+  {
+   "chain": "taco-bell",
+   "chain_name": "Taco Bell",
+   "item": "Double Steak Grilled Cheese Burrito",
+   "protein_g": 40.0,
+   "calories": 910.0,
+   "price": 8.24,
+   "price_kind": "national +uplift",
+   "notes": "regular",
+   "protein_per_dollar": 4.85,
+   "protein_per_100cal": 4.4,
+   "density_norm": 23.2,
+   "ppd_norm": 71.7,
+   "value_score": 52.3,
+   "rank": 32
   },
   {
    "chain": "arbys",
@@ -501,10 +533,10 @@
    "notes": "",
    "protein_per_dollar": 4.3,
    "protein_per_100cal": 6.67,
-   "density_norm": 36.9,
+   "density_norm": 35.1,
    "ppd_norm": 63.6,
-   "value_score": 52.9,
-   "rank": 31
+   "value_score": 52.2,
+   "rank": 33
   },
   {
    "chain": "carls-jr",
@@ -517,10 +549,10 @@
    "notes": "",
    "protein_per_dollar": 4.65,
    "protein_per_100cal": 4.95,
-   "density_norm": 27.3,
+   "density_norm": 26.1,
    "ppd_norm": 68.8,
-   "value_score": 52.2,
-   "rank": 32
+   "value_score": 51.7,
+   "rank": 34
   },
   {
    "chain": "kfc",
@@ -533,10 +565,10 @@
    "notes": "",
    "protein_per_dollar": 4.1,
    "protein_per_100cal": 6.92,
-   "density_norm": 38.2,
+   "density_norm": 36.4,
    "ppd_norm": 60.7,
-   "value_score": 51.7,
-   "rank": 33
+   "value_score": 51.0,
+   "rank": 35
   },
   {
    "chain": "arbys",
@@ -549,10 +581,10 @@
    "notes": "",
    "protein_per_dollar": 4.45,
    "protein_per_100cal": 5.5,
-   "density_norm": 30.4,
+   "density_norm": 28.9,
    "ppd_norm": 65.8,
-   "value_score": 51.6,
-   "rank": 34
+   "value_score": 51.0,
+   "rank": 36
   },
   {
    "chain": "subway",
@@ -565,10 +597,10 @@
    "notes": "",
    "protein_per_dollar": 4.03,
    "protein_per_100cal": 7.08,
-   "density_norm": 39.1,
+   "density_norm": 37.3,
    "ppd_norm": 59.6,
-   "value_score": 51.4,
-   "rank": 35
+   "value_score": 50.7,
+   "rank": 37
   },
   {
    "chain": "mcdonalds",
@@ -581,26 +613,10 @@
    "notes": "",
    "protein_per_dollar": 4.34,
    "protein_per_100cal": 5.77,
-   "density_norm": 31.9,
+   "density_norm": 30.4,
    "ppd_norm": 64.2,
-   "value_score": 51.3,
-   "rank": 36
-  },
-  {
-   "chain": "jack-in-the-box",
-   "chain_name": "Jack in the Box",
-   "item": "Double Jack",
-   "protein_g": 40.0,
-   "calories": 830.0,
-   "price": 8.79,
-   "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 4.55,
-   "protein_per_100cal": 4.82,
-   "density_norm": 26.6,
-   "ppd_norm": 67.3,
-   "value_score": 51.0,
-   "rank": 37
+   "value_score": 50.7,
+   "rank": 38
   },
   {
    "chain": "wendys",
@@ -613,42 +629,10 @@
    "notes": "",
    "protein_per_dollar": 4.24,
    "protein_per_100cal": 5.74,
-   "density_norm": 31.7,
+   "density_norm": 30.2,
    "ppd_norm": 62.7,
-   "value_score": 50.3,
-   "rank": 38
-  },
-  {
-   "chain": "taco-bell",
-   "chain_name": "Taco Bell",
-   "item": "Double Steak Grilled Cheese Burrito",
-   "protein_g": 37.0,
-   "calories": 780.0,
-   "price": 8.24,
-   "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 4.49,
-   "protein_per_100cal": 4.74,
-   "density_norm": 26.2,
-   "ppd_norm": 66.4,
-   "value_score": 50.3,
+   "value_score": 49.7,
    "rank": 39
-  },
-  {
-   "chain": "subway",
-   "chain_name": "Subway",
-   "item": "6-inch Rotisserie-Style Chicken",
-   "protein_g": 29.0,
-   "calories": 360.0,
-   "price": 8.02,
-   "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 3.62,
-   "protein_per_100cal": 8.06,
-   "density_norm": 44.5,
-   "ppd_norm": 53.6,
-   "value_score": 50.0,
-   "rank": 40
   },
   {
    "chain": "popeyes",
@@ -661,10 +645,10 @@
    "notes": "",
    "protein_per_dollar": 4.64,
    "protein_per_100cal": 4.0,
-   "density_norm": 22.1,
+   "density_norm": 21.1,
    "ppd_norm": 68.6,
-   "value_score": 50.0,
-   "rank": 41
+   "value_score": 49.6,
+   "rank": 40
   },
   {
    "chain": "wendys",
@@ -677,9 +661,25 @@
    "notes": "",
    "protein_per_dollar": 4.34,
    "protein_per_100cal": 5.08,
-   "density_norm": 28.1,
+   "density_norm": 26.7,
    "ppd_norm": 64.2,
-   "value_score": 49.8,
+   "value_score": 49.2,
+   "rank": 41
+  },
+  {
+   "chain": "subway",
+   "chain_name": "Subway",
+   "item": "6-inch Rotisserie-Style Chicken",
+   "protein_g": 29.0,
+   "calories": 360.0,
+   "price": 8.02,
+   "price_kind": "national +uplift",
+   "notes": "",
+   "protein_per_dollar": 3.62,
+   "protein_per_100cal": 8.06,
+   "density_norm": 42.4,
+   "ppd_norm": 53.6,
+   "value_score": 49.1,
    "rank": 42
   },
   {
@@ -693,26 +693,10 @@
    "notes": "queso/guac included in price",
    "protein_per_dollar": 3.99,
    "protein_per_100cal": 6.43,
-   "density_norm": 35.5,
+   "density_norm": 33.8,
    "ppd_norm": 59.0,
-   "value_score": 49.6,
+   "value_score": 48.9,
    "rank": 43
-  },
-  {
-   "chain": "jersey-mikes",
-   "chain_name": "Jersey Mike's",
-   "item": "#7 Turkey Sub in a Tub",
-   "protein_g": 25.0,
-   "calories": 180.0,
-   "price": 11.83,
-   "price_kind": "national +uplift",
-   "notes": "no bread \u2014 density standout",
-   "protein_per_dollar": 2.11,
-   "protein_per_100cal": 13.89,
-   "density_norm": 76.7,
-   "ppd_norm": 31.2,
-   "value_score": 49.4,
-   "rank": 44
   },
   {
    "chain": "wendys",
@@ -725,10 +709,10 @@
    "notes": "",
    "protein_per_dollar": 4.18,
    "protein_per_100cal": 5.6,
-   "density_norm": 30.9,
+   "density_norm": 29.5,
    "ppd_norm": 61.8,
-   "value_score": 49.4,
-   "rank": 45
+   "value_score": 48.9,
+   "rank": 44
   },
   {
    "chain": "taco-bell",
@@ -741,26 +725,26 @@
    "notes": "",
    "protein_per_dollar": 4.24,
    "protein_per_100cal": 5.29,
-   "density_norm": 29.2,
+   "density_norm": 27.8,
    "ppd_norm": 62.7,
-   "value_score": 49.3,
-   "rank": 46
+   "value_score": 48.7,
+   "rank": 45
   },
   {
-   "chain": "jack-in-the-box",
-   "chain_name": "Jack in the Box",
-   "item": "Chicken Fajita Pita",
-   "protein_g": 26.0,
-   "calories": 320.0,
-   "price": 7.47,
+   "chain": "cava",
+   "chain_name": "Cava",
+   "item": "Double Chicken Bowl",
+   "protein_g": 64.0,
+   "calories": 780.0,
+   "price": 18.15,
    "price_kind": "national +uplift",
-   "notes": "classic lean pick",
-   "protein_per_dollar": 3.48,
-   "protein_per_100cal": 8.12,
-   "density_norm": 44.9,
-   "ppd_norm": 51.5,
-   "value_score": 48.9,
-   "rank": 47
+   "notes": "double grilled chicken",
+   "protein_per_dollar": 3.53,
+   "protein_per_100cal": 8.21,
+   "density_norm": 43.2,
+   "ppd_norm": 52.2,
+   "value_score": 48.6,
+   "rank": 46
   },
   {
    "chain": "chick-fil-a",
@@ -773,9 +757,25 @@
    "notes": "",
    "protein_per_dollar": 3.71,
    "protein_per_100cal": 7.18,
-   "density_norm": 39.7,
+   "density_norm": 37.8,
    "ppd_norm": 54.9,
-   "value_score": 48.8,
+   "value_score": 48.1,
+   "rank": 47
+  },
+  {
+   "chain": "jack-in-the-box",
+   "chain_name": "Jack in the Box",
+   "item": "Chicken Fajita Pita",
+   "protein_g": 26.0,
+   "calories": 320.0,
+   "price": 7.47,
+   "price_kind": "national +uplift",
+   "notes": "classic lean pick",
+   "protein_per_dollar": 3.48,
+   "protein_per_100cal": 8.12,
+   "density_norm": 42.7,
+   "ppd_norm": 51.5,
+   "value_score": 48.0,
    "rank": 48
   },
   {
@@ -789,42 +789,10 @@
    "notes": "",
    "protein_per_dollar": 4.08,
    "protein_per_100cal": 5.53,
-   "density_norm": 30.6,
+   "density_norm": 29.1,
    "ppd_norm": 60.4,
-   "value_score": 48.5,
-   "rank": 49
-  },
-  {
-   "chain": "cava",
-   "chain_name": "Cava",
-   "item": "Double Chicken Bowl",
-   "protein_g": 62.0,
-   "calories": 780.0,
-   "price": 18.15,
-   "price_kind": "national +uplift",
-   "notes": "extra protein scoop",
-   "protein_per_dollar": 3.42,
-   "protein_per_100cal": 7.95,
-   "density_norm": 43.9,
-   "ppd_norm": 50.6,
    "value_score": 47.9,
-   "rank": 50
-  },
-  {
-   "chain": "burgerville",
-   "chain_name": "Burgerville",
-   "item": "Double Beef Cheeseburger",
-   "protein_g": 33.0,
-   "calories": 600.0,
-   "price": 8.24,
-   "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 4.0,
-   "protein_per_100cal": 5.5,
-   "density_norm": 30.4,
-   "ppd_norm": 59.2,
-   "value_score": 47.7,
-   "rank": 51
+   "rank": 49
   },
   {
    "chain": "raising-canes",
@@ -837,42 +805,10 @@
    "notes": "combo incl. fries/toast/slaw/drink",
    "protein_per_dollar": 4.3,
    "protein_per_100cal": 4.16,
-   "density_norm": 23.0,
+   "density_norm": 21.9,
    "ppd_norm": 63.6,
-   "value_score": 47.4,
-   "rank": 52
-  },
-  {
-   "chain": "jamba",
-   "chain_name": "Jamba",
-   "item": "Protein Berry Workout (Whey; 16 oz)",
-   "protein_g": 27.0,
-   "calories": 290.0,
-   "price": 9.12,
-   "price_kind": "national +uplift",
-   "notes": "only qualifying item; drinkable",
-   "protein_per_dollar": 2.96,
-   "protein_per_100cal": 9.31,
-   "density_norm": 51.4,
-   "ppd_norm": 43.8,
-   "value_score": 46.8,
-   "rank": 53
-  },
-  {
-   "chain": "subway",
-   "chain_name": "Subway",
-   "item": "Footlong Meatball Marinara",
-   "protein_g": 42.0,
-   "calories": 960.0,
-   "price": 10.22,
-   "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 4.11,
-   "protein_per_100cal": 4.38,
-   "density_norm": 24.2,
-   "ppd_norm": 60.8,
-   "value_score": 46.2,
-   "rank": 54
+   "value_score": 46.9,
+   "rank": 50
   },
   {
    "chain": "taco-bell",
@@ -885,10 +821,26 @@
    "notes": "",
    "protein_per_dollar": 4.3,
    "protein_per_100cal": 3.61,
-   "density_norm": 19.9,
+   "density_norm": 19.0,
    "ppd_norm": 63.6,
-   "value_score": 46.1,
-   "rank": 55
+   "value_score": 45.8,
+   "rank": 51
+  },
+  {
+   "chain": "subway",
+   "chain_name": "Subway",
+   "item": "Footlong Meatball Marinara",
+   "protein_g": 42.0,
+   "calories": 960.0,
+   "price": 10.22,
+   "price_kind": "national +uplift",
+   "notes": "",
+   "protein_per_dollar": 4.11,
+   "protein_per_100cal": 4.38,
+   "density_norm": 23.1,
+   "ppd_norm": 60.8,
+   "value_score": 45.7,
+   "rank": 52
   },
   {
    "chain": "carls-jr",
@@ -901,10 +853,10 @@
    "notes": "",
    "protein_per_dollar": 3.64,
    "protein_per_100cal": 6.07,
-   "density_norm": 33.5,
+   "density_norm": 31.9,
    "ppd_norm": 53.8,
-   "value_score": 45.7,
-   "rank": 56
+   "value_score": 45.0,
+   "rank": 53
   },
   {
    "chain": "arbys",
@@ -917,26 +869,10 @@
    "notes": "",
    "protein_per_dollar": 3.64,
    "protein_per_100cal": 5.78,
-   "density_norm": 31.9,
+   "density_norm": 30.4,
    "ppd_norm": 53.8,
-   "value_score": 45.0,
-   "rank": 57
-  },
-  {
-   "chain": "five-guys",
-   "chain_name": "Five Guys",
-   "item": "Bacon Cheeseburger",
-   "protein_g": 51.0,
-   "calories": 920.0,
-   "price": 14.29,
-   "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 3.57,
-   "protein_per_100cal": 5.54,
-   "density_norm": 30.6,
-   "ppd_norm": 52.8,
-   "value_score": 43.9,
-   "rank": 58
+   "value_score": 44.4,
+   "rank": 54
   },
   {
    "chain": "jack-in-the-box",
@@ -949,26 +885,10 @@
    "notes": "",
    "protein_per_dollar": 3.79,
    "protein_per_100cal": 4.63,
-   "density_norm": 25.6,
+   "density_norm": 24.4,
    "ppd_norm": 56.1,
-   "value_score": 43.9,
-   "rank": 59
-  },
-  {
-   "chain": "subway",
-   "chain_name": "Subway",
-   "item": "Footlong Oven Roasted Turkey",
-   "protein_g": 36.0,
-   "calories": 540.0,
-   "price": 11.21,
-   "price_kind": "national +uplift",
-   "notes": "",
-   "protein_per_dollar": 3.21,
-   "protein_per_100cal": 6.67,
-   "density_norm": 36.9,
-   "ppd_norm": 47.5,
-   "value_score": 43.3,
-   "rank": 60
+   "value_score": 43.4,
+   "rank": 55
   },
   {
    "chain": "mcdonalds",
@@ -981,10 +901,26 @@
    "notes": "",
    "protein_per_dollar": 3.79,
    "protein_per_100cal": 4.24,
-   "density_norm": 23.4,
+   "density_norm": 22.3,
    "ppd_norm": 56.1,
-   "value_score": 43.0,
-   "rank": 61
+   "value_score": 42.6,
+   "rank": 56
+  },
+  {
+   "chain": "subway",
+   "chain_name": "Subway",
+   "item": "Footlong Oven Roasted Turkey",
+   "protein_g": 36.0,
+   "calories": 540.0,
+   "price": 11.21,
+   "price_kind": "national +uplift",
+   "notes": "",
+   "protein_per_dollar": 3.21,
+   "protein_per_100cal": 6.67,
+   "density_norm": 35.1,
+   "ppd_norm": 47.5,
+   "value_score": 42.5,
+   "rank": 57
   },
   {
    "chain": "kfc",
@@ -997,42 +933,10 @@
    "notes": "",
    "protein_per_dollar": 3.95,
    "protein_per_100cal": 3.51,
-   "density_norm": 19.4,
+   "density_norm": 18.5,
    "ppd_norm": 58.4,
-   "value_score": 42.8,
-   "rank": 62
-  },
-  {
-   "chain": "chick-fil-a",
-   "chain_name": "Chick-fil-A",
-   "item": "Spicy Southwest Salad",
-   "protein_g": 33.0,
-   "calories": 450.0,
-   "price": 11.17,
-   "price_kind": "national +uplift",
-   "notes": "with grilled chicken; no dressing",
-   "protein_per_dollar": 2.95,
-   "protein_per_100cal": 7.33,
-   "density_norm": 40.5,
-   "ppd_norm": 43.6,
    "value_score": 42.4,
-   "rank": 63
-  },
-  {
-   "chain": "taco-bell",
-   "chain_name": "Taco Bell",
-   "item": "Power Menu Bowl (Chicken)",
-   "protein_g": 26.0,
-   "calories": 470.0,
-   "price": 7.69,
-   "price_kind": "national +uplift",
-   "notes": "lean pick",
-   "protein_per_dollar": 3.38,
-   "protein_per_100cal": 5.53,
-   "density_norm": 30.6,
-   "ppd_norm": 50.0,
-   "value_score": 42.2,
-   "rank": 64
+   "rank": 58
   },
   {
    "chain": "arbys",
@@ -1045,10 +949,42 @@
    "notes": "",
    "protein_per_dollar": 3.43,
    "protein_per_100cal": 5.33,
-   "density_norm": 29.4,
+   "density_norm": 28.1,
    "ppd_norm": 50.7,
-   "value_score": 42.2,
-   "rank": 65
+   "value_score": 41.7,
+   "rank": 59
+  },
+  {
+   "chain": "chick-fil-a",
+   "chain_name": "Chick-fil-A",
+   "item": "Spicy Southwest Salad",
+   "protein_g": 33.0,
+   "calories": 450.0,
+   "price": 11.17,
+   "price_kind": "national +uplift",
+   "notes": "with grilled chicken; no dressing",
+   "protein_per_dollar": 2.95,
+   "protein_per_100cal": 7.33,
+   "density_norm": 38.6,
+   "ppd_norm": 43.6,
+   "value_score": 41.6,
+   "rank": 60
+  },
+  {
+   "chain": "taco-bell",
+   "chain_name": "Taco Bell",
+   "item": "Power Menu Bowl (Chicken)",
+   "protein_g": 26.0,
+   "calories": 470.0,
+   "price": 7.69,
+   "price_kind": "national +uplift",
+   "notes": "lean pick",
+   "protein_per_dollar": 3.38,
+   "protein_per_100cal": 5.53,
+   "density_norm": 29.1,
+   "ppd_norm": 50.0,
+   "value_score": 41.6,
+   "rank": 61
   },
   {
    "chain": "burgerville",
@@ -1061,10 +997,10 @@
    "notes": "PNW-only chain; data less standardized",
    "protein_per_dollar": 3.39,
    "protein_per_100cal": 5.47,
-   "density_norm": 30.2,
+   "density_norm": 28.8,
    "ppd_norm": 50.1,
-   "value_score": 42.1,
-   "rank": 66
+   "value_score": 41.6,
+   "rank": 62
   },
   {
    "chain": "chipotle",
@@ -1077,10 +1013,10 @@
    "notes": "steak, rice, beans, fajita veg, salsa",
    "protein_per_dollar": 3.23,
    "protein_per_100cal": 5.94,
-   "density_norm": 32.8,
+   "density_norm": 31.3,
    "ppd_norm": 47.8,
-   "value_score": 41.8,
-   "rank": 67
+   "value_score": 41.2,
+   "rank": 63
   },
   {
    "chain": "jersey-mikes",
@@ -1093,10 +1029,10 @@
    "notes": "",
    "protein_per_dollar": 3.2,
    "protein_per_100cal": 6.0,
-   "density_norm": 33.1,
+   "density_norm": 31.6,
    "ppd_norm": 47.3,
-   "value_score": 41.6,
-   "rank": 68
+   "value_score": 41.0,
+   "rank": 64
   },
   {
    "chain": "panda-express",
@@ -1109,10 +1045,10 @@
    "notes": "a la carte medium entree",
    "protein_per_dollar": 3.39,
    "protein_per_100cal": 5.1,
-   "density_norm": 28.2,
+   "density_norm": 26.8,
    "ppd_norm": 50.1,
-   "value_score": 41.3,
-   "rank": 69
+   "value_score": 40.8,
+   "rank": 65
   },
   {
    "chain": "five-guys",
@@ -1125,10 +1061,10 @@
    "notes": "two patties standard",
    "protein_per_dollar": 3.23,
    "protein_per_100cal": 5.57,
-   "density_norm": 30.8,
+   "density_norm": 29.3,
    "ppd_norm": 47.8,
-   "value_score": 41.0,
-   "rank": 70
+   "value_score": 40.4,
+   "rank": 66
   },
   {
    "chain": "jack-in-the-box",
@@ -1141,10 +1077,10 @@
    "notes": "",
    "protein_per_dollar": 3.55,
    "protein_per_100cal": 4.11,
-   "density_norm": 22.7,
+   "density_norm": 21.6,
    "ppd_norm": 52.5,
-   "value_score": 40.6,
-   "rank": 71
+   "value_score": 40.1,
+   "rank": 67
   },
   {
    "chain": "five-guys",
@@ -1157,10 +1093,26 @@
    "notes": "",
    "protein_per_dollar": 3.26,
    "protein_per_100cal": 5.12,
-   "density_norm": 28.3,
+   "density_norm": 26.9,
    "ppd_norm": 48.2,
-   "value_score": 40.2,
-   "rank": 72
+   "value_score": 39.7,
+   "rank": 68
+  },
+  {
+   "chain": "five-guys",
+   "chain_name": "Five Guys",
+   "item": "Bacon Cheeseburger",
+   "protein_g": 47.0,
+   "calories": 1060.0,
+   "price": 14.29,
+   "price_kind": "national +uplift",
+   "notes": "two patties + bacon",
+   "protein_per_dollar": 3.29,
+   "protein_per_100cal": 4.43,
+   "density_norm": 23.3,
+   "ppd_norm": 48.7,
+   "value_score": 38.5,
+   "rank": 69
   },
   {
    "chain": "cava",
@@ -1173,10 +1125,26 @@
    "notes": "chicken, supergreens, rice, hummus",
    "protein_per_dollar": 2.8,
    "protein_per_100cal": 6.13,
-   "density_norm": 33.9,
+   "density_norm": 32.3,
    "ppd_norm": 41.4,
-   "value_score": 38.4,
-   "rank": 73
+   "value_score": 37.8,
+   "rank": 70
+  },
+  {
+   "chain": "burgerville",
+   "chain_name": "Burgerville",
+   "item": "Double Beef Cheeseburger",
+   "protein_g": 25.0,
+   "calories": 480.0,
+   "price": 8.24,
+   "price_kind": "national +uplift",
+   "notes": "was overstated when seeded",
+   "protein_per_dollar": 3.03,
+   "protein_per_100cal": 5.21,
+   "density_norm": 27.4,
+   "ppd_norm": 44.8,
+   "value_score": 37.8,
+   "rank": 71
   },
   {
    "chain": "jersey-mikes",
@@ -1189,10 +1157,10 @@
    "notes": "",
    "protein_per_dollar": 2.79,
    "protein_per_100cal": 5.59,
-   "density_norm": 30.9,
+   "density_norm": 29.4,
    "ppd_norm": 41.3,
-   "value_score": 37.1,
-   "rank": 74
+   "value_score": 36.5,
+   "rank": 72
   },
   {
    "chain": "burgerville",
@@ -1205,10 +1173,10 @@
    "notes": "",
    "protein_per_dollar": 2.85,
    "protein_per_100cal": 5.2,
-   "density_norm": 28.7,
+   "density_norm": 27.4,
    "ppd_norm": 42.2,
-   "value_score": 36.8,
-   "rank": 75
+   "value_score": 36.3,
+   "rank": 73
   },
   {
    "chain": "qdoba",
@@ -1221,10 +1189,10 @@
    "notes": "",
    "protein_per_dollar": 2.86,
    "protein_per_100cal": 5.14,
-   "density_norm": 28.4,
+   "density_norm": 27.1,
    "ppd_norm": 42.3,
-   "value_score": 36.7,
-   "rank": 76
+   "value_score": 36.2,
+   "rank": 74
   },
   {
    "chain": "jersey-mikes",
@@ -1237,10 +1205,10 @@
    "notes": "",
    "protein_per_dollar": 2.99,
    "protein_per_100cal": 4.46,
-   "density_norm": 24.6,
+   "density_norm": 23.5,
    "ppd_norm": 44.2,
-   "value_score": 36.4,
-   "rank": 77
+   "value_score": 35.9,
+   "rank": 75
   },
   {
    "chain": "jersey-mikes",
@@ -1253,10 +1221,26 @@
    "notes": "",
    "protein_per_dollar": 2.82,
    "protein_per_100cal": 5.07,
-   "density_norm": 28.0,
+   "density_norm": 26.7,
    "ppd_norm": 41.7,
-   "value_score": 36.2,
-   "rank": 78
+   "value_score": 35.7,
+   "rank": 76
+  },
+  {
+   "chain": "jersey-mikes",
+   "chain_name": "Jersey Mike's",
+   "item": "#7 Turkey Sub in a Tub",
+   "protein_g": 30.0,
+   "calories": 490.0,
+   "price": 11.83,
+   "price_kind": "national +uplift",
+   "notes": "regular tub w/ toppings; order dry to cut cals",
+   "protein_per_dollar": 2.54,
+   "protein_per_100cal": 6.12,
+   "density_norm": 32.2,
+   "ppd_norm": 37.6,
+   "value_score": 35.4,
+   "rank": 77
   },
   {
    "chain": "burgerville",
@@ -1269,10 +1253,10 @@
    "notes": "",
    "protein_per_dollar": 2.63,
    "protein_per_100cal": 4.64,
-   "density_norm": 25.6,
+   "density_norm": 24.4,
    "ppd_norm": 38.9,
-   "value_score": 33.6,
-   "rank": 79
+   "value_score": 33.1,
+   "rank": 78
   },
   {
    "chain": "cava",
@@ -1285,10 +1269,10 @@
    "notes": "",
    "protein_per_dollar": 2.21,
    "protein_per_100cal": 5.08,
-   "density_norm": 28.1,
+   "density_norm": 26.7,
    "ppd_norm": 32.7,
-   "value_score": 30.9,
-   "rank": 80
+   "value_score": 30.3,
+   "rank": 79
   },
   {
    "chain": "cava",
@@ -1301,10 +1285,10 @@
    "notes": "",
    "protein_per_dollar": 2.09,
    "protein_per_100cal": 4.29,
-   "density_norm": 23.7,
+   "density_norm": 22.6,
    "ppd_norm": 30.9,
-   "value_score": 28.0,
-   "rank": 81
+   "value_score": 27.6,
+   "rank": 80
   }
  ]
 }

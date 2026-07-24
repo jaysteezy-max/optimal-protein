@@ -250,6 +250,7 @@ HTML_TEMPLATE = """<!doctype html>
   h1{font-size:clamp(30px,8vw,40px); font-weight:600; letter-spacing:-.03em; line-height:1.05;
     text-wrap:balance}
   .sub{color:var(--muted); font-size:15px; margin-top:10px; line-height:1.4}
+  .meta{color:var(--muted2); font-size:12.5px; margin-top:8px; line-height:1.4}
   .caveat{color:var(--muted2); font-size:12px; line-height:1.5; margin:14px auto 0; max-width:44ch}
   .caveat b{color:var(--muted); font-weight:600}
   /* controls (frosted, sticky) */
@@ -356,9 +357,10 @@ HTML_TEMPLATE = """<!doctype html>
 </head>
 <body>
 <header>
-  <div class="eyebrow">PACIFIC NORTHWEST</div>
-  <h1>Protein, by the dollar.</h1>
-  <div class="sub">__SUBTITLE__</div>
+  <div class="eyebrow">PROTEIN VALUE INDEX</div>
+  <h1>Gains for Less</h1>
+  <div class="sub">Ranked by protein, not hype</div>
+  <div class="meta">__SUBTITLE__</div>
   <div class="caveat">Prices are national averages + __UPLIFT__% PNW uplift &mdash;
   <b>not till-verified</b>. Sales tax and app deals excluded. Value Score =
   __WPPD__% protein-per-dollar + __WPD__% density, each normalized to the best item = 100.

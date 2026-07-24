@@ -389,11 +389,8 @@ HTML_TEMPLATE = """<!doctype html>
   <h1>Gains for Less</h1>
   <div class="sub">Ranked by protein, not hype</div>
   <div class="meta">__SUBTITLE__</div>
-  <div class="caveat">Prices are national averages scaled to your region
-  (auto-detected, or pick below) &mdash; <b>not till-verified</b>. Sales tax and
-  app deals excluded. Value Score = __WPPD__% protein-per-dollar + __WPD__%
-  density, each normalized to the best item = 100. Rankings don&rsquo;t change by
-  region &mdash; only prices do. Tap any item for the full breakdown.</div>
+  <div class="caveat">Regional price estimates &mdash; <b>not till-verified</b>.
+  Before tax and app deals. Tap any item for the full breakdown.</div>
 </header>
 <div class="controls">
   <select id="chain" aria-label="Filter by chain"><option value="">All chains</option></select>

@@ -9,6 +9,8 @@ protein-for-the-money order?
 - 🏆 **[Live ranking page](https://jaysteezy-max.github.io/optimal-protein/)** — searchable, filterable, tap any item for a full score breakdown _(enable GitHub Pages first — see below)_
 - 📊 **[RANKINGS.md](RANKINGS.md)** — the full table, readable right here on GitHub
 - 🗄️ **[docs/data.json](docs/data.json)** — the same data, machine-readable
+- 🎨 **[design.md](design.md)** — the app's design system (tokens, type, motion)
+- 📓 **[CHANGELOG.md](CHANGELOG.md)** — what changed, release by release
 
 ## 📐 How it's scored
 
@@ -31,6 +33,11 @@ build_rankings.py         data + config → HTML / JSON / Markdown
 pull_nutrition.py         refresh nutrition, diff menus, update items.csv
 pull_prices.py            validate / refresh the regional multipliers
 ```
+
+> **Editing the app's look?** `docs/index.html` is _generated_ — it's
+> overwritten on every build. The page markup, CSS, and JS live in
+> `HTML_TEMPLATE` inside `build_rankings.py`; edit there, then re-run. The
+> design tokens and conventions are documented in **[design.md](design.md)**.
 
 ## 🔄 Updating
 

@@ -5,126 +5,181 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Protein Value — PNW</title>
 <style>
-  :root {
-    --bg: #f3f5f4; --card: #ffffff; --ink: #14181a; --muted: #5f6a71;
-    --line: #e2e7e5; --line-strong: #ccd4d1;
-    --accent: #0f7a52; --accent-ink: #ffffff; --accent-soft: #e3f3ec;
-    --flag: #a8501c;
-    --gold: #b8860b; --silver: #6b7378; --bronze: #a5622c;
-    --radius: 13px;
+  :root{
+    --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --muted2:#86868b;
+    --line:#e5e5ea; --hair:#ebebf0; --blue:#0071e3; --blue-soft:#e8f1fd;
+    --good:#1a8f4c; --shadow:0 4px 22px rgba(0,0,0,.06); --radius:18px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #12161a; --card: #1b2126; --ink: #e9edeb; --muted: #98a3a9;
-      --line: #29323a; --line-strong: #3a454d;
-      --accent: #34b483; --accent-ink: #062319; --accent-soft: #17352a;
-      --flag: #e08a52;
-      --gold: #e6b23e; --silver: #b7c0c7; --bronze: #d08a54;
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#000000; --card:#1c1c1e; --ink:#f5f5f7; --muted:#98989d; --muted2:#8e8e93;
+      --line:#2c2c2e; --hair:#2c2c2e; --blue:#0a84ff; --blue-soft:#0a2540;
+      --good:#30d158; --shadow:0 4px 22px rgba(0,0,0,.5);
     }
   }
-  :root[data-theme="light"] {
-    --bg: #f3f5f4; --card: #ffffff; --ink: #14181a; --muted: #5f6a71;
-    --line: #e2e7e5; --line-strong: #ccd4d1;
-    --accent: #0f7a52; --accent-ink: #ffffff; --accent-soft: #e3f3ec;
-    --flag: #a8501c; --gold: #b8860b; --silver: #6b7378; --bronze: #a5622c;
+  :root[data-theme="light"]{
+    --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --muted2:#86868b;
+    --line:#e5e5ea; --hair:#ebebf0; --blue:#0071e3; --blue-soft:#e8f1fd;
+    --good:#1a8f4c; --shadow:0 4px 22px rgba(0,0,0,.06);
   }
-  :root[data-theme="dark"] {
-    --bg: #12161a; --card: #1b2126; --ink: #e9edeb; --muted: #98a3a9;
-    --line: #29323a; --line-strong: #3a454d;
-    --accent: #34b483; --accent-ink: #062319; --accent-soft: #17352a;
-    --flag: #e08a52; --gold: #e6b23e; --silver: #b7c0c7; --bronze: #d08a54;
+  :root[data-theme="dark"]{
+    --bg:#000000; --card:#1c1c1e; --ink:#f5f5f7; --muted:#98989d; --muted2:#8e8e93;
+    --line:#2c2c2e; --hair:#2c2c2e; --blue:#0a84ff; --blue-soft:#0a2540;
+    --good:#30d158; --shadow:0 4px 22px rgba(0,0,0,.5);
   }
-  * { box-sizing: border-box; margin: 0; }
-  html { -webkit-text-size-adjust: 100%; }
-  body {
-    background: var(--bg); color: var(--ink);
-    font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    padding: 18px 12px 56px; max-width: 720px; margin: 0 auto;
-    overscroll-behavior: contain;
-    font-variant-numeric: tabular-nums;
+  *{box-sizing:border-box;margin:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:16px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    max-width:600px; margin:0 auto; padding:0 16px 64px;
+    font-variant-numeric:tabular-nums; overscroll-behavior-y:none;
   }
-  header { margin-bottom: 12px; }
-  h1 { font-size: 1.4rem; letter-spacing: -0.02em; }
-  .sub { color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
-  .caveat {
-    border: 1px solid var(--line); border-left: 3px solid var(--accent);
-    border-radius: 8px; padding: 8px 11px; color: var(--muted);
-    font-size: 0.74rem; line-height: 1.35; margin-top: 12px;
+  /* hero */
+  header{padding:30px 4px 8px; text-align:center}
+  .eyebrow{font-size:12px; font-weight:600; letter-spacing:.02em; color:var(--blue); margin-bottom:8px}
+  h1{font-size:clamp(30px,8vw,40px); font-weight:600; letter-spacing:-.03em; line-height:1.05;
+    text-wrap:balance}
+  .sub{color:var(--muted); font-size:15px; margin-top:10px; line-height:1.4}
+  .caveat{color:var(--muted2); font-size:12px; line-height:1.5; margin:14px auto 0; max-width:44ch}
+  .caveat b{color:var(--muted); font-weight:600}
+  /* controls (frosted, sticky) */
+  .controls{
+    position:sticky; top:0; z-index:20; margin:16px -16px 0; padding:12px 16px;
+    display:grid; grid-template-columns:1fr 1.2fr; gap:8px;
+    background:color-mix(in srgb,var(--bg) 82%,transparent);
+    backdrop-filter:saturate(1.8) blur(20px); -webkit-backdrop-filter:saturate(1.8) blur(20px);
+    border-bottom:1px solid var(--line);
   }
-  .caveat b { color: var(--ink); font-weight: 600; }
-  .controls {
-    position: sticky; top: 0; z-index: 3; background: var(--bg);
-    padding: 12px 0 10px; margin-top: 4px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  select,input[type=search]{
+    width:100%; padding:11px 13px; border:1px solid transparent; border-radius:12px;
+    background:var(--card); color:var(--ink); font-size:16px; font-family:inherit;
+    -webkit-appearance:none; appearance:none; box-shadow:var(--shadow);
   }
-  select, input[type=search] {
-    width: 100%; padding: 10px 12px; border: 1px solid var(--line-strong);
-    border-radius: 10px; background: var(--card); color: var(--ink);
-    font-size: 0.95rem; -webkit-appearance: none; appearance: none;
+  select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2386868b' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; padding-right:32px}
+  input:focus,select:focus{outline:none; border-color:var(--blue);
+    box-shadow:0 0 0 3.5px color-mix(in srgb,var(--blue) 22%,transparent)}
+  .count{color:var(--muted2); font-size:12px; font-weight:500; padding:14px 6px 8px;
+    letter-spacing:.01em}
+  /* list — iOS inset grouped */
+  .list{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    overflow:hidden; border:1px solid var(--hair)}
+  .row{display:grid; grid-template-columns:24px 1fr auto 8px; gap:13px; align-items:center;
+    width:100%; text-align:left; background:none; border:0; border-bottom:1px solid var(--hair);
+    padding:14px 16px; color:inherit; font:inherit; cursor:pointer;
+    -webkit-tap-highlight-color:transparent}
+  .row:last-child{border-bottom:0}
+  .row:hover{background:color-mix(in srgb,var(--ink) 3%,transparent)}
+  .row:active{background:color-mix(in srgb,var(--ink) 6%,transparent)}
+  .row:focus-visible{outline:2px solid var(--blue); outline-offset:-2px}
+  .rk{font-size:15px; font-weight:400; color:var(--muted2); text-align:center}
+  .row.top .rk{color:var(--blue); font-weight:600}
+  .main{min-width:0; display:block}
+  .nm{display:block; font-size:15px; font-weight:590; letter-spacing:-.012em; line-height:1.25}
+  .ch{display:block; font-size:12.5px; color:var(--muted); margin-top:2px}
+  .best{display:inline-block; font-size:10.5px; font-weight:600; letter-spacing:.02em;
+    color:var(--blue); background:var(--blue-soft); border-radius:6px; padding:1px 6px; margin-top:5px}
+  .sc{font-size:17px; font-weight:600; letter-spacing:-.01em}
+  .sc.no{color:var(--muted2); font-weight:500; font-size:14px}
+  .chev{width:7px; height:12px; color:var(--muted2); opacity:.6}
+  .empty{color:var(--muted); text-align:center; padding:40px 0}
+  footer{color:var(--muted2); font-size:11.5px; text-align:center; margin-top:22px; line-height:1.6}
+  /* ---- detail sheet ---- */
+  .backdrop{position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.36);
+    opacity:0; transition:opacity .28s ease; -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px)}
+  .backdrop.open{opacity:1}
+  .sheet{position:fixed; left:0; right:0; bottom:0; z-index:41; margin:0 auto; max-width:600px;
+    background:var(--bg); border-radius:22px 22px 0 0; box-shadow:0 -8px 40px rgba(0,0,0,.28);
+    max-height:90vh; display:flex; flex-direction:column;
+    transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1)}
+  .sheet.open{transform:translateY(0)}
+  .handle{width:38px; height:5px; border-radius:3px; background:var(--muted2); opacity:.4;
+    margin:8px auto 2px; flex:none; cursor:grab; touch-action:none}
+  .sheet-close{position:absolute; top:12px; right:14px; width:30px; height:30px; border:0;
+    border-radius:50%; background:color-mix(in srgb,var(--ink) 8%,transparent); color:var(--muted);
+    display:grid; place-items:center; cursor:pointer; z-index:2}
+  .sheet-close:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+  .sheet-scroll{overflow-y:auto; padding:6px 20px 30px; -webkit-overflow-scrolling:touch}
+  .sh-rank{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted2)}
+  .sh-name{font-size:24px; font-weight:600; letter-spacing:-.02em; line-height:1.1; margin-top:8px}
+  .sh-ch{font-size:14px; color:var(--muted); margin-top:3px}
+  .sh-hero{display:flex; align-items:baseline; gap:10px; margin-top:16px}
+  .sh-score{font-size:52px; font-weight:300; letter-spacing:-.03em; line-height:1}
+  .sh-scorelbl{font-size:12px; font-weight:500; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--muted2)}
+  .sh-pill{margin-left:auto; align-self:center; font-size:12px; font-weight:600; color:var(--blue);
+    background:var(--blue-soft); border-radius:8px; padding:5px 10px}
+  .panel{background:var(--card); border-radius:14px; padding:16px; margin-top:16px;
+    border:1px solid var(--hair)}
+  .panel-h{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--muted2); margin-bottom:12px}
+  .brk{margin-bottom:13px}
+  .brk:last-child{margin-bottom:0}
+  .brk-top{display:flex; justify-content:space-between; align-items:baseline; font-size:14px}
+  .brk-top .w{color:var(--muted); font-size:12px; font-weight:500}
+  .brk-name{font-weight:550}
+  .brk-val{font-weight:600; font-variant-numeric:tabular-nums}
+  .bar{height:7px; border-radius:4px; background:color-mix(in srgb,var(--ink) 8%,transparent);
+    margin-top:7px; overflow:hidden}
+  .bar i{display:block; height:100%; border-radius:4px; background:var(--blue);
+    width:0; transition:width .5s cubic-bezier(.32,.72,0,1)}
+  .bar.g i{background:var(--good)}
+  .eq{margin-top:14px; padding-top:13px; border-top:1px solid var(--hair);
+    font-size:13px; color:var(--muted); text-align:center; font-variant-numeric:tabular-nums}
+  .eq b{color:var(--ink); font-weight:600}
+  .specs{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px 8px}
+  .spec b{display:block; font-size:17px; font-weight:600; letter-spacing:-.01em}
+  .spec span{display:block; font-size:11px; color:var(--muted2); margin-top:2px}
+  .derived{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px}
+  .dcard{background:var(--card); border:1px solid var(--hair); border-radius:14px; padding:14px}
+  .dcard .dv{font-size:19px; font-weight:600; letter-spacing:-.01em}
+  .dcard .dl{font-size:11.5px; color:var(--muted); margin-top:4px; line-height:1.35}
+  .tip{display:flex; gap:9px; margin-top:16px; padding:13px 14px; border-radius:12px;
+    background:var(--blue-soft); color:var(--ink); font-size:13.5px; line-height:1.45}
+  .tip svg{flex:none; color:var(--blue); margin-top:1px}
+  .sh-foot{font-size:11.5px; color:var(--muted2); margin-top:18px; line-height:1.5; text-align:center}
+  @media (prefers-reduced-motion:reduce){
+    .sheet,.backdrop,.bar i{transition:none}
   }
-  input[type=search]:focus, select:focus {
-    outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent;
-  }
-  .count { color: var(--muted); font-size: 0.72rem; padding: 2px 2px 8px; }
-
-  .row {
-    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 11px 13px; margin-bottom: 7px;
-    display: grid; grid-template-columns: 2.1rem 1fr auto; column-gap: 11px;
-    align-items: center;
-  }
-  .row.r1 { border-left: 3px solid var(--gold); }
-  .row.r2 { border-left: 3px solid var(--silver); }
-  .row.r3 { border-left: 3px solid var(--bronze); }
-  .rk { text-align: center; font-weight: 700; font-size: 1.1rem; color: var(--muted); }
-  .r1 .rk { color: var(--gold); }
-  .r2 .rk { color: var(--silver); }
-  .r3 .rk { color: var(--bronze); }
-  .main { min-width: 0; }
-  .nm { font-weight: 650; font-size: 0.96rem; letter-spacing: -0.01em; }
-  .ch { color: var(--muted); font-size: 0.78rem; margin-top: 1px; }
-  .sc {
-    background: var(--accent); color: var(--accent-ink);
-    border-radius: 10px; padding: 7px 10px; text-align: center; min-width: 3.3rem;
-    font-weight: 700; font-size: 1.05rem;
-  }
-  .sc small { display: block; font-weight: 600; font-size: 0.52rem;
-    letter-spacing: 0.08em; opacity: 0.82; margin-top: 1px; }
-  .sc.noscore { background: var(--line); color: var(--muted); }
-  .st { color: var(--muted); font-size: 0.79rem; margin-top: 4px; }
-  .st b { color: var(--ink); font-weight: 600; }
-  .st .sep { opacity: 0.45; margin: 0 5px; }
-  .meter { height: 5px; background: var(--line); border-radius: 3px;
-    overflow: hidden; margin-top: 7px; }
-  .meter i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
-  .r1 .meter i { background: var(--gold); }
-  .r2 .meter i { background: var(--silver); }
-  .r3 .meter i { background: var(--bronze); }
-  .note { font-size: 0.73rem; color: var(--flag); margin-top: 5px; }
-  .empty { color: var(--muted); text-align: center; padding: 28px 0; }
-  footer { color: var(--muted); font-size: 0.68rem; text-align: center;
-    margin-top: 18px; line-height: 1.5; }
 </style>
 </head>
 <body>
 <header>
-  <h1>Protein Value &mdash; PNW</h1>
-  <div class="sub">80 items ≥ 25 g protein across 19 chains · updated 2026-07-23</div>
+  <div class="eyebrow">PACIFIC NORTHWEST</div>
+  <h1>Protein, by the dollar.</h1>
+  <div class="sub">80 items ≥ 25 g protein across 19 chains · updated 2026-07-24</div>
   <div class="caveat">Prices are national averages + 10% PNW uplift &mdash;
-  <b>not till-verified</b>, confirm in store. Sales tax and app deals excluded.
-  Value Score = 60% protein-per-dollar + 40% protein density (per 100 cal),
-  each normalized to the best item = 100.</div>
+  <b>not till-verified</b>. Sales tax and app deals excluded. Value Score =
+  60% protein-per-dollar + 40% density, each normalized to the best item = 100.
+  Tap any item for the full breakdown.</div>
 </header>
 <div class="controls">
   <select id="chain" aria-label="Filter by chain"><option value="">All chains</option></select>
   <input id="q" type="search" placeholder="Search items…" aria-label="Search items">
 </div>
 <div class="count" id="count"></div>
-<div id="list"></div>
+<div class="list" id="list"></div>
 <p class="empty" id="empty" hidden>No items match.</p>
-<footer>Top pick: Raising Cane's — 6 Chicken Fingers (a la carte) (score 81.0). Generated 2026-07-23 from data/items.csv.</footer>
+<footer>Top pick: Raising Cane's — 6 Chicken Fingers (a la carte) (score 81.0). Generated 2026-07-24 from data/items.csv.</footer>
+
+<div class="backdrop" id="backdrop" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-name" hidden>
+  <div class="handle" id="handle"></div>
+  <button class="sheet-close" id="sheetClose" aria-label="Close details">
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>
+  </button>
+  <div class="sheet-scroll" id="sheetBody"></div>
+</div>
+
 <script>
 const DATA = {"items":[{"chain":"raising-canes","chain_name":"Raising Cane's","item":"6 Chicken Fingers (a la carte)","protein_g":78.0,"calories":780.0,"price":11.54,"price_kind":"national +uplift","notes":"~13g protein per finger","protein_per_dollar":6.76,"protein_per_100cal":10.0,"density_norm":52.6,"ppd_norm":100.0,"value_score":81.0,"rank":1},{"chain":"kfc","chain_name":"KFC","item":"Original Recipe Chicken Breast","protein_g":39.0,"calories":390.0,"price":6.04,"price_kind":"national +uplift","notes":"single piece a la carte","protein_per_dollar":6.46,"protein_per_100cal":10.0,"density_norm":52.6,"ppd_norm":95.6,"value_score":78.4,"rank":2},{"chain":"raising-canes","chain_name":"Raising Cane's","item":"Chicken Fingers (3 pc a la carte)","protein_g":39.0,"calories":390.0,"price":6.04,"price_kind":"national +uplift","notes":"~13g protein per finger","protein_per_dollar":6.46,"protein_per_100cal":10.0,"density_norm":52.6,"ppd_norm":95.6,"value_score":78.4,"rank":3},{"chain":"popeyes","chain_name":"Popeyes","item":"Fried Chicken Breast","protein_g":35.0,"calories":380.0,"price":5.49,"price_kind":"national +uplift","notes":"single piece a la carte","protein_per_dollar":6.38,"protein_per_100cal":9.21,"density_norm":48.5,"ppd_norm":94.4,"value_score":76.0,"rank":4},{"chain":"chick-fil-a","chain_name":"Chick-fil-A","item":"Grilled Nuggets (12 ct)","protein_g":38.0,"calories":200.0,"price":10.0,"price_kind":"national +uplift","notes":"leanest item on menu","protein_per_dollar":3.8,"protein_per_100cal":19.0,"density_norm":100.0,"ppd_norm":56.2,"value_score":73.7,"rank":5},{"chain":"popeyes","chain_name":"Popeyes","item":"Blackened Tenders (5 pc)","protein_g":43.0,"calories":280.0,"price":9.34,"price_kind":"national +uplift","notes":"not breaded \u2014 density standout","protein_per_dollar":4.6,"protein_per_100cal":15.36,"density_norm":80.8,"ppd_norm":68.0,"value_score":73.1,"rank":6},{"chain":"chipotle","chain_name":"Chipotle","item":"Double Chicken Burrito Bowl","protein_g":81.0,"calories":760.0,"price":14.41,"price_kind":"national +uplift","notes":"double-protein build (rice/beans/salsa)","protein_per_dollar":5.62,"protein_per_100cal":10.66,"density_norm":56.1,"ppd_norm":83.1,"value_score":72.3,"rank":7},{"chain":"chick-fil-a","chain_name":"Chick-fil-A","item":"Chick-fil-A Nuggets (12 ct)","protein_g":40.0,"calories":380.0,"price":7.21,"price_kind":"national +uplift","notes":"","protein_per_dollar":5.55,"protein_per_100cal":10.53,"density_norm":55.4,"ppd_norm":82.1,"value_score":71.4,"rank":8},{"chain":"in-n-out","chain_name":"In-N-Out","item":"3x3","protein_g":52.0,"calories":860.0,"price":8.09,"price_kind":"national +uplift","notes":"not-so-secret menu","protein_per_dollar":6.43,"protein_per_100cal":6.05,"density_norm":31.8,"ppd_norm":95.1,"value_score":69.8,"rank":9},{"chain":"panda-express","chain_name":"Panda Express","item":"Grilled Teriyaki Chicken (entree)","protein_g":33.0,"calories":275.0,"price":7.37,"price_kind":"national +uplift","notes":"a la carte entree (6 oz)","protein_per_dollar":4.48,"protein_per_100cal":12.0,"density_norm":63.2,"ppd_norm":66.3,"value_score":65.1,"rank":10},{"chain":"wendys","chain_name":"Wendy's","item":"Grilled Chicken Sandwich","protein_g":34.0,"calories":350.0,"price":6.81,"price_kind":"national +uplift","notes":"lean pick","protein_per_dollar":4.99,"protein_per_100cal":9.71,"density_norm":51.1,"ppd_norm":73.8,"value_score":64.7,"rank":11},{"chain":"wendys","chain_name":"Wendy's","item":"Baconator","protein_g":57.0,"calories":950.0,"price":9.89,"price_kind":"national +uplift","notes":"","protein_per_dollar":5.76,"protein_per_100cal":6.0,"density_norm":31.6,"ppd_norm":85.2,"value_score":63.8,"rank":12},{"chain":"mcdonalds","chain_name":"McDonald's","item":"Double Cheeseburger","protein_g":25.0,"calories":450.0,"price":4.39,"price_kind":"national +uplift","notes":"value-menu sleeper","protein_per_dollar":5.69,"protein_per_100cal":5.56,"density_norm":29.3,"ppd_norm":84.2,"value_score":62.2,"rank":13},{"chain":"in-n-out","chain_name":"In-N-Out","item":"Double-Double","protein_g":37.0,"calories":670.0,"price":6.49,"price_kind":"national +uplift","notes":"","protein_per_dollar":5.7,"protein_per_100cal":5.52,"density_norm":29.1,"ppd_norm":84.3,"value_score":62.2,"rank":14},{"chain":"wendys","chain_name":"Wendy's","item":"Dave's Double","protein_g":48.0,"calories":810.0,"price":8.68,"price_kind":"national +uplift","notes":"","protein_per_dollar":5.53,"protein_per_100cal":5.93,"density_norm":31.2,"ppd_norm":81.8,"value_score":61.6,"rank":15},{"chain":"carls-jr","chain_name":"Carl's Jr.","item":"Big Carl","protein_g":47.0,"calories":930.0,"price":8.24,"price_kind":"national +uplift","notes":"","protein_per_dollar":5.7,"protein_per_100cal":5.05,"density_norm":26.6,"ppd_norm":84.3,"value_score":61.2,"rank":16},{"chain":"mcdonalds","chain_name":"McDonald's","item":"Double Quarter Pounder with Cheese","protein_g":48.0,"calories":740.0,"price":9.01,"price_kind":"national +uplift","notes":"","protein_per_dollar":5.33,"protein_per_100cal":6.49,"density_norm":34.2,"ppd_norm":78.8,"value_score":61.0,"rank":17},{"chain":"arbys","chain_name":"Arby's","item":"Half Pound Roast Beef","protein_g":48.0,"calories":610.0,"price":9.67,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.96,"protein_per_100cal":7.87,"density_norm":41.4,"ppd_norm":73.4,"value_score":60.6,"rank":18},{"chain":"chick-fil-a","chain_name":"Chick-fil-A","item":"Grilled Cool Wrap","protein_g":42.0,"calories":350.0,"price":10.73,"price_kind":"national +uplift","notes":"no dressing","protein_per_dollar":3.91,"protein_per_100cal":12.0,"density_norm":63.2,"ppd_norm":57.8,"value_score":60.0,"rank":19},{"chain":"subway","chain_name":"Subway","item":"Footlong Rotisserie-Style Chicken","protein_g":58.0,"calories":700.0,"price":12.42,"price_kind":"national +uplift","notes":"no cheese/sauce in base","protein_per_dollar":4.67,"protein_per_100cal":8.29,"density_norm":43.6,"ppd_norm":69.1,"value_score":58.9,"rank":20},{"chain":"in-n-out","chain_name":"In-N-Out","item":"Double-Double Protein Style","protein_g":33.0,"calories":520.0,"price":6.49,"price_kind":"national +uplift","notes":"lettuce wrap; lean pick","protein_per_dollar":5.08,"protein_per_100cal":6.35,"density_norm":33.4,"ppd_norm":75.1,"value_score":58.4,"rank":21},{"chain":"qdoba","chain_name":"Qdoba","item":"Chicken Protein Bowl","protein_g":60.0,"calories":700.0,"price":13.31,"price_kind":"national +uplift","notes":"double protein build","protein_per_dollar":4.51,"protein_per_100cal":8.57,"density_norm":45.1,"ppd_norm":66.7,"value_score":58.1,"rank":22},{"chain":"jack-in-the-box","chain_name":"Jack in the Box","item":"Double Jack","protein_g":46.0,"calories":830.0,"price":8.79,"price_kind":"national +uplift","notes":"","protein_per_dollar":5.23,"protein_per_100cal":5.54,"density_norm":29.2,"ppd_norm":77.4,"value_score":58.1,"rank":23},{"chain":"chipotle","chain_name":"Chipotle","item":"Chicken Salad Bowl","protein_g":42.0,"calories":400.0,"price":10.56,"price_kind":"national +uplift","notes":"supergreens, chicken, beans, salsa \u2014 no rice; no dressing","protein_per_dollar":3.98,"protein_per_100cal":10.5,"density_norm":55.3,"ppd_norm":58.9,"value_score":57.5,"rank":24},{"chain":"chipotle","chain_name":"Chipotle","item":"Chicken Burrito","protein_g":54.0,"calories":975.0,"price":10.56,"price_kind":"national +uplift","notes":"same fillings + tortilla","protein_per_dollar":5.11,"protein_per_100cal":5.54,"density_norm":29.2,"ppd_norm":75.6,"value_score":57.0,"rank":25},{"chain":"kfc","chain_name":"KFC","item":"KFC Chicken Sandwich","protein_g":34.0,"calories":650.0,"price":6.59,"price_kind":"national +uplift","notes":"","protein_per_dollar":5.16,"protein_per_100cal":5.23,"density_norm":27.5,"ppd_norm":76.3,"value_score":56.8,"rank":26},{"chain":"panda-express","chain_name":"Panda Express","item":"Grilled Teriyaki Chicken Bowl + Super Greens","protein_g":42.0,"calories":430.0,"price":10.56,"price_kind":"national +uplift","notes":"bowl combo; lean pick","protein_per_dollar":3.98,"protein_per_100cal":9.77,"density_norm":51.4,"ppd_norm":58.9,"value_score":55.9,"rank":27},{"chain":"chipotle","chain_name":"Chipotle","item":"Chicken Burrito Bowl","protein_g":48.0,"calories":665.0,"price":10.56,"price_kind":"national +uplift","notes":"chicken, white rice, black beans, fajita veg, salsa","protein_per_dollar":4.55,"protein_per_100cal":7.22,"density_norm":38.0,"ppd_norm":67.3,"value_score":55.6,"rank":28},{"chain":"carls-jr","chain_name":"Carl's Jr.","item":"Charbroiled BBQ Chicken Sandwich","protein_g":33.0,"calories":400.0,"price":7.69,"price_kind":"national +uplift","notes":"lean pick","protein_per_dollar":4.29,"protein_per_100cal":8.25,"density_norm":43.4,"ppd_norm":63.5,"value_score":55.5,"rank":29},{"chain":"popeyes","chain_name":"Popeyes","item":"Blackened Chicken Sandwich","protein_g":32.0,"calories":550.0,"price":6.59,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.86,"protein_per_100cal":5.82,"density_norm":30.6,"ppd_norm":71.9,"value_score":55.4,"rank":30},{"chain":"chick-fil-a","chain_name":"Chick-fil-A","item":"Spicy Chicken Sandwich","protein_g":29.0,"calories":460.0,"price":6.55,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.43,"protein_per_100cal":6.3,"density_norm":33.2,"ppd_norm":65.5,"value_score":52.6,"rank":31},{"chain":"taco-bell","chain_name":"Taco Bell","item":"Double Steak Grilled Cheese Burrito","protein_g":40.0,"calories":910.0,"price":8.24,"price_kind":"national +uplift","notes":"regular","protein_per_dollar":4.85,"protein_per_100cal":4.4,"density_norm":23.2,"ppd_norm":71.7,"value_score":52.3,"rank":32},{"chain":"arbys","chain_name":"Arby's","item":"Double Roast Beef","protein_g":34.0,"calories":510.0,"price":7.91,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.3,"protein_per_100cal":6.67,"density_norm":35.1,"ppd_norm":63.6,"value_score":52.2,"rank":33},{"chain":"carls-jr","chain_name":"Carl's Jr.","item":"Super Star with Cheese","protein_g":46.0,"calories":930.0,"price":9.89,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.65,"protein_per_100cal":4.95,"density_norm":26.1,"ppd_norm":68.8,"value_score":51.7,"rank":34},{"chain":"kfc","chain_name":"KFC","item":"Tenders (3 pc)","protein_g":27.0,"calories":390.0,"price":6.59,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.1,"protein_per_100cal":6.92,"density_norm":36.4,"ppd_norm":60.7,"value_score":51.0,"rank":35},{"chain":"arbys","chain_name":"Arby's","item":"Roast Turkey Ranch & Bacon Sandwich","protein_g":44.0,"calories":800.0,"price":9.89,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.45,"protein_per_100cal":5.5,"density_norm":28.9,"ppd_norm":65.8,"value_score":51.0,"rank":36},{"chain":"subway","chain_name":"Subway","item":"Footlong Steak & Cheese","protein_g":51.0,"calories":720.0,"price":12.64,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.03,"protein_per_100cal":7.08,"density_norm":37.3,"ppd_norm":59.6,"value_score":50.7,"rank":37},{"chain":"mcdonalds","chain_name":"McDonald's","item":"Quarter Pounder with Cheese","protein_g":30.0,"calories":520.0,"price":6.92,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.34,"protein_per_100cal":5.77,"density_norm":30.4,"ppd_norm":64.2,"value_score":50.7,"rank":38},{"chain":"wendys","chain_name":"Wendy's","item":"Crispy Chicken Nuggets (10 pc)","protein_g":27.0,"calories":470.0,"price":6.37,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.24,"protein_per_100cal":5.74,"density_norm":30.2,"ppd_norm":62.7,"value_score":49.7,"rank":39},{"chain":"popeyes","chain_name":"Popeyes","item":"Classic Chicken Sandwich","protein_g":28.0,"calories":700.0,"price":6.04,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.64,"protein_per_100cal":4.0,"density_norm":21.1,"ppd_norm":68.6,"value_score":49.6,"rank":40},{"chain":"wendys","chain_name":"Wendy's","item":"Dave's Single","protein_g":30.0,"calories":590.0,"price":6.92,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.34,"protein_per_100cal":5.08,"density_norm":26.7,"ppd_norm":64.2,"value_score":49.2,"rank":41},{"chain":"subway","chain_name":"Subway","item":"6-inch Rotisserie-Style Chicken","protein_g":29.0,"calories":360.0,"price":8.02,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.62,"protein_per_100cal":8.06,"density_norm":42.4,"ppd_norm":53.6,"value_score":49.1,"rank":42},{"chain":"qdoba","chain_name":"Qdoba","item":"Chicken Burrito Bowl","protein_g":45.0,"calories":700.0,"price":11.28,"price_kind":"national +uplift","notes":"queso/guac included in price","protein_per_dollar":3.99,"protein_per_100cal":6.43,"density_norm":33.8,"ppd_norm":59.0,"value_score":48.9,"rank":43},{"chain":"wendys","chain_name":"Wendy's","item":"Spicy Chicken Sandwich","protein_g":28.0,"calories":500.0,"price":6.7,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.18,"protein_per_100cal":5.6,"density_norm":29.5,"ppd_norm":61.8,"value_score":48.9,"rank":44},{"chain":"taco-bell","chain_name":"Taco Bell","item":"Chicken Quesadilla","protein_g":27.0,"calories":510.0,"price":6.37,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.24,"protein_per_100cal":5.29,"density_norm":27.8,"ppd_norm":62.7,"value_score":48.7,"rank":45},{"chain":"cava","chain_name":"Cava","item":"Double Chicken Bowl","protein_g":64.0,"calories":780.0,"price":18.15,"price_kind":"national +uplift","notes":"double grilled chicken","protein_per_dollar":3.53,"protein_per_100cal":8.21,"density_norm":43.2,"ppd_norm":52.2,"value_score":48.6,"rank":46},{"chain":"chick-fil-a","chain_name":"Chick-fil-A","item":"Grilled Chicken Sandwich","protein_g":28.0,"calories":390.0,"price":7.54,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.71,"protein_per_100cal":7.18,"density_norm":37.8,"ppd_norm":54.9,"value_score":48.1,"rank":47},{"chain":"jack-in-the-box","chain_name":"Jack in the Box","item":"Chicken Fajita Pita","protein_g":26.0,"calories":320.0,"price":7.47,"price_kind":"national +uplift","notes":"classic lean pick","protein_per_dollar":3.48,"protein_per_100cal":8.12,"density_norm":42.7,"ppd_norm":51.5,"value_score":48.0,"rank":48},{"chain":"mcdonalds","chain_name":"McDonald's","item":"McCrispy","protein_g":26.0,"calories":470.0,"price":6.37,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.08,"protein_per_100cal":5.53,"density_norm":29.1,"ppd_norm":60.4,"value_score":47.9,"rank":49},{"chain":"raising-canes","chain_name":"Raising Cane's","item":"The Box Combo (4 fingers)","protein_g":52.0,"calories":1250.0,"price":12.09,"price_kind":"national +uplift","notes":"combo incl. fries/toast/slaw/drink","protein_per_dollar":4.3,"protein_per_100cal":4.16,"density_norm":21.9,"ppd_norm":63.6,"value_score":46.9,"rank":50},{"chain":"taco-bell","chain_name":"Taco Bell","item":"Grilled Cheese Burrito (Seasoned Beef)","protein_g":26.0,"calories":720.0,"price":6.04,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.3,"protein_per_100cal":3.61,"density_norm":19.0,"ppd_norm":63.6,"value_score":45.8,"rank":51},{"chain":"subway","chain_name":"Subway","item":"Footlong Meatball Marinara","protein_g":42.0,"calories":960.0,"price":10.22,"price_kind":"national +uplift","notes":"","protein_per_dollar":4.11,"protein_per_100cal":4.38,"density_norm":23.1,"ppd_norm":60.8,"value_score":45.7,"rank":52},{"chain":"carls-jr","chain_name":"Carl's Jr.","item":"Charbroiled Chicken Club","protein_g":34.0,"calories":560.0,"price":9.34,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.64,"protein_per_100cal":6.07,"density_norm":31.9,"ppd_norm":53.8,"value_score":45.0,"rank":53},{"chain":"arbys","chain_name":"Arby's","item":"Classic Beef 'n Cheddar","protein_g":26.0,"calories":450.0,"price":7.14,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.64,"protein_per_100cal":5.78,"density_norm":30.4,"ppd_norm":53.8,"value_score":44.4,"rank":54},{"chain":"jack-in-the-box","chain_name":"Jack in the Box","item":"Jumbo Jack","protein_g":25.0,"calories":540.0,"price":6.59,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.79,"protein_per_100cal":4.63,"density_norm":24.4,"ppd_norm":56.1,"value_score":43.4,"rank":55},{"chain":"mcdonalds","chain_name":"McDonald's","item":"Big Mac","protein_g":25.0,"calories":590.0,"price":6.59,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.79,"protein_per_100cal":4.24,"density_norm":22.3,"ppd_norm":56.1,"value_score":42.6,"rank":56},{"chain":"subway","chain_name":"Subway","item":"Footlong Oven Roasted Turkey","protein_g":36.0,"calories":540.0,"price":11.21,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.21,"protein_per_100cal":6.67,"density_norm":35.1,"ppd_norm":47.5,"value_score":42.5,"rank":57},{"chain":"kfc","chain_name":"KFC","item":"Famous Bowl","protein_g":26.0,"calories":740.0,"price":6.59,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.95,"protein_per_100cal":3.51,"density_norm":18.5,"ppd_norm":58.4,"value_score":42.4,"rank":58},{"chain":"arbys","chain_name":"Arby's","item":"Smokehouse Brisket Sandwich","protein_g":32.0,"calories":600.0,"price":9.34,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.43,"protein_per_100cal":5.33,"density_norm":28.1,"ppd_norm":50.7,"value_score":41.7,"rank":59},{"chain":"chick-fil-a","chain_name":"Chick-fil-A","item":"Spicy Southwest Salad","protein_g":33.0,"calories":450.0,"price":11.17,"price_kind":"national +uplift","notes":"with grilled chicken; no dressing","protein_per_dollar":2.95,"protein_per_100cal":7.33,"density_norm":38.6,"ppd_norm":43.6,"value_score":41.6,"rank":60},{"chain":"taco-bell","chain_name":"Taco Bell","item":"Power Menu Bowl (Chicken)","protein_g":26.0,"calories":470.0,"price":7.69,"price_kind":"national +uplift","notes":"lean pick","protein_per_dollar":3.38,"protein_per_100cal":5.53,"density_norm":29.1,"ppd_norm":50.0,"value_score":41.6,"rank":61},{"chain":"burgerville","chain_name":"Burgerville","item":"Colossal Cheeseburger","protein_g":35.0,"calories":640.0,"price":10.33,"price_kind":"national +uplift","notes":"PNW-only chain; data less standardized","protein_per_dollar":3.39,"protein_per_100cal":5.47,"density_norm":28.8,"ppd_norm":50.1,"value_score":41.6,"rank":62},{"chain":"chipotle","chain_name":"Chipotle","item":"Steak Burrito Bowl","protein_g":38.0,"calories":640.0,"price":11.77,"price_kind":"national +uplift","notes":"steak, rice, beans, fajita veg, salsa","protein_per_dollar":3.23,"protein_per_100cal":5.94,"density_norm":31.3,"ppd_norm":47.8,"value_score":41.2,"rank":63},{"chain":"jersey-mikes","chain_name":"Jersey Mike's","item":"#17 Mike's Famous Philly (Regular)","protein_g":42.0,"calories":700.0,"price":13.14,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.2,"protein_per_100cal":6.0,"density_norm":31.6,"ppd_norm":47.3,"value_score":41.0,"rank":64},{"chain":"panda-express","chain_name":"Panda Express","item":"Original Orange Chicken (entree)","protein_g":25.0,"calories":490.0,"price":7.37,"price_kind":"national +uplift","notes":"a la carte medium entree","protein_per_dollar":3.39,"protein_per_100cal":5.1,"density_norm":26.8,"ppd_norm":50.1,"value_score":40.8,"rank":65},{"chain":"five-guys","chain_name":"Five Guys","item":"Hamburger","protein_g":39.0,"calories":700.0,"price":12.09,"price_kind":"national +uplift","notes":"two patties standard","protein_per_dollar":3.23,"protein_per_100cal":5.57,"density_norm":29.3,"ppd_norm":47.8,"value_score":40.4,"rank":66},{"chain":"jack-in-the-box","chain_name":"Jack in the Box","item":"Sourdough Jack","protein_g":30.0,"calories":730.0,"price":8.46,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.55,"protein_per_100cal":4.11,"density_norm":21.6,"ppd_norm":52.5,"value_score":40.1,"rank":67},{"chain":"five-guys","chain_name":"Five Guys","item":"Cheeseburger","protein_g":43.0,"calories":840.0,"price":13.19,"price_kind":"national +uplift","notes":"","protein_per_dollar":3.26,"protein_per_100cal":5.12,"density_norm":26.9,"ppd_norm":48.2,"value_score":39.7,"rank":68},{"chain":"five-guys","chain_name":"Five Guys","item":"Bacon Cheeseburger","protein_g":47.0,"calories":1060.0,"price":14.29,"price_kind":"national +uplift","notes":"two patties + bacon","protein_per_dollar":3.29,"protein_per_100cal":4.43,"density_norm":23.3,"ppd_norm":48.7,"value_score":38.5,"rank":69},{"chain":"cava","chain_name":"Cava","item":"Grilled Chicken Bowl","protein_g":38.0,"calories":620.0,"price":13.59,"price_kind":"national +uplift","notes":"chicken, supergreens, rice, hummus","protein_per_dollar":2.8,"protein_per_100cal":6.13,"density_norm":32.3,"ppd_norm":41.4,"value_score":37.8,"rank":70},{"chain":"burgerville","chain_name":"Burgerville","item":"Double Beef Cheeseburger","protein_g":25.0,"calories":480.0,"price":8.24,"price_kind":"national +uplift","notes":"was overstated when seeded","protein_per_dollar":3.03,"protein_per_100cal":5.21,"density_norm":27.4,"ppd_norm":44.8,"value_score":37.8,"rank":71},{"chain":"jersey-mikes","chain_name":"Jersey Mike's","item":"#7 Turkey & Provolone (Regular)","protein_g":33.0,"calories":590.0,"price":11.83,"price_kind":"national +uplift","notes":"","protein_per_dollar":2.79,"protein_per_100cal":5.59,"density_norm":29.4,"ppd_norm":41.3,"value_score":36.5,"rank":72},{"chain":"burgerville","chain_name":"Burgerville","item":"Turkey Burger","protein_g":26.0,"calories":500.0,"price":9.12,"price_kind":"national +uplift","notes":"","protein_per_dollar":2.85,"protein_per_100cal":5.2,"density_norm":27.4,"ppd_norm":42.2,"value_score":36.3,"rank":73},{"chain":"qdoba","chain_name":"Qdoba","item":"Steak Burrito Bowl","protein_g":36.0,"calories":700.0,"price":12.6,"price_kind":"national +uplift","notes":"","protein_per_dollar":2.86,"protein_per_100cal":5.14,"density_norm":27.1,"ppd_norm":42.3,"value_score":36.2,"rank":74},{"chain":"jersey-mikes","chain_name":"Jersey Mike's","item":"#13 Original Italian (Regular)","protein_g":37.0,"calories":830.0,"price":12.38,"price_kind":"national +uplift","notes":"","protein_per_dollar":2.99,"protein_per_100cal":4.46,"density_norm":23.5,"ppd_norm":44.2,"value_score":35.9,"rank":75},{"chain":"jersey-mikes","chain_name":"Jersey Mike's","item":"#8 Club Sub (Regular)","protein_g":38.0,"calories":750.0,"price":13.48,"price_kind":"national +uplift","notes":"","protein_per_dollar":2.82,"protein_per_100cal":5.07,"density_norm":26.7,"ppd_norm":41.7,"value_score":35.7,"rank":76},{"chain":"jersey-mikes","chain_name":"Jersey Mike's","item":"#7 Turkey Sub in a Tub","protein_g":30.0,"calories":490.0,"price":11.83,"price_kind":"national +uplift","notes":"regular tub w/ toppings; order dry to cut cals","protein_per_dollar":2.54,"protein_per_100cal":6.12,"density_norm":32.2,"ppd_norm":37.6,"value_score":35.4,"rank":77},{"chain":"burgerville","chain_name":"Burgerville","item":"Crispy Chicken Sandwich","protein_g":26.0,"calories":560.0,"price":9.89,"price_kind":"national +uplift","notes":"","protein_per_dollar":2.63,"protein_per_100cal":4.64,"density_norm":24.4,"ppd_norm":38.9,"value_score":33.1,"rank":78},{"chain":"cava","chain_name":"Cava","item":"Grilled Steak Bowl","protein_g":33.0,"calories":650.0,"price":14.91,"price_kind":"national +uplift","notes":"","protein_per_dollar":2.21,"protein_per_100cal":5.08,"density_norm":26.7,"ppd_norm":32.7,"value_score":30.3,"rank":79},{"chain":"cava","chain_name":"Cava","item":"Spicy Lamb Meatball Bowl","protein_g":30.0,"calories":700.0,"price":14.36,"price_kind":"national +uplift","notes":"","protein_per_dollar":2.09,"protein_per_100cal":4.29,"density_norm":22.6,"ppd_norm":30.9,"value_score":27.6,"rank":80}]};
+const W_PPD = 60, W_PD = 40;              // integer percents (e.g. 60, 40)
+const TOTAL = DATA.items.length;
+DATA.items.forEach((it, k) => it._id = k);
+
 const chainSel = document.getElementById('chain');
 const q = document.getElementById('q');
 const list = document.getElementById('list');
@@ -135,12 +190,12 @@ const count = document.getElementById('count');
   .sort((a, b) => a[1].localeCompare(b[1]))
   .forEach(([slug, name]) => chainSel.add(new Option(name, slug)));
 
-function esc(s) {
-  return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-}
-function num(n) { return n == null ? '—' : n; }
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+const money = n => n == null ? null : '$' + n.toFixed(2);
 
-function render() {
+const CHEV = '<svg class="chev" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg>';
+
+function render(){
   const slug = chainSel.value, term = q.value.trim().toLowerCase();
   const rows = DATA.items.filter(i =>
     (!slug || i.chain === slug) &&
@@ -149,23 +204,137 @@ function render() {
     + (slug ? ' · ' + chainSel.options[chainSel.selectedIndex].text : ' · ranked by value');
   list.innerHTML = rows.map((i, idx) => {
     const scored = i.value_score != null;
-    const medal = scored && idx < 3 ? ' r' + (idx + 1) : '';
     const pos = scored ? (slug ? idx + 1 : i.rank) : '·';
-    const price = i.price != null ? '$' + i.price.toFixed(2) : 'no price';
-    const w = scored ? Math.max(3, Math.min(100, i.value_score)) : 0;
-    return `<div class="row${medal}">
-      <div class="rk">${pos}</div>
-      <div class="main">
-        <div class="nm">${esc(i.item)}</div><div class="ch">${esc(i.chain_name)}</div>
-        <div class="st"><b>${price}</b><span class="sep">·</span><b>${i.protein_g}g</b> protein<span class="sep">·</span>${i.calories} cal<span class="sep">·</span>${num(i.protein_per_dollar)} g/$<span class="sep">·</span>${i.protein_per_100cal} g/100cal</div>
-        ${scored ? `<div class="meter"><i style="width:${w}%"></i></div>` : ''}
-        ${i.notes || !scored ? `<div class="note">${esc([i.notes, scored ? '' : 'no price — add one in data/items.csv'].filter(Boolean).join(' · '))}</div>` : ''}
-      </div>
-      <div class="sc ${scored ? '' : 'noscore'}">${scored ? i.value_score : '—'}<small>SCORE</small></div>
-    </div>`;
+    const price = money(i.price) || 'no price';
+    const best = idx === 0 && !slug && scored ? '<div class="best">Best value</div>' : '';
+    return `<button class="row${idx===0&&scored?' top':''}" data-id="${i._id}">
+      <span class="rk">${pos}</span>
+      <span class="main">
+        <span class="nm">${esc(i.item)}</span>
+        <span class="ch">${esc(i.chain_name)} · ${i.protein_g}g · ${price}</span>
+        ${best}
+      </span>
+      <span class="sc${scored?'':' no'}">${scored ? i.value_score.toFixed(1) : '—'}</span>
+      ${CHEV}
+    </button>`;
   }).join('');
   empty.hidden = rows.length > 0;
+  list.hidden = rows.length === 0;
 }
+
+/* ---------------- detail sheet ---------------- */
+const backdrop = document.getElementById('backdrop');
+const sheet = document.getElementById('sheet');
+const sheetBody = document.getElementById('sheetBody');
+let lastFocus = null;
+
+function sheetHTML(i){
+  const scored = i.value_score != null;
+  const price = money(i.price);
+  const ppdN = i.ppd_norm, densN = i.density_norm;
+  const fP = (W_PPD/100), fD = (W_PD/100);
+  const cost100 = (i.price!=null) ? (100/i.protein_g)*i.price : null;
+  const mult100 = (100/i.protein_g);
+  const per25 = (i.price!=null) ? (25/i.protein_g)*i.price : null;
+  const pctTop = scored ? Math.max(1, Math.round(i.rank/TOTAL*100)) : null;
+
+  const breakdown = scored ? `
+    <div class="panel">
+      <div class="panel-h">Score breakdown</div>
+      <div class="brk">
+        <div class="brk-top"><span class="brk-name">Value per dollar <span class="w">· ${W_PPD}%</span></span>
+          <span class="brk-val">${ppdN.toFixed(1)}</span></div>
+        <div class="bar"><i data-w="${Math.max(2,Math.min(100,ppdN))}"></i></div>
+      </div>
+      <div class="brk">
+        <div class="brk-top"><span class="brk-name">Protein density <span class="w">· ${W_PD}%</span></span>
+          <span class="brk-val">${densN.toFixed(1)}</span></div>
+        <div class="bar g"><i data-w="${Math.max(2,Math.min(100,densN))}"></i></div>
+      </div>
+      <div class="eq">${fP.toFixed(1)} × ${ppdN.toFixed(1)} &nbsp;+&nbsp; ${fD.toFixed(1)} × ${densN.toFixed(1)} &nbsp;=&nbsp; <b>${i.value_score.toFixed(1)}</b></div>
+    </div>` : '';
+
+  const derived = (i.price!=null) ? `
+    <div class="derived">
+      <div class="dcard"><div class="dv">${money(cost100)}</div>
+        <div class="dl">to reach <b>100 g protein</b> (≈ ${mult100.toFixed(1)}×)</div></div>
+      <div class="dcard"><div class="dv">${money(per25)}</div>
+        <div class="dl">per <b>25 g protein</b> serving</div></div>
+    </div>` : '';
+
+  const tip = i.notes ? `
+    <div class="tip">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm.9 12H7.1V7h1.8v5zM8 5.6A1.05 1.05 0 118 3.5a1.05 1.05 0 010 2.1z"/></svg>
+      <span>${esc(i.notes)}</span>
+    </div>` : '';
+
+  return `
+    <div class="sh-rank">${scored ? `#${i.rank} of ${TOTAL} · top ${pctTop}%` : 'Unranked'}</div>
+    <div class="sh-name" id="sh-name">${esc(i.item)}</div>
+    <div class="sh-ch">${esc(i.chain_name)}</div>
+    <div class="sh-hero">
+      <div class="sh-score">${scored ? i.value_score.toFixed(1) : '—'}</div>
+      <div class="sh-scorelbl">value<br>score</div>
+      ${idxIsBest(i) ? '<span class="sh-pill">Best value</span>' : ''}
+    </div>
+    ${breakdown}
+    <div class="panel">
+      <div class="panel-h">Nutrition &amp; price</div>
+      <div class="specs">
+        <div class="spec"><b>${i.protein_g} g</b><span>Protein</span></div>
+        <div class="spec"><b>${i.calories}</b><span>Calories</span></div>
+        <div class="spec"><b>${price || '—'}</b><span>Price</span></div>
+        <div class="spec"><b>${i.protein_per_dollar ?? '—'}</b><span>g / dollar</span></div>
+        <div class="spec"><b>${i.protein_per_100cal}</b><span>g / 100 cal</span></div>
+        <div class="spec"><b>${Math.round(i.calories / (i.protein_g||1))}</b><span>cal / g protein</span></div>
+      </div>
+    </div>
+    ${derived}
+    ${tip}
+    <div class="sh-foot">Price: ${esc(i.price_kind || 'n/a')} — not till-verified. Confirm in store.</div>`;
+}
+
+function idxIsBest(i){ return i.rank === 1; }
+
+function openSheet(id){
+  const i = DATA.items[id];
+  if(!i) return;
+  lastFocus = document.activeElement;
+  sheetBody.innerHTML = sheetHTML(i);
+  backdrop.hidden = false; sheet.hidden = false;
+  requestAnimationFrame(() => {
+    backdrop.classList.add('open'); sheet.classList.add('open');
+    sheetBody.scrollTop = 0;
+    sheetBody.querySelectorAll('.bar i').forEach(b => { b.style.width = b.dataset.w + '%'; });
+  });
+  document.getElementById('sheetClose').focus();
+  document.body.style.overflow = 'hidden';
+}
+function closeSheet(){
+  backdrop.classList.remove('open'); sheet.classList.remove('open');
+  document.body.style.overflow = '';
+  const done = () => { backdrop.hidden = true; sheet.hidden = true; sheet.removeEventListener('transitionend', done); };
+  sheet.addEventListener('transitionend', done);
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) done();
+  if (lastFocus) lastFocus.focus();
+}
+
+list.addEventListener('click', e => {
+  const row = e.target.closest('.row'); if(row) openSheet(+row.dataset.id);
+});
+backdrop.addEventListener('click', closeSheet);
+document.getElementById('sheetClose').addEventListener('click', closeSheet);
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidden) closeSheet(); });
+
+/* drag-to-dismiss on the handle */
+(function(){
+  const handle = document.getElementById('handle');
+  let y0 = null, dy = 0;
+  handle.addEventListener('pointerdown', e => { y0 = e.clientY; dy = 0; sheet.style.transition = 'none'; handle.setPointerCapture(e.pointerId); });
+  handle.addEventListener('pointermove', e => { if(y0==null) return; dy = Math.max(0, e.clientY - y0); sheet.style.transform = `translateY(${dy}px)`; });
+  handle.addEventListener('pointerup', () => { if(y0==null) return; sheet.style.transition=''; sheet.style.transform=''; if(dy > 90) closeSheet(); y0=null; });
+})();
+
 chainSel.onchange = render;
 q.oninput = render;
 render();

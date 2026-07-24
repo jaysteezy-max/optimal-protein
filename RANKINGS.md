@@ -1,6 +1,6 @@
 # Protein Value Rankings (PNW)
 
-Generated 2026-07-23. Prices are national averages + 10% PNW uplift, not till-verified — confirm in store. Sales tax and app deals excluded.
+Generated 2026-07-24. Prices are national averages + 10% PNW uplift, not till-verified — confirm in store. Sales tax and app deals excluded.
 
 Value Score = 60% protein-per-dollar + 40% protein density, each normalized to the best item in the list (=100).
 

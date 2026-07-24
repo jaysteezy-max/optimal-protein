@@ -95,7 +95,7 @@
   .backdrop.open{opacity:1}
   .sheet{position:fixed; left:0; right:0; bottom:0; z-index:41; margin:0 auto; max-width:600px;
     background:var(--bg); border-radius:22px 22px 0 0; box-shadow:0 -8px 40px rgba(0,0,0,.28);
-    max-height:90vh; display:flex; flex-direction:column;
+    max-height:90vh; display:flex; flex-direction:column; touch-action:none;
     transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1)}
   .sheet.open{transform:translateY(0)}
   .handle{width:38px; height:5px; border-radius:3px; background:var(--muted2); opacity:.4;
@@ -108,7 +108,7 @@
     cursor:grab; user-select:none; -webkit-user-select:none}
   .sheet-grab:active{cursor:grabbing}
   .sheet-scroll{flex:1; min-height:0; overflow-y:auto; padding:2px 20px 30px;
-    -webkit-overflow-scrolling:touch; touch-action:pan-y}
+    -webkit-overflow-scrolling:touch; touch-action:none}
   .sh-rank{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
     color:var(--muted2)}
   .sh-name{font-size:24px; font-weight:600; letter-spacing:-.02em; line-height:1.1; margin-top:8px}
@@ -385,41 +385,44 @@ backdrop.addEventListener('click', closeSheet);
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidden) closeSheet(); });
 
-/* swipe-down-to-dismiss: from the handle always, or from anywhere on the
-   sheet once its content is scrolled to the top (so it never fights
-   normal scrolling inside the sheet) */
+/* Swipe gesture for the sheet. The initial direction of a swipe decides the
+   whole gesture: swiping DOWN always drags the sheet down to dismiss (it never
+   scrolls); swiping UP reveals any content below the fold. The header always
+   dismisses. Touch scrolling is handled here (touch-action:none) so a
+   downward swipe can never be swallowed by the scroll container. */
 (function(){
-  let y0 = null, dy = 0, dragging = false;
+  const maxScroll = () => Math.max(0, sheetBody.scrollHeight - sheetBody.clientHeight);
+  let y0 = null, scroll0 = 0, mode = null, dy = 0, headerGrab = false;
 
   function onDown(e){
     if (e.target.closest('#sheetClose')) return;
-    y0 = e.clientY; dy = 0;
-    // the whole header (handle + title + score) is a drag target;
-    // the scrolling body only initiates a drag when already at the top
-    dragging = !!e.target.closest('#sheetGrab');
-    if (dragging) { sheet.style.transition = 'none'; sheet.setPointerCapture(e.pointerId); }
+    y0 = e.clientY; scroll0 = sheetBody.scrollTop; mode = null; dy = 0;
+    headerGrab = !!e.target.closest('#sheetGrab');
+    sheet.setPointerCapture(e.pointerId);
   }
   function onMove(e){
     if (y0 == null) return;
-    const raw = e.clientY - y0;
-    if (!dragging) {
-      if (raw > 6 && sheetBody.scrollTop <= 0) {
-        dragging = true;
-        sheet.style.transition = 'none';
-        sheet.setPointerCapture(e.pointerId);
-      } else {
-        return; // let the content scroll normally
-      }
+    const delta = e.clientY - y0;                 // + = finger moved down
+    if (mode === null){
+      if (Math.abs(delta) < 4) return;
+      mode = (headerGrab || delta > 0) ? 'dismiss' : 'scroll';
+      if (mode === 'dismiss') sheet.style.transition = 'none';
     }
-    dy = Math.max(0, raw);
     e.preventDefault();
-    sheet.style.transform = `translateY(${dy}px)`;
+    if (mode === 'dismiss'){
+      dy = Math.max(0, delta);
+      sheet.style.transform = `translateY(${dy}px)`;
+    } else {
+      sheetBody.scrollTop = Math.min(maxScroll(), Math.max(0, scroll0 - delta));
+    }
   }
   function onUp(){
-    if (!dragging) { y0 = null; return; }
-    sheet.style.transition = ''; sheet.style.transform = '';
-    if (dy > 90) closeSheet();
-    dragging = false; y0 = null;
+    if (y0 == null) return;
+    if (mode === 'dismiss'){
+      sheet.style.transition = ''; sheet.style.transform = '';
+      if (dy > 90) closeSheet();
+    }
+    y0 = null; mode = null; dy = 0;
   }
   sheet.addEventListener('pointerdown', onDown);
   sheet.addEventListener('pointermove', onMove, { passive: false });

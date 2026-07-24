@@ -328,13 +328,44 @@ backdrop.addEventListener('click', closeSheet);
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidden) closeSheet(); });
 
-/* drag-to-dismiss on the handle */
+/* swipe-down-to-dismiss: from the handle always, or from anywhere on the
+   sheet once its content is scrolled to the top (so it never fights
+   normal scrolling inside the sheet) */
 (function(){
-  const handle = document.getElementById('handle');
-  let y0 = null, dy = 0;
-  handle.addEventListener('pointerdown', e => { y0 = e.clientY; dy = 0; sheet.style.transition = 'none'; handle.setPointerCapture(e.pointerId); });
-  handle.addEventListener('pointermove', e => { if(y0==null) return; dy = Math.max(0, e.clientY - y0); sheet.style.transform = `translateY(${dy}px)`; });
-  handle.addEventListener('pointerup', () => { if(y0==null) return; sheet.style.transition=''; sheet.style.transform=''; if(dy > 90) closeSheet(); y0=null; });
+  let y0 = null, dy = 0, dragging = false;
+
+  function onDown(e){
+    if (e.target.closest('#sheetClose')) return;
+    y0 = e.clientY; dy = 0;
+    dragging = !!e.target.closest('#handle');
+    if (dragging) { sheet.style.transition = 'none'; sheet.setPointerCapture(e.pointerId); }
+  }
+  function onMove(e){
+    if (y0 == null) return;
+    const raw = e.clientY - y0;
+    if (!dragging) {
+      if (raw > 6 && sheetBody.scrollTop <= 0) {
+        dragging = true;
+        sheet.style.transition = 'none';
+        sheet.setPointerCapture(e.pointerId);
+      } else {
+        return; // let the content scroll normally
+      }
+    }
+    dy = Math.max(0, raw);
+    e.preventDefault();
+    sheet.style.transform = `translateY(${dy}px)`;
+  }
+  function onUp(){
+    if (!dragging) { y0 = null; return; }
+    sheet.style.transition = ''; sheet.style.transform = '';
+    if (dy > 90) closeSheet();
+    dragging = false; y0 = null;
+  }
+  sheet.addEventListener('pointerdown', onDown);
+  sheet.addEventListener('pointermove', onMove, { passive: false });
+  sheet.addEventListener('pointerup', onUp);
+  sheet.addEventListener('pointercancel', onUp);
 })();
 
 chainSel.onchange = render;

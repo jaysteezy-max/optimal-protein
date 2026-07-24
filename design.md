@@ -131,19 +131,40 @@ capped at `max-width: 600px` and the caveat at `44ch` for a comfortable measure.
 
 ## Motion
 
-Keep it physical and brief. Two easing curves do all the work:
+Keep it physical and brief. Structural motion (sheet, backdrop) is CSS;
+expressive motion is **anime.js v3.2.2**, vendored at `docs/anime.min.js` so
+the page stays offline-capable and CDN-free.
+
+CSS easing curves:
 
 - **`cubic-bezier(.32, .72, 0, 1)`** — the iOS "decelerate" curve. Sheet
-  transform (`.32s`) and bar fill (`.5s`).
+  transform (`.32s`); also reused by anime as `IOS_EASE`.
 - **`ease`** — backdrop fade (`.28s`).
+
+anime.js choreography (all calls go through the `AN()` guard, which returns
+nothing under reduced motion or if the library didn't load):
+
+| Moment                    | Effect                                          | Easing |
+| ------------------------- | ----------------------------------------------- | ------ |
+| List render               | Rows rise/fade, `stagger(40)`, first 20 only    | `IOS_EASE` |
+| #1 row badge              | Scale pop from .6                               | `easeOutElastic(1,.5)` |
+| Region change             | Prices roll in, `stagger(14)` (`render('prices')` animates only `.pr`) | `IOS_EASE` |
+| Sheet open — content      | Head + panels stagger in, `stagger(55)`         | `easeOutQuart` |
+| Sheet open — score        | Number tween 0 → value over 900 ms              | `easeOutExpo` |
+| Sheet open — bars         | Width with overshoot, `stagger(90)` (CSS width transition disabled first so they don't fight) | `easeOutElastic(1,.6)` |
+
+The sheet's own rise stays a CSS transition because the drag-to-dismiss
+gesture manipulates that transform directly.
 
 Interaction model for the sheet: the first few pixels of a drag decide the
 gesture for its whole duration — down always dismisses (past a ~90px
 threshold), up scrolls content. The header is always a dismiss target.
 
-**Accessibility:** every transition is disabled under
-`@media (prefers-reduced-motion: reduce)`. Any new motion must degrade the same
-way, and must not be required to understand a state change.
+**Accessibility:** CSS transitions are disabled under
+`@media (prefers-reduced-motion: reduce)`, and every anime.js call is skipped
+by the `AN()` guard in the same condition — elements are authored in their
+final state, so skipping the animation is always safe. Any new motion must
+degrade the same way, and must not be required to understand a state change.
 
 ---
 

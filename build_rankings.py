@@ -312,6 +312,7 @@ HTML_TEMPLATE = """<!doctype html>
   .main{min-width:0; display:block}
   .nm{display:block; font-size:15px; font-weight:590; letter-spacing:-.012em; line-height:1.25}
   .ch{display:block; font-size:12.5px; color:var(--muted); margin-top:2px}
+  .pr{display:inline-block}  /* transformable for the region price roll */
   .best{display:inline-block; font-size:10.5px; font-weight:600; letter-spacing:.02em;
     color:var(--blue); background:var(--blue-soft); border-radius:6px; padding:1px 6px; margin-top:5px}
   .sc{font-size:17px; font-weight:600; letter-spacing:-.01em}
@@ -414,8 +415,16 @@ HTML_TEMPLATE = """<!doctype html>
   <div class="sheet-scroll" id="sheetBody"></div>
 </div>
 
+<script src="anime.min.js"></script>
 <script>
 const DATA = __DATA__;
+
+/* Motion: anime.js drives staggering, springs, number tweens and the sheet
+   timeline. Everything degrades: under prefers-reduced-motion, or if
+   anime.min.js fails to load, elements simply appear in their final state. */
+const RM = matchMedia('(prefers-reduced-motion:reduce)').matches;
+const AN = () => (!RM && window.anime) ? window.anime : null;
+const IOS_EASE = 'cubicBezier(.32,.72,0,1)';
 const W_PPD = __WPPD__, W_PD = __WPD__;              // integer percents (e.g. 60, 40)
 const TOTAL = DATA.items.length;
 DATA.items.forEach((it, k) => it._id = k);
@@ -451,7 +460,7 @@ function regionLabel(r){
 REGIONS.list.forEach(r => regionSel.add(new Option(regionLabel(r), r.code)));
 const savedRegion = localStorage.getItem('pv_region');
 regionSel.value = (savedRegion && regionByCode[savedRegion]) ? savedRegion : REGIONS.default;
-regionSel.onchange = () => { localStorage.setItem('pv_region', regionSel.value); render(); };
+regionSel.onchange = () => { localStorage.setItem('pv_region', regionSel.value); render('prices'); };
 
 // Auto-detect once per visit via free keyless IP lookup (no permission
 // prompt). An explicit saved choice always wins; failures fall back silently.
@@ -459,7 +468,7 @@ if (!savedRegion) {
   fetch('https://ipwho.is/').then(r => r.json()).then(j => {
     if (j && j.success !== false && j.country_code === 'US') {
       const rc = stateRegion[j.region_code];
-      if (rc && rc !== regionSel.value) { regionSel.value = rc; render(); }
+      if (rc && rc !== regionSel.value) { regionSel.value = rc; render('prices'); }
     }
   }).catch(() => {});
 }
@@ -476,7 +485,7 @@ function ppdOf(i){
 
 const CHEV = '<svg class="chev" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg>';
 
-function render(){
+function render(mode){
   const slug = chainSel.value, term = q.value.trim().toLowerCase();
   const rows = DATA.items.filter(i =>
     (!slug || i.chain === slug) &&
@@ -492,7 +501,7 @@ function render(){
       <span class="rk">${pos}</span>
       <span class="main">
         <span class="nm">${esc(i.item)}</span>
-        <span class="ch">${esc(i.chain_name)} · ${i.protein_g}g · ${price}</span>
+        <span class="ch">${esc(i.chain_name)} · ${i.protein_g}g · <span class="pr">${price}</span></span>
         ${best}
       </span>
       <span class="sc${scored?'':' no'}">${scored ? i.value_score.toFixed(1) : '—'}</span>
@@ -501,6 +510,21 @@ function render(){
   }).join('');
   empty.hidden = rows.length > 0;
   list.hidden = rows.length === 0;
+
+  const anm = AN();
+  if (!anm) return;
+  if (mode === 'prices'){
+    // region change: only the prices changed, so only the prices move
+    anm({targets:'#list .pr', translateY:[9,0], opacity:[0,1],
+      delay:anm.stagger(14), duration:300, easing:IOS_EASE});
+    return;
+  }
+  // staggered entrance (first screenful only, so long lists stay snappy)
+  anm({targets:'#list .row:nth-child(-n+20)', translateY:[8,0], opacity:[0,1],
+    delay:anm.stagger(40), duration:420, easing:IOS_EASE});
+  const b = list.querySelector('.best');
+  if (b) anm({targets:b, scale:[.6,1], opacity:[0,1],
+    duration:700, delay:260, easing:'easeOutElastic(1, .5)'});
 }
 
 /* ---------------- detail sheet ---------------- */
@@ -591,7 +615,28 @@ function openSheet(id){
   requestAnimationFrame(() => {
     backdrop.classList.add('open'); sheet.classList.add('open');
     sheetBody.scrollTop = 0;
-    sheetBody.querySelectorAll('.bar i').forEach(b => { b.style.width = b.dataset.w + '%'; });
+    const bars = sheetBody.querySelectorAll('.bar i');
+    const anm = AN();
+    if (!anm){
+      bars.forEach(b => { b.style.width = b.dataset.w + '%'; });
+      return;
+    }
+    // open timeline: the sheet itself rises via its CSS transition (the drag
+    // gesture owns that transform); anime choreographs what happens inside it.
+    anm({targets:[...document.getElementById('sheetHead').children, ...sheetBody.children],
+      translateY:[10,0], opacity:[0,1],
+      delay:anm.stagger(55, {start:90}), duration:380, easing:'easeOutQuart'});
+    // score count-up
+    const sEl = sheet.querySelector('.sh-score');
+    if (sEl && i.value_score != null){
+      const o = {v: 0};
+      anm({targets:o, v:i.value_score, duration:900, easing:'easeOutExpo',
+        update:() => { sEl.textContent = o.v.toFixed(1); }});
+    }
+    // elastic breakdown bars (kill the CSS width transition so it can't fight)
+    bars.forEach(b => b.style.transition = 'none');
+    anm({targets:bars, width:b => b.dataset.w + '%',
+      duration:1100, delay:anm.stagger(90, {start:220}), easing:'easeOutElastic(1, .6)'});
   });
   document.getElementById('sheetClose').focus();
   document.body.style.overflow = 'hidden';

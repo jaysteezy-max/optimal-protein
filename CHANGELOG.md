@@ -8,6 +8,13 @@ week-to-week data updates.
 ## [Unreleased]
 
 ### Added
+- **Motion.** anime.js (v3.2.2, vendored into `docs/` to keep the page
+  offline-capable and CDN-free) now drives six animations: staggered list
+  entrance on load and filter changes, a "Best value" badge pop, a score
+  count-up when the detail sheet opens, elastic score-breakdown bars, a
+  choreographed sheet-open content sequence, and a price roll-in on region
+  change. All of it degrades gracefully — under `prefers-reduced-motion`, or if
+  the library fails to load, elements simply appear in their final state.
 - `design.md` — documents the app's Apple/Cupertino design system: color
   tokens, type scale, spacing, components, and motion.
 - `CHANGELOG.md` — this file.

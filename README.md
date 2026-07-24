@@ -38,6 +38,9 @@ pull_prices.py            validate / refresh the regional multipliers
 > overwritten on every build. The page markup, CSS, and JS live in
 > `HTML_TEMPLATE` inside `build_rankings.py`; edit there, then re-run. The
 > design tokens and conventions are documented in **[design.md](design.md)**.
+> Animations use [anime.js](https://animejs.com), vendored at
+> `docs/anime.min.js` (committed, not rebuilt) so the page works offline; they
+> switch off automatically under `prefers-reduced-motion`.
 
 ## 🔄 Updating
 

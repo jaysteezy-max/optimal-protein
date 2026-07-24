@@ -273,6 +273,20 @@ HTML_TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Protein Value — PNW</title>
+<meta name="description" content="The best protein-per-dollar fast-food orders across the Pacific Northwest. Only verified items are ranked.">
+<meta name="theme-color" content="#0071e3">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230071e3'/%3E%3Crect x='13' y='34' width='9' height='16' rx='2.5' fill='white'/%3E%3Crect x='27.5' y='25' width='9' height='25' rx='2.5' fill='white'/%3E%3Crect x='42' y='15' width='9' height='35' rx='2.5' fill='white'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Protein Value Tracker — Gains for Less">
+<meta property="og:description" content="The best protein-per-dollar fast-food orders across the PNW. Only verified items are ranked.">
+<meta property="og:url" content="https://jaysteezy-max.github.io/optimal-protein/">
+<meta property="og:image" content="https://jaysteezy-max.github.io/optimal-protein/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Protein Value Tracker — Gains for Less">
+<meta name="twitter:description" content="The best protein-per-dollar fast-food orders across the PNW. Only verified items are ranked.">
+<meta name="twitter:image" content="https://jaysteezy-max.github.io/optimal-protein/og.png">
 <style>
   :root{
     --bg:#f5f5f7; --card:#ffffff; --ink:#1d1d1f; --muted:#6e6e73; --muted2:#86868b;
@@ -368,6 +382,7 @@ HTML_TEMPLATE = """<!doctype html>
     max-height:90vh; display:flex; flex-direction:column; touch-action:none;
     transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1)}
   .sheet.open{transform:translateY(0)}
+  .sheet[hidden],.m-sheet[hidden]{display:none}  /* [hidden] must beat the flex above */
   .handle{width:38px; height:5px; border-radius:3px; background:var(--muted2); opacity:.4;
     margin:8px auto 2px; flex:none; cursor:grab; touch-action:none}
   .sheet-close{position:absolute; top:12px; right:14px; width:30px; height:30px; border:0;
@@ -383,6 +398,13 @@ HTML_TEMPLATE = """<!doctype html>
     color:var(--muted2)}
   .sh-name{font-size:24px; font-weight:600; letter-spacing:-.02em; line-height:1.1; margin-top:8px}
   .sh-ch{font-size:14px; color:var(--muted); margin-top:3px}
+  .sh-chlink{display:inline-flex; align-items:center; gap:7px; background:none; border:0;
+    font:inherit; font-size:14px; color:var(--muted); cursor:pointer; padding:2px 0;
+    -webkit-tap-highlight-color:transparent}
+  .sh-chsee{display:inline-flex; align-items:center; gap:3px; font-size:12px; font-weight:600;
+    color:var(--blue)}
+  .sh-chsee .chev{width:6px; height:10px; color:var(--blue); opacity:1}
+  .sh-chlink:focus-visible{outline:2px solid var(--blue); outline-offset:2px; border-radius:6px}
   .sh-hero{display:flex; align-items:baseline; gap:10px; margin-top:16px}
   .sh-score{font-size:52px; font-weight:300; letter-spacing:-.03em; line-height:1}
   .sh-scorelbl{font-size:12px; font-weight:500; letter-spacing:.04em; text-transform:uppercase;
@@ -420,8 +442,76 @@ HTML_TEMPLATE = """<!doctype html>
     background:var(--blue-soft); color:var(--ink); font-size:13.5px; line-height:1.45}
   .tip svg{flex:none; color:var(--blue); margin-top:1px}
   .sh-foot{font-size:11.5px; color:var(--muted2); margin-top:18px; line-height:1.5; text-align:center}
+  /* ---- toolbar: count + sort + actions ---- */
+  .listbar{display:flex; align-items:center; gap:10px; padding:14px 6px 8px}
+  .listbar .count{padding:0; flex:1; min-width:0}
+  .sortwrap{position:relative; flex:none}
+  #sort{font-size:12px; font-weight:590; color:var(--ink); background:transparent;
+    border:0; box-shadow:none; padding:4px 20px 4px 8px; width:auto; border-radius:8px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8' fill='none' stroke='%2386868b' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 6px center}
+  #sort:focus{outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 20%,transparent)}
+  .actions{display:flex; gap:8px; padding:0 6px 14px}
+  .act{flex:1; font:inherit; font-size:13px; font-weight:590; letter-spacing:-.01em;
+    color:var(--blue); background:var(--blue-soft); border:0; border-radius:11px;
+    padding:10px 12px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    gap:6px; -webkit-tap-highlight-color:transparent; transition:transform .12s ease}
+  .act:active{transform:scale(.97)}
+  .act:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+  .act svg{flex:none}
+  .act.on{background:var(--blue); color:#fff}
+  /* compare selection state on rows */
+  .row.cmp{cursor:pointer}
+  .row.picked{background:color-mix(in srgb,var(--blue) 9%,transparent)}
+  .row .tick{width:22px; height:22px; border-radius:50%; border:2px solid var(--muted2);
+    display:none; place-items:center; flex:none; color:#fff}
+  body.compare .row .chev{display:none}
+  body.compare .row .tick{display:grid}
+  body.compare .row.picked .tick{background:var(--blue); border-color:var(--blue)}
+  body.compare .row .tick svg{opacity:0}
+  body.compare .row.picked .tick svg{opacity:1}
+  .order-badge{display:inline-block; font-size:10.5px; font-weight:600; letter-spacing:.02em;
+    color:var(--good); background:color-mix(in srgb,var(--good) 15%,transparent);
+    border-radius:6px; padding:1px 6px; margin-top:5px}
+  /* ---- lightweight secondary modal (compare / budget) ---- */
+  .m-sheet{position:fixed; left:0; right:0; bottom:0; z-index:45; margin:0 auto; max-width:600px;
+    background:var(--bg); border-radius:22px 22px 0 0; box-shadow:0 -8px 40px rgba(0,0,0,.28);
+    max-height:92vh; display:flex; flex-direction:column;
+    transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1)}
+  .m-sheet.open{transform:translateY(0)}
+  .m-head{flex:none; display:flex; align-items:center; padding:18px 20px 12px; gap:12px}
+  .m-head h2{font-size:20px; font-weight:600; letter-spacing:-.02em; flex:1}
+  .m-body{flex:1; min-height:0; overflow-y:auto; padding:0 20px 30px; -webkit-overflow-scrolling:touch}
+  .cmp-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .cmp-col{background:var(--card); border:1px solid var(--hair); border-radius:14px; padding:14px}
+  .cmp-col h3{font-size:15px; font-weight:600; letter-spacing:-.01em; line-height:1.2}
+  .cmp-col .cc{font-size:12px; color:var(--muted); margin:2px 0 12px}
+  .cmp-metric{padding:8px 0; border-top:1px solid var(--hair)}
+  .cmp-metric .cm-l{font-size:11px; color:var(--muted2); font-weight:500}
+  .cmp-metric .cm-v{font-size:16px; font-weight:600; letter-spacing:-.01em}
+  .cmp-metric.win .cm-v{color:var(--good)}
+  .fld{margin-bottom:14px}
+  .fld label{display:block; font-size:12px; font-weight:600; letter-spacing:.02em;
+    text-transform:uppercase; color:var(--muted2); margin-bottom:7px}
+  .fld input,.fld select{width:100%; padding:11px 13px; border:1px solid var(--line);
+    border-radius:12px; background:var(--card); color:var(--ink); font-size:16px;
+    font-family:inherit; -webkit-appearance:none; appearance:none}
+  .fld input:focus,.fld select:focus{outline:none; border-color:var(--blue);
+    box-shadow:0 0 0 3.5px color-mix(in srgb,var(--blue) 22%,transparent)}
+  .b-result{margin-top:4px}
+  .b-pick{background:var(--card); border:1px solid var(--hair); border-radius:14px;
+    padding:15px; margin-bottom:10px; display:grid; grid-template-columns:1fr auto; gap:10px;
+    align-items:center}
+  .b-pick .bp-h{font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--blue); margin-bottom:5px}
+  .b-pick.combo .bp-h{color:var(--good)}
+  .b-pick .bp-n{font-size:15px; font-weight:590; letter-spacing:-.01em; line-height:1.25}
+  .b-pick .bp-c{font-size:12px; color:var(--muted); margin-top:3px}
+  .b-pick .bp-p{font-size:22px; font-weight:600; letter-spacing:-.02em; text-align:right}
+  .b-pick .bp-pl{font-size:10.5px; color:var(--muted2); text-align:right}
+  .b-empty{color:var(--muted); font-size:14px; text-align:center; padding:24px 0; line-height:1.5}
   @media (prefers-reduced-motion:reduce){
-    .sheet,.backdrop,.bar i{transition:none}
+    .sheet,.backdrop,.bar i,.m-sheet{transition:none}
   }
 </style>
 </head>
@@ -440,12 +530,40 @@ HTML_TEMPLATE = """<!doctype html>
   <input id="q" type="search" placeholder="Search items…" aria-label="Search items">
   <select id="region" aria-label="Pricing region"></select>
 </div>
-<div class="count" id="count"></div>
+<div class="listbar">
+  <div class="count" id="count"></div>
+  <div class="sortwrap">
+    <select id="sort" aria-label="Sort by">
+      <option value="score">Sort: Value score</option>
+      <option value="protein">Sort: Most protein</option>
+      <option value="ppd">Sort: Protein per $</option>
+      <option value="lean">Sort: Leanest</option>
+      <option value="price">Sort: Lowest price</option>
+    </select>
+  </div>
+</div>
+<div class="actions">
+  <button class="act" id="cmpBtn" aria-pressed="false">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 1v14M3 5l-2 3 2 3M13 5l2 3-2 3"/></svg>
+    Compare</button>
+  <button class="act" id="budgetBtn">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v14M11 4H6.5a2.5 2.5 0 000 5h3a2.5 2.5 0 010 5H4"/></svg>
+    Budget</button>
+</div>
 <div class="list" id="list"></div>
 <p class="empty" id="empty" hidden>No items match.</p>
 <footer>__FOOTER__</footer>
 
 <div class="backdrop" id="backdrop" hidden></div>
+<div class="m-sheet" id="mSheet" role="dialog" aria-modal="true" aria-labelledby="mTitle" hidden>
+  <div class="m-head">
+    <h2 id="mTitle"></h2>
+    <button class="sheet-close" id="mClose" aria-label="Close" style="position:static">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>
+    </button>
+  </div>
+  <div class="m-body" id="mBody"></div>
+</div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-name" hidden>
   <div class="sheet-grab" id="sheetGrab">
     <div class="handle" id="handle"></div>
@@ -476,6 +594,8 @@ const q = document.getElementById('q');
 const list = document.getElementById('list');
 const empty = document.getElementById('empty');
 const count = document.getElementById('count');
+const cmpSel = new Set();      // item ids chosen for compare
+let compareMode = false;
 
 [...new Map(DATA.items.map(i => [i.chain, i.chain_name])).entries()]
   .sort((a, b) => a[1].localeCompare(b[1]))
@@ -527,35 +647,62 @@ function ppdOf(i){
 
 const CHEV = '<svg class="chev" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg>';
 
+const TICK = '<span class="tick"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5l3.5 3.5L12 3.5"/></svg></span>';
+
+// sort keys: scored items always sort ahead of pending ones
+const SORTS = {
+  score:   {label:'ranked by value',   key:i => i.value_score,        dir:-1},
+  protein: {label:'most protein',      key:i => i.protein_g,          dir:-1},
+  ppd:     {label:'protein per dollar',key:i => ppdOf(i),             dir:-1},
+  lean:    {label:'leanest',           key:i => i.leanness_pct,       dir:-1},
+  price:   {label:'lowest price',      key:i => priceOf(i),           dir:+1},
+};
+const sortSel = document.getElementById('sort');
+
 function render(mode){
   const slug = chainSel.value, term = q.value.trim().toLowerCase();
+  const sort = SORTS[sortSel.value] || SORTS.score;
   const rows = DATA.items.filter(i =>
     (!slug || i.chain === slug) &&
     (!term || (i.item + ' ' + i.chain_name).toLowerCase().includes(term)));
+  // scored first, then the chosen metric; nulls sink to the bottom
+  rows.sort((a, b) => {
+    const sa = a.value_score != null, sb = b.value_score != null;
+    if (sa !== sb) return sa ? -1 : 1;
+    const ka = sort.key(a), kb = sort.key(b);
+    if (ka == null && kb == null) return 0;
+    if (ka == null) return 1;
+    if (kb == null) return -1;
+    return (ka - kb) * sort.dir;
+  });
   count.textContent = rows.length + (rows.length === 1 ? ' item' : ' items')
-    + (slug ? ' · ' + chainSel.options[chainSel.selectedIndex].text : ' · ranked by value');
+    + (slug ? ' · ' + chainSel.options[chainSel.selectedIndex].text : ' · ' + sort.label);
+  const byScore = sortSel.value === 'score';
   list.innerHTML = rows.map((i, idx) => {
     const scored = i.value_score != null;
-    const pos = scored ? (slug ? idx + 1 : i.rank) : '·';
+    const pos = scored ? (byScore && !slug ? i.rank : idx + 1) : '·';
     const price = money(priceOf(i)) || 'no price';
-    const best = idx === 0 && !slug && scored ? '<div class="best">Best value</div>' : '';
+    // top of an all-chains value sort = best value; top of a single-chain view = order this
+    const badge = idx === 0 && scored && byScore
+      ? (slug ? '<div class="order-badge">Order this</div>' : '<div class="best">Best value</div>')
+      : '';
     const pend = scored ? '' : `<div class="pend">${i.unranked_reason === 'no price' ? 'No price yet' : 'Awaiting verification'}</div>`;
-    return `<button class="row${idx===0&&scored?' top':''}" data-id="${i._id}">
+    return `<button class="row cmp${idx===0&&scored&&byScore&&!slug?' top':''}${cmpSel.has(i._id)?' picked':''}" data-id="${i._id}">
       <span class="rk">${pos}</span>
       <span class="main">
         <span class="nm">${esc(i.item)}</span>
         <span class="ch">${esc(i.chain_name)} · ${i.protein_g}g · <span class="pr">${price}</span></span>
-        ${best}${pend}
+        ${badge}${pend}
       </span>
       <span class="sc${scored?'':' no'}">${scored ? i.value_score.toFixed(1) : '—'}</span>
-      ${CHEV}
+      ${TICK}${CHEV}
     </button>`;
   }).join('');
   empty.hidden = rows.length > 0;
   list.hidden = rows.length === 0;
 
   const anm = AN();
-  if (!anm) return;
+  if (!anm || mode === 'quiet') return;   // 'quiet' = compare-selection toggle
   if (mode === 'prices'){
     // region change: only the prices changed, so only the prices move
     anm({targets:'#list .pr', translateY:[9,0], opacity:[0,1],
@@ -635,7 +782,8 @@ function sheetHTML(i){
     <div class="sh-rank">${scored ? `#${i.rank} of ${TOTAL} · top ${pctTop}%`
       : (i.unranked_reason === 'no price' ? 'Unranked · no price' : 'Unranked · awaiting verification')}</div>
     <div class="sh-name" id="sh-name">${esc(i.item)}</div>
-    <div class="sh-ch">${esc(i.chain_name)}</div>
+    <button class="sh-ch sh-chlink" data-chain="${esc(i.chain)}">${esc(i.chain_name)}
+      <span class="sh-chsee">See all ${CHEV}</span></button>
     <div class="sh-hero">
       <div class="sh-score">${scored ? i.value_score.toFixed(1) : '—'}</div>
       <div class="sh-scorelbl">value<br>score</div>
@@ -715,11 +863,147 @@ function closeSheet(){
 }
 
 list.addEventListener('click', e => {
-  const row = e.target.closest('.row'); if(row) openSheet(+row.dataset.id);
+  const row = e.target.closest('.row'); if(!row) return;
+  const id = +row.dataset.id;
+  if (compareMode){ toggleCompare(id, row); return; }
+  openSheet(id);
 });
-backdrop.addEventListener('click', closeSheet);
+backdrop.addEventListener('click', () => { if(!sheet.hidden) closeSheet(); if(!mSheet.hidden) closeModal(); });
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
-document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidden) closeSheet(); });
+// tapping the chain name in the sheet → filter the list to that chain (best-to-worst)
+document.getElementById('sheetHead').addEventListener('click', e => {
+  const link = e.target.closest('.sh-chlink'); if(!link) return;
+  chainSel.value = link.dataset.chain; sortSel.value = 'score';
+  closeSheet(); render(); window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'});
+});
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Escape') return;
+  if(!sheet.hidden) closeSheet(); else if(!mSheet.hidden) closeModal();
+});
+
+/* ---------------- secondary modal (compare / budget) ---------------- */
+const mSheet = document.getElementById('mSheet');
+const mBody = document.getElementById('mBody');
+const mTitle = document.getElementById('mTitle');
+function openModal(title, html){
+  lastFocus = document.activeElement;
+  mTitle.textContent = title;
+  mBody.innerHTML = html;
+  backdrop.hidden = false; mSheet.hidden = false;
+  requestAnimationFrame(() => { backdrop.classList.add('open'); mSheet.classList.add('open'); mBody.scrollTop = 0; });
+  document.getElementById('mClose').focus();
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){
+  backdrop.classList.remove('open'); mSheet.classList.remove('open');
+  document.body.style.overflow = '';
+  const done = () => { backdrop.hidden = true; mSheet.hidden = true; mSheet.removeEventListener('transitionend', done); };
+  mSheet.addEventListener('transitionend', done);
+  if (RM) done();
+  if (lastFocus) lastFocus.focus();
+}
+document.getElementById('mClose').addEventListener('click', closeModal);
+
+/* ---------------- compare mode ---------------- */
+const cmpBtn = document.getElementById('cmpBtn');
+function setCompareMode(on){
+  compareMode = on;
+  document.body.classList.toggle('compare', on);
+  cmpBtn.classList.toggle('on', on);
+  cmpBtn.setAttribute('aria-pressed', on);
+  cmpBtn.lastChild.textContent = on ? ' Cancel' : ' Compare';
+  if (!on){ cmpSel.clear(); render(); }
+}
+function toggleCompare(id, row){
+  if (cmpSel.has(id)) cmpSel.delete(id);
+  else { if (cmpSel.size >= 2){ const first = cmpSel.values().next().value; cmpSel.delete(first); } cmpSel.add(id); }
+  render('quiet');
+  if (cmpSel.size === 2) showCompare();
+}
+cmpBtn.addEventListener('click', () => setCompareMode(!compareMode));
+
+function cmpRow(label, a, b, fmt, better){
+  const va = a, vb = b;
+  const winA = better != null && va != null && vb != null && (better > 0 ? va > vb : va < vb) && va !== vb;
+  const winB = better != null && va != null && vb != null && (better > 0 ? vb > va : vb < va) && va !== vb;
+  return {label, a:fmt(va), b:fmt(vb), winA, winB};
+}
+function showCompare(){
+  const [x, y] = [...cmpSel].map(id => DATA.items[id]);
+  const px = priceOf(x), py = priceOf(y);
+  const metrics = [
+    cmpRow('Value score', x.value_score, y.value_score, v => v==null?'—':v.toFixed(1), +1),
+    cmpRow('Protein', x.protein_g, y.protein_g, v => v+' g', +1),
+    cmpRow('Price', px, py, v => v==null?'—':money(v), -1),
+    cmpRow('Protein / $', ppdOf(x), ppdOf(y), v => v==null?'—':v.toFixed(1), +1),
+    cmpRow('Calories', x.calories, y.calories, v => ''+v, -1),
+    cmpRow('Cals from protein', x.leanness_pct, y.leanness_pct, v => v+'%', +1),
+    cmpRow('Sat fat', x.sat_fat_g, y.sat_fat_g, v => v==null?'—':v+' g', -1),
+  ];
+  const col = (it, side) => `
+    <div class="cmp-col">
+      <h3>${esc(it.item)}</h3><div class="cc">${esc(it.chain_name)}</div>
+      ${metrics.map(m => `<div class="cmp-metric${m['win'+side]?' win':''}">
+        <div class="cm-l">${m.label}</div><div class="cm-v">${m[side==='A'?'a':'b']}</div></div>`).join('')}
+    </div>`;
+  openModal('Compare', `<div class="cmp-grid">${col(x,'A')}${col(y,'B')}</div>
+    <p class="b-empty" style="padding-top:16px">Green marks the better value on each row. Prices shown for ${esc(regionByCode[regionSel.value].name)}.</p>`);
+}
+
+/* ---------------- budget mode ---------------- */
+const budgetBtn = document.getElementById('budgetBtn');
+budgetBtn.addEventListener('click', showBudget);
+function showBudget(){
+  const chainOpts = [...new Map(DATA.items.map(i => [i.chain, i.chain_name])).entries()]
+    .sort((a,b) => a[1].localeCompare(b[1]))
+    .map(([s,n]) => `<option value="${s}">${esc(n)}</option>`).join('');
+  openModal('Budget', `
+    <div class="fld"><label for="bAmt">Budget</label>
+      <input id="bAmt" type="number" inputmode="decimal" min="1" step="0.50" value="10" placeholder="10.00"></div>
+    <div class="fld"><label for="bChain">Chain (optional)</label>
+      <select id="bChain"><option value="">Any chain</option>${chainOpts}</select></div>
+    <div class="b-result" id="bResult"></div>`);
+  const amt = document.getElementById('bAmt'), ch = document.getElementById('bChain'), res = document.getElementById('bResult');
+  const run = () => { res.innerHTML = budgetSolve(parseFloat(amt.value), ch.value); };
+  amt.addEventListener('input', run); ch.addEventListener('change', run); run();
+}
+// pick the single item, and the best 1–3 item combo, that maximize protein within budget
+function budgetSolve(budget, chainSlug){
+  if (!(budget > 0)) return '<p class="b-empty">Enter a budget to see the most protein you can get.</p>';
+  const pool = DATA.items.filter(i => (!chainSlug || i.chain === chainSlug) && priceOf(i) != null && priceOf(i) <= budget);
+  if (!pool.length) return `<p class="b-empty">Nothing on the menu fits ${money(budget)}${chainSlug?' at that chain':''}. Try a bigger budget.</p>`;
+  const single = pool.slice().sort((a,b) => b.protein_g - a.protein_g)[0];
+  // greedy combo: repeatedly add the highest-protein item that still fits (same chain if one is set)
+  let best = null;
+  const comber = (startChain) => {
+    const items = DATA.items.filter(i => i.chain === startChain && priceOf(i) != null);
+    let spent = 0, prot = 0, picks = [];
+    const avail = items.slice().sort((a,b) => (b.protein_g/priceOf(b)) - (a.protein_g/priceOf(a)));
+    for (let n=0; n<3; n++){
+      const nxt = avail.find(i => spent + priceOf(i) <= budget);
+      if (!nxt) break;
+      picks.push(nxt); spent += priceOf(nxt); prot += nxt.protein_g;
+      avail.splice(avail.indexOf(nxt), 1);
+    }
+    return picks.length ? {picks, spent, prot} : null;
+  };
+  const chains = chainSlug ? [chainSlug] : [...new Set(pool.map(i => i.chain))];
+  for (const c of chains){ const r = comber(c); if (r && (!best || r.prot > best.prot)) best = r; }
+
+  const singleCard = `<div class="b-pick"><div><div class="bp-h">Best single item</div>
+      <div class="bp-n">${esc(single.item)}</div>
+      <div class="bp-c">${esc(single.chain_name)} · ${money(priceOf(single))}</div></div>
+      <div><div class="bp-p">${single.protein_g} g</div><div class="bp-pl">protein</div></div></div>`;
+  let comboCard = '';
+  if (best && best.picks.length > 1 && best.prot > single.protein_g){
+    const names = best.picks.map(p => esc(p.item)).join(' + ');
+    comboCard = `<div class="b-pick combo"><div><div class="bp-h">Most protein · ${best.picks.length} items, one chain</div>
+      <div class="bp-n">${names}</div>
+      <div class="bp-c">${esc(best.picks[0].chain_name)} · ${money(best.spent)}</div></div>
+      <div><div class="bp-p">${best.prot} g</div><div class="bp-pl">protein</div></div></div>`;
+  }
+  return singleCard + comboCard;
+}
 
 /* Swipe gesture for the sheet. The initial direction of a swipe decides the
    whole gesture: swiping DOWN always drags the sheet down to dismiss (it never
@@ -731,7 +1015,8 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidd
   let y0 = null, scroll0 = 0, mode = null, dy = 0, headerGrab = false;
 
   function onDown(e){
-    if (e.target.closest('#sheetClose')) return;
+    // let real controls receive their click (pointer capture would steal it)
+    if (e.target.closest('#sheetClose') || e.target.closest('.sh-chlink')) return;
     y0 = e.clientY; scroll0 = sheetBody.scrollTop; mode = null; dy = 0;
     headerGrab = !!e.target.closest('#sheetGrab');
     sheet.setPointerCapture(e.pointerId);
@@ -766,8 +1051,9 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheet.hidd
   sheet.addEventListener('pointercancel', onUp);
 })();
 
-chainSel.onchange = render;
-q.oninput = render;
+chainSel.onchange = () => render();
+q.oninput = () => render();
+sortSel.onchange = () => render();
 render();
 </script>
 </body>

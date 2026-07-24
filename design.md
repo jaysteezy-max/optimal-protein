@@ -46,7 +46,8 @@ toggle.
 | `--hair`       | `#ebebf0` | `#2c2c2e` | Hairline dividers between rows/panels         |
 | `--blue`       | `#0071e3` | `#0a84ff` | Accent: rank #1, links, focus, primary bar   |
 | `--blue-soft`  | `#e8f1fd` | `#0a2540` | Accent fill: badges, pills, tips             |
-| `--good`       | `#1a8f4c` | `#30d158` | Positive/secondary bar (protein density)     |
+| `--good`       | `#1a8f4c` | `#30d158` | Positive bar (leanness); compare "win" marks |
+| `--warn`       | `#c93400` | `#ff9f0a` | Saturated-fat penalty bar (third score term) |
 
 **Usage rules**
 

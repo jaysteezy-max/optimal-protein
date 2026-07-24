@@ -2,38 +2,24 @@
 
 Durable roadmap for this repo, so it's visible across Claude Code sessions and
 on GitHub (the in-session task list is ephemeral — it does not persist here).
-Last updated 2026-07-24.
+Last updated 2026-07-24 (Score v2 + app features shipped).
 
 ## 🔜 Open
 
-### Score v2 — leanness + saturated-fat penalty, web-verified only
-**Status:** not started · **Blocked on:** data verification
+### Finish nutrition verification — remaining seeded rows
+**Status:** in progress · ~61 rows still `seeded — verify`
 
-Rework the Value Score from two terms to three:
+Score v2's hard rule scores only web-verified rows, so the board grows as these
+are verified. For each seeded row, web-verify protein / calories / price **and**
+the new `sat_fat_g`, then change its `source` to `web-verified <date>`. Work
+chain by chain. The 19 ranking-driving picks are already done.
 
-| Term | Source | Notes |
-|------|--------|-------|
-| Protein per dollar | existing | value (keep) |
-| **Leanness** = % calories from protein | `protein_g × 4 / calories` | derivable today, no new data |
-| **Saturated-fat penalty** = sat fat per g protein | **new `sat_fat_g` column** | must be web-verified |
+### New chains
+**Status:** not started
 
-**Hard rule (locked):** only `web-verified` rows may feed the score. Seeded
-(`seeded — verify`) rows are excluded from ranking until verified — no seeded
-data in the numbers, full stop.
-
-**Why it's blocked:** ~60 of 80 rows are still `seeded — verify`. Turning on the
-hard rule today would shrink the scored board to ~20 items (the per-chain best
-picks already cross-checked). The board grows back as verification proceeds.
-
-**Sub-steps:**
-1. Add a `sat_fat_g` column to `data/items.csv`.
-2. Web-verify saturated fat + existing protein/calorie/price for each row
-   (chain by chain); mark rows `web-verified`.
-3. Decide the three weights in `config/scoring.yaml` (must sum to 1.0).
-4. Update `compute()` in `build_rankings.py`: add leanness + sat-fat terms,
-   exclude non-`web-verified` rows from scoring.
-5. Update the detail-sheet score breakdown to show three terms + the equation.
-6. Regenerate outputs, commit.
+Candidates: Panera, Firehouse Subs, El Pollo Loco, Shake Shack, Costco food
+court, Dutch Bros. Each needs a `config/chains.yaml` entry plus web-verified
+items (with `sat_fat_g`) to enter the scored board under the v2 hard rule.
 
 ### Regional pricing v2 — per-item scraping (maybe never)
 **Status:** deferred
@@ -45,6 +31,16 @@ coarse. Possible companion: a per-chain `offers_url` link in the detail sheet.
 
 ## ✅ Decided / done (for context)
 
+- **Score v2 shipped.** Three-term score (50% protein-per-dollar / 30% leanness
+  / 20% low-sat-fat), verified-only hard rule enforced in `compute()`, new
+  `sat_fat_g` column, three-bar sheet breakdown, unranked "awaiting
+  verification" state. 19 ranked / 61 pending at ship.
+- **App features shipped:** sort options (score/protein/$/lean/price), compare
+  mode (two items side by side), budget mode (max protein for $X, optional
+  chain), chain view ("Order this" + "see all from chain"), OG/Twitter cards +
+  `docs/og.png` + SVG favicon.
+- **anime.js motion** (vendored, reduced-motion-safe): list stagger, score
+  count-up, elastic bars, badge pop, sheet-open timeline, price roll.
 - **Concept 07 "The Apple"** chosen from the 7-concept gallery and shipped as
   the production page.
 - **Item detail sheet** with transparent score breakdown, nutrition, cost-to-100g

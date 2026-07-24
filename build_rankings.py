@@ -38,7 +38,17 @@ def load_config():
     total = sum(weights.values())
     if abs(total - 1.0) > 1e-9:
         sys.exit(f"scoring.yaml weights must sum to 1.0 (got {total})")
-    return scoring, chains
+    regions_cfg = yaml.safe_load((ROOT / "config/regions.yaml").read_text())
+    codes = [r["code"] for r in regions_cfg["regions"]]
+    if len(codes) != len(set(codes)):
+        sys.exit("regions.yaml: duplicate region codes")
+    if regions_cfg["default_region"] not in codes:
+        sys.exit("regions.yaml: default_region not in regions")
+    for r in regions_cfg["regions"]:
+        if not (0.8 <= r["multiplier"] <= 1.3):
+            sys.exit(f"regions.yaml: multiplier for {r['code']} out of sane "
+                     f"range 0.8–1.3 ({r['multiplier']})")
+    return scoring, chains, regions_cfg
 
 
 def read_csv_rows(path: Path):
@@ -92,12 +102,15 @@ def compute(scoring, chains, items, overrides):
         if key in overrides:
             price = overrides[key]["price"]
             price_kind = f"verified {overrides[key]['as_of']}".strip()
+            price_national, price_fixed = None, True
         elif it["national_price_usd"] is not None:
             price = round(it["national_price_usd"] * uplift, 2)
             price_kind = "national +uplift"
+            price_national, price_fixed = it["national_price_usd"], False
         else:
             price = None
             price_kind = "no price"
+            price_national, price_fixed = None, False
         rows.append({
             "chain": it["chain"],
             "chain_name": chains[it["chain"]]["name"],
@@ -106,6 +119,8 @@ def compute(scoring, chains, items, overrides):
             "calories": it["calories"],
             "price": price,
             "price_kind": price_kind,
+            "price_national": price_national,
+            "price_fixed": price_fixed,
             "notes": (it.get("notes") or "").strip(),
             "protein_per_dollar": round(it["protein_g"] / price, 2) if price else None,
             "protein_per_100cal": round(it["protein_g"] / (it["calories"] / 100.0), 2),
@@ -151,15 +166,22 @@ def fmt_price(r):
     return f"${r['price']:.2f}" if r["price"] is not None else "—"
 
 
-def write_json(scoring, rows, path):
+def write_json(scoring, regions_cfg, rows, path):
     payload = {
         "generated": date.today().isoformat(),
         "methodology": {
             "weights": scoring["weights"],
             "protein_threshold_g": scoring["protein_threshold_g"],
             "pnw_uplift_pct": scoring["pnw_uplift_pct"],
-            "caveat": ("Prices are national averages + PNW uplift, not "
-                       "till-verified. Sales tax excluded. App deals excluded."),
+            "caveat": ("Prices are national averages + regional uplift, not "
+                       "till-verified. Sales tax excluded. App deals excluded. "
+                       "Rankings are region-invariant; only displayed prices "
+                       "scale by region."),
+        },
+        "regions": {
+            "default": regions_cfg["default_region"],
+            "list": regions_cfg["regions"],
+            "provenance": regions_cfg.get("provenance", "").strip(),
         },
         "items": rows,
     }
@@ -268,6 +290,8 @@ HTML_TEMPLATE = """<!doctype html>
   }
   select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2386868b' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
     background-repeat:no-repeat; background-position:right 12px center; padding-right:32px}
+  #region{grid-column:1/-1; padding-top:8px; padding-bottom:8px; font-size:13.5px;
+    color:var(--muted); font-weight:500}
   input:focus,select:focus{outline:none; border-color:var(--blue);
     box-shadow:0 0 0 3.5px color-mix(in srgb,var(--blue) 22%,transparent)}
   .count{color:var(--muted2); font-size:12px; font-weight:500; padding:14px 6px 8px;
@@ -365,14 +389,16 @@ HTML_TEMPLATE = """<!doctype html>
   <h1>Gains for Less</h1>
   <div class="sub">Ranked by protein, not hype</div>
   <div class="meta">__SUBTITLE__</div>
-  <div class="caveat">Prices are national averages + __UPLIFT__% PNW uplift &mdash;
-  <b>not till-verified</b>. Sales tax and app deals excluded. Value Score =
-  __WPPD__% protein-per-dollar + __WPD__% density, each normalized to the best item = 100.
-  Tap any item for the full breakdown.</div>
+  <div class="caveat">Prices are national averages scaled to your region
+  (auto-detected, or pick below) &mdash; <b>not till-verified</b>. Sales tax and
+  app deals excluded. Value Score = __WPPD__% protein-per-dollar + __WPD__%
+  density, each normalized to the best item = 100. Rankings don&rsquo;t change by
+  region &mdash; only prices do. Tap any item for the full breakdown.</div>
 </header>
 <div class="controls">
   <select id="chain" aria-label="Filter by chain"><option value="">All chains</option></select>
   <input id="q" type="search" placeholder="Search items…" aria-label="Search items">
+  <select id="region" aria-label="Pricing region"></select>
 </div>
 <div class="count" id="count"></div>
 <div class="list" id="list"></div>
@@ -410,6 +436,47 @@ const count = document.getElementById('count');
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 const money = n => n == null ? null : '$' + n.toFixed(2);
 
+/* ---------------- regional pricing ----------------
+   A region multiplier scales displayed prices only. Rankings and Value
+   Scores are region-invariant: the multiplier is uniform, so it cancels
+   out of the normalization. */
+const REGIONS = __REGIONS__;
+const regionSel = document.getElementById('region');
+const regionByCode = Object.fromEntries(REGIONS.list.map(r => [r.code, r]));
+const stateRegion = {};
+REGIONS.list.forEach(r => r.states.forEach(st => stateRegion[st] = r.code));
+
+function regionLabel(r){
+  const pct = Math.round((r.multiplier - 1) * 100);
+  const tag = pct === 0 ? 'national avg' : (pct > 0 ? '+' + pct + '%' : pct + '%');
+  return 'Prices: ' + r.name + ' · ' + tag;
+}
+REGIONS.list.forEach(r => regionSel.add(new Option(regionLabel(r), r.code)));
+const savedRegion = localStorage.getItem('pv_region');
+regionSel.value = (savedRegion && regionByCode[savedRegion]) ? savedRegion : REGIONS.default;
+regionSel.onchange = () => { localStorage.setItem('pv_region', regionSel.value); render(); };
+
+// Auto-detect once per visit via free keyless IP lookup (no permission
+// prompt). An explicit saved choice always wins; failures fall back silently.
+if (!savedRegion) {
+  fetch('https://ipwho.is/').then(r => r.json()).then(j => {
+    if (j && j.success !== false && j.country_code === 'US') {
+      const rc = stateRegion[j.region_code];
+      if (rc && rc !== regionSel.value) { regionSel.value = rc; render(); }
+    }
+  }).catch(() => {});
+}
+
+function regionMult(){ return regionByCode[regionSel.value].multiplier; }
+function priceOf(i){
+  if (i.price_fixed || i.price_national == null) return i.price;
+  return Math.round(i.price_national * regionMult() * 100) / 100;
+}
+function ppdOf(i){
+  const p = priceOf(i);
+  return p ? Math.round((i.protein_g / p) * 100) / 100 : null;
+}
+
 const CHEV = '<svg class="chev" viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l6 6-6 6"/></svg>';
 
 function render(){
@@ -422,7 +489,7 @@ function render(){
   list.innerHTML = rows.map((i, idx) => {
     const scored = i.value_score != null;
     const pos = scored ? (slug ? idx + 1 : i.rank) : '·';
-    const price = money(i.price) || 'no price';
+    const price = money(priceOf(i)) || 'no price';
     const best = idx === 0 && !slug && scored ? '<div class="best">Best value</div>' : '';
     return `<button class="row${idx===0&&scored?' top':''}" data-id="${i._id}">
       <span class="rk">${pos}</span>
@@ -447,12 +514,13 @@ let lastFocus = null;
 
 function sheetHTML(i){
   const scored = i.value_score != null;
-  const price = money(i.price);
+  const rPrice = priceOf(i);
+  const price = money(rPrice);
   const ppdN = i.ppd_norm, densN = i.density_norm;
   const fP = (W_PPD/100), fD = (W_PD/100);
-  const cost100 = (i.price!=null) ? (100/i.protein_g)*i.price : null;
+  const cost100 = (rPrice!=null) ? (100/i.protein_g)*rPrice : null;
   const mult100 = (100/i.protein_g);
-  const per25 = (i.price!=null) ? (25/i.protein_g)*i.price : null;
+  const per25 = (rPrice!=null) ? (25/i.protein_g)*rPrice : null;
   const pctTop = scored ? Math.max(1, Math.round(i.rank/TOTAL*100)) : null;
 
   const breakdown = scored ? `
@@ -471,7 +539,7 @@ function sheetHTML(i){
       <div class="eq">${fP.toFixed(1)} × ${ppdN.toFixed(1)} &nbsp;+&nbsp; ${fD.toFixed(1)} × ${densN.toFixed(1)} &nbsp;=&nbsp; <b>${i.value_score.toFixed(1)}</b></div>
     </div>` : '';
 
-  const derived = (i.price!=null) ? `
+  const derived = (rPrice!=null) ? `
     <div class="derived">
       <div class="dcard"><div class="dv">${money(cost100)}</div>
         <div class="dl">to reach <b>100 g protein</b> (≈ ${mult100.toFixed(1)}×)</div></div>
@@ -502,14 +570,14 @@ function sheetHTML(i){
         <div class="spec"><b>${i.protein_g} g</b><span>Protein</span></div>
         <div class="spec"><b>${i.calories}</b><span>Calories</span></div>
         <div class="spec"><b>${price || '—'}</b><span>Price</span></div>
-        <div class="spec"><b>${i.protein_per_dollar ?? '—'}</b><span>g / dollar</span></div>
+        <div class="spec"><b>${ppdOf(i) ?? '—'}</b><span>g / dollar</span></div>
         <div class="spec"><b>${i.protein_per_100cal}</b><span>g / 100 cal</span></div>
         <div class="spec"><b>${Math.round(i.calories / (i.protein_g||1))}</b><span>cal / g protein</span></div>
       </div>
     </div>
     ${derived}
     ${tip}
-    <div class="sh-foot">Price: ${esc(i.price_kind || 'n/a')} — not till-verified. Confirm in store.</div>`;
+    <div class="sh-foot">Price: ${esc(i.price_kind || 'n/a')}${i.price_fixed ? '' : ' · shown for ' + esc(regionByCode[regionSel.value].name)} — not till-verified. Confirm in store.</div>`;
   return { head, body };
 }
 
@@ -598,7 +666,7 @@ render();
 """
 
 
-def write_html(scoring, rows, path):
+def write_html(scoring, regions_cfg, rows, path):
     today = date.today().isoformat()
     n_chains = len({r["chain"] for r in rows})
     n_ranked = sum(1 for r in rows if r["rank"])
@@ -607,27 +675,34 @@ def write_html(scoring, rows, path):
                 f"across {n_chains} chains · updated {today}")
     footer = (f"Top pick: {top['chain_name']} — {top['item']} "
               f"(score {top['value_score']}). Generated {today} from data/items.csv.")
+    regions_payload = {
+        "default": regions_cfg["default_region"],
+        "list": [{"code": r["code"], "name": r["name"],
+                  "multiplier": r["multiplier"], "states": r["states"]}
+                 for r in regions_cfg["regions"]],
+    }
     html = (HTML_TEMPLATE
             .replace("__SUBTITLE__", subtitle)
             .replace("__FOOTER__", footer)
             .replace("__UPLIFT__", str(scoring["pnw_uplift_pct"]))
             .replace("__WPPD__", str(int(scoring["weights"]["protein_per_dollar"] * 100)))
             .replace("__WPD__", str(int(scoring["weights"]["protein_density"] * 100)))
+            .replace("__REGIONS__", json.dumps(regions_payload, separators=(",", ":")))
             .replace("__DATA__", json.dumps({"items": rows}, separators=(",", ":"))))
     path.write_text(html)
 
 
 def main():
-    scoring, chains = load_config()
+    scoring, chains, regions_cfg = load_config()
     items = load_items(chains)
     overrides = load_manual_prices()
     rows = compute(scoring, chains, items, overrides)
     best = best_per_chain(rows)
 
     (ROOT / "docs").mkdir(exist_ok=True)
-    write_json(scoring, rows, ROOT / "docs/data.json")
+    write_json(scoring, regions_cfg, rows, ROOT / "docs/data.json")
     write_markdown(scoring, rows, best, ROOT / "RANKINGS.md")
-    write_html(scoring, rows, ROOT / "docs/index.html")
+    write_html(scoring, regions_cfg, rows, ROOT / "docs/index.html")
 
     print(f"ranked {sum(1 for r in rows if r['rank'])} items "
           f"({len(rows)} total) across {len({r['chain'] for r in rows})} chains")

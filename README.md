@@ -24,10 +24,12 @@ commit:
 ```
 config/scoring.yaml       weights, 25 g protein threshold, PNW price uplift
 config/chains.yaml        the chains and their nutrition sources
+config/regions.yaml       regional price multipliers (BEA-seeded estimates)
 data/items.csv            one row per qualifying item (the main data file)
 data/manual_prices.csv    optional price overrides you confirm yourself
 build_rankings.py         data + config → HTML / JSON / Markdown
 pull_nutrition.py         refresh nutrition, diff menus, update items.csv
+pull_prices.py            validate / refresh the regional multipliers
 ```
 
 ## 🔄 Updating
@@ -40,10 +42,22 @@ git commit -am "update" && git push
 
 Requires Python 3.10+ and PyYAML (`pip install pyyaml`).
 
+## 🤖 Automation
+
+A GitHub Actions workflow ([refresh-data.yml](.github/workflows/refresh-data.yml))
+runs the whole pipeline weekly and commits the result — Pages redeploys
+automatically. It never invents data: when a fetcher fails or a new menu item
+lacks a verified price, it opens a `data-refresh` issue instead. Free on
+public repos. Optional: add a free `BEA_API_KEY` secret to refresh the
+regional multipliers from BEA Regional Price Parities.
+
 ## 💵 Prices & accuracy
 
-Prices are **national averages + 10% PNW uplift** — _not_ till-verified, so
-confirm in store. Sales tax and app deals are excluded. To correct one, edit
+Prices are **national averages scaled by a regional multiplier** — _not_
+till-verified, so confirm in store. The page auto-detects your US region (free
+IP lookup, no permission prompt; pick manually anytime — the choice sticks in
+your browser). Rankings don't change by region: a uniform multiplier cancels
+out of the score normalization, so only displayed prices move. Sales tax and app deals are excluded. To correct one, edit
 `national_price_usd` in `data/items.csv`, or add a row to
 `data/manual_prices.csv` (used as-is, no uplift). Each chain's best pick was
 cross-checked against several nutrition databases and marked `web-verified`;

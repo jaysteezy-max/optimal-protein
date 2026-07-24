@@ -1,0 +1,119 @@
+# Weekly automated data refresh.
+#
+# Runs the same pipeline a human would: pull nutrition, validate/refresh
+# regional price multipliers, rebuild outputs, commit. GitHub Pages redeploys
+# automatically on push to main.
+#
+# Human-in-the-loop rule: the bot never invents or promotes data. When
+# something needs judgment — a fetcher failed, a new menu item has no verified
+# price — it opens (or updates) a GitHub issue instead of guessing.
+#
+# Cost: none. Actions minutes are free for public repositories.
+#
+# Optional: add a BEA_API_KEY repo secret (free key from apps.bea.gov/api) to
+# let pull_prices.py refresh the regional multipliers from source data;
+# without it the step just validates the config.
+
+name: Refresh data
+
+on:
+  schedule:
+    - cron: "17 14 * * 1"   # Mondays 14:17 UTC (~7:17am Pacific)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Pull nutrition data
+        id: nutrition
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python3 pull_nutrition.py 2>&1 | tee nutrition.log
+
+      - name: Validate / refresh regional price multipliers
+        id: prices
+        continue-on-error: true
+        env:
+          BEA_API_KEY: ${{ secrets.BEA_API_KEY }}
+        run: |
+          set -o pipefail
+          python3 pull_prices.py --refresh 2>&1 | tee prices.log
+
+      - name: Rebuild rankings
+        run: python3 build_rankings.py
+
+      - name: Check for items needing a human (no verified price)
+        id: flags
+        run: |
+          python3 - <<'PY' | tee flags.log
+          import csv, os
+          rows = list(csv.DictReader(open("data/items.csv")))
+          missing = [r for r in rows
+                     if float(r["protein_g"] or 0) >= 25
+                     and not (r.get("national_price_usd") or "").strip()]
+          for r in missing:
+              print(f"UNPRICED: {r['chain']} — {r['item']}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"attention={'true' if missing else 'false'}\n")
+          PY
+
+      - name: Commit and push refreshed data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A ':!*.log'
+            git commit -m "chore: automated weekly data refresh"
+            git push
+          else
+            echo "no changes"
+          fi
+
+      - name: Open issue if a human is needed
+        if: >
+          steps.nutrition.outcome == 'failure' ||
+          steps.prices.outcome == 'failure' ||
+          steps.flags.outputs.attention == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const read = f => { try { return fs.readFileSync(f, 'utf8').trim(); } catch { return '(no log)'; } };
+            const sections = [];
+            if ('${{ steps.nutrition.outcome }}' === 'failure')
+              sections.push('### Nutrition pull failed\n```\n' + read('nutrition.log').slice(-3000) + '\n```');
+            if ('${{ steps.prices.outcome }}' === 'failure')
+              sections.push('### Price multiplier validation/refresh failed\n```\n' + read('prices.log').slice(-3000) + '\n```');
+            if ('${{ steps.flags.outputs.attention }}' === 'true')
+              sections.push('### Items missing a verified price (excluded from scoring until filled)\n```\n' + read('flags.log').slice(-3000) + '\n```');
+            const title = 'Data refresh needs attention';
+            const body = 'The weekly refresh ran, but part of it needs a human. ' +
+              'The bot never fills in unverified data.\n\n' + sections.join('\n\n') +
+              '\n\n_Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}_';
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'data-refresh' });
+            if (open.data.length) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: open.data[0].number, body });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels: ['data-refresh'] });
+            }

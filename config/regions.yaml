@@ -1,0 +1,55 @@
+# Regional price multipliers, applied CLIENT-SIDE to national-average prices.
+#
+# The page detects the visitor's US state (free keyless IP lookup, no prompt),
+# maps it to one of these regions, and scales displayed prices by the
+# multiplier. Rankings and Value Scores do NOT change by region: a uniform
+# multiplier cancels out of the normalization, so only displayed prices,
+# g-per-dollar, and cost-to-target figures move.
+#
+# Multipliers are seeded from BEA Regional Price Parities (food services,
+# all-items RPP as a proxy), coarsened to broad regions. They are estimates,
+# not store prices. pull_prices.py sanity-checks this file and is the hook
+# for refreshing the values from source data.
+#
+# default_region is used when detection fails or the visitor is outside the US.
+
+default_region: pnw
+
+regions:
+  - code: pnw
+    name: Pacific Northwest
+    multiplier: 1.10
+    states: [WA, OR, ID]
+  - code: west
+    name: California & Nevada
+    multiplier: 1.12
+    states: [CA, NV]
+  - code: mountain
+    name: Mountain West
+    multiplier: 1.02
+    states: [CO, UT, AZ, NM, MT, WY]
+  - code: midwest
+    name: Midwest
+    multiplier: 0.96
+    states: [IL, OH, MI, MN, WI, IN, IA, MO, KS, NE, ND, SD]
+  - code: south
+    name: South
+    multiplier: 0.95
+    states: [TX, OK, AR, LA, MS, AL, TN, KY, GA, FL, SC, NC, VA, WV]
+  - code: northeast
+    name: Northeast
+    multiplier: 1.08
+    states: [NY, NJ, MA, CT, RI, NH, VT, ME, PA, MD, DE, DC]
+  - code: ak-hi
+    name: Alaska & Hawaii
+    multiplier: 1.12
+    states: [AK, HI]
+  - code: national
+    name: National average
+    multiplier: 1.00
+    states: []
+
+provenance: >
+  Seeded 2026-07-24 from BEA Regional Price Parities (food services) as coarse
+  regional estimates. Refresh via pull_prices.py; values are approximations,
+  not store-verified prices.

@@ -151,7 +151,7 @@ nothing under reduced motion or if the library didn't load):
 | Region change             | Prices roll in, `stagger(14)` (`render('prices')` animates only `.pr`) | `IOS_EASE` |
 | Sheet open — content      | Head + panels stagger in, `stagger(55)`         | `easeOutQuart` |
 | Sheet open — score        | Number tween 0 → value over 900 ms              | `easeOutExpo` |
-| Sheet open — bars         | Width with overshoot, `stagger(90)` (CSS width transition disabled first so they don't fight) | `easeOutElastic(1,.6)` |
+| Sheet open — bars         | Left-to-right fill, one 5% overshoot, settle on the score; `stagger(90)` (CSS width transition disabled first so they don't fight) | `easeOutQuart` → `easeOutSine` |
 
 The sheet's own rise stays a CSS transition because the drag-to-dismiss
 gesture manipulates that transform directly.

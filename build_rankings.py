@@ -633,10 +633,16 @@ function openSheet(id){
       anm({targets:o, v:i.value_score, duration:900, easing:'easeOutExpo',
         update:() => { sEl.textContent = o.v.toFixed(1); }});
     }
-    // elastic breakdown bars (kill the CSS width transition so it can't fight)
+    // breakdown bars: fill left to right, overshoot once, settle on the score
+    // (kill the CSS width transition so it can't fight)
     bars.forEach(b => b.style.transition = 'none');
-    anm({targets:bars, width:b => b.dataset.w + '%',
-      duration:1100, delay:anm.stagger(90, {start:220}), easing:'easeOutElastic(1, .6)'});
+    anm({targets:bars,
+      width:[
+        {value:b => Math.min(100, b.dataset.w * 1.05) + '%',
+         duration:620, easing:'easeOutQuart'},
+        {value:b => b.dataset.w + '%', duration:280, easing:'easeOutSine'}
+      ],
+      delay:anm.stagger(90, {start:220})});
   });
   document.getElementById('sheetClose').focus();
   document.body.style.overflow = 'hidden';

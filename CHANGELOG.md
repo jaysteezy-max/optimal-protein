@@ -8,6 +8,32 @@ week-to-week data updates.
 ## [Unreleased]
 
 ### Added
+- **Score v3.** The Value Score is now 45% protein-per-dollar + 40% calorie
+  efficiency + 15% low-saturated-fat, and every term is expressed as a cost per
+  50 g of protein, so portion size cancels out — a 3-piece and a 6-piece of the
+  same item now score identically.
+
+  The bigger change is the normalization. v2 scaled each term against the single
+  best item, which let one outlier set the ruler for the whole board: a $1.99
+  Costco pizza slice at 18.7 g protein per dollar pushed the *median* item down
+  to 22/100 on the heaviest-weighted term, and took #1 while scoring near-last on
+  both calories and saturated fat. Reweighting alone does not fix that — it was
+  simulated, and cheese pizza stays #1 under any weighting that keeps
+  protein-per-dollar dominant. v3 winsorizes at the 95th percentile instead, so a
+  standout still earns full marks on its own term without compressing everyone
+  else. The percentile is configurable via `winsorize_pct`; the top of the board
+  is stable anywhere from 85 to 95.
+
+  Net effect: #1 goes from a cheese pizza slice to El Pollo Loco's fire-grilled
+  chicken breast, followed by Raising Cane's fingers, KFC's chicken breast and
+  Chipotle's Double High Protein Bowl. Cheese pizza lands at #18 — still credited
+  in full for being unbeatable value, no longer able to win on that alone.
+
+  "Leanness %" is retired in favour of **calories per 50 g protein** — the same
+  quantity inverted, but legible: 294 for the chicken breast against 866 for the
+  pizza. Total calories stay out of the score deliberately, since whether 1,120
+  calories is a bargain or a dealbreaker depends on the user's day; the page
+  surfaces the number and sorts on it instead.
 - **Six new chains** — Panera Bread, Firehouse Subs, El Pollo Loco, Shake Shack,
   Costco Food Court and Dutch Bros, contributing 25 web-verified items. Dutch
   Bros' hot medium and large Protein Lattes clear the 25 g protein floor at
@@ -25,11 +51,12 @@ week-to-week data updates.
   list, the detail sheet and `RANKINGS.md`, instead of being lumped in with rows
   that are merely awaiting verification. Driven by an `off-menu` marker in the
   `source` column, so it stays a pure data decision.
-- **Score v2.** The Value Score is now three terms — 50% protein-per-dollar,
-  30% leanness (% of calories from protein), 20% low-saturated-fat — replacing
-  the old value+density blend. A locked hard rule scores **only web-verified
-  items with saturated-fat data**; seeded rows are listed but unranked with an
-  "awaiting verification" state. New `sat_fat_g` column in `data/items.csv`.
+- **Score v2** (superseded by v3 above before release; kept for the pieces that
+  survived). Replaced the old value+density blend with three terms, and added the
+  locked hard rule that scores **only web-verified items with saturated-fat
+  data** — unverified rows are listed but unranked. New `sat_fat_g` column in
+  `data/items.csv`. Its 50/30/20 weighting and best-item normalization were both
+  replaced by v3.
 - **Sort options.** Sort the list by value score, most protein, protein per
   dollar, leanest, or lowest price (control in the list header).
 - **Compare mode.** Tap "Compare", pick any two items, and see their metrics

@@ -1,19 +1,37 @@
 # Scoring configuration — edit here, then re-run: python3 build_rankings.py
 #
-# Score v2: three terms, weights must sum to 1.0.
-#   protein_per_dollar — bang-for-buck (normalized best = 100)
-#   leanness           — % of calories from protein (protein_g x 4 / calories),
-#                        normalized best = 100
-#   sat_fat            — saturated-fat penalty: sat fat per gram of protein,
-#                        scaled so lowest = 100, highest = 0
+# Score v3: three terms, weights must sum to 1.0.
+#   protein_per_dollar — bang-for-buck (protein_g / price)
+#   calorie_efficiency — calories spent to get 50 g of protein (lower wins).
+#                        Mathematically the inverse of v2's "leanness %", but
+#                        far easier to read: "294 cal per 50 g" beats "68%".
+#   sat_fat            — saturated fat per 50 g of protein (lower wins). A
+#                        tie-breaking detail, not a co-equal factor.
 weights:
-  protein_per_dollar: 0.50
-  leanness: 0.30
-  sat_fat: 0.20
+  protein_per_dollar: 0.45
+  calorie_efficiency: 0.40
+  sat_fat: 0.15
+
+# NORMALIZATION (changed in v3 — this matters more than the weights did).
+#
+# v2 scaled every term against the single best item, so one outlier set the
+# ruler for everyone: a $1.99 Costco pizza slice at 18.7 g protein per dollar
+# pushed the MEDIAN item down to 22/100 on the heaviest-weighted term, and took
+# the whole board while scoring near-last on calories and saturated fat.
+#
+# v3 winsorizes instead: anything at or beyond this percentile earns full marks
+# on that term, and the opposite tail is floored at (100 - this). Winsorizing is
+# the standard robust-statistics treatment for a skewed indicator like protein
+# per dollar (median 4.2, max 18.7), and the OECD/JRC handbook on composite
+# indicators recommends capping such indicators rather than raw min-max.
+#
+# 95 is the textbook default (90% winsorization) and clips only ~5% of items.
+# Lower it to clip harder; the top of the board is stable anywhere from 85 to 95.
+winsorize_pct: 95
 
 # HARD RULE (locked — see BACKLOG.md): only rows whose source is web-verified
-# AND that have sat_fat_g data are scored. Seeded rows appear unranked as
-# "awaiting verification" until they're verified.
+# AND that have sat_fat_g data are scored. Unverified rows appear unranked as
+# "awaiting verification"; items pulled from a menu appear as "off menu".
 
 # Items below this protein threshold are excluded from the rankings.
 protein_threshold_g: 25

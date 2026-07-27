@@ -14,11 +14,25 @@ protein-for-the-money order?
 
 ## 📐 How it's scored
 
-**Value Score = 50% protein-per-dollar + 30% leanness + 20% low-saturated-fat.**
-Leanness is the share of calories that come from protein (`protein_g × 4 /
-calories`); the sat-fat term rewards less saturated fat per gram of protein.
-Each term is scaled so the best scored item = 100; weights live in
-`config/scoring.yaml`. On the page, tap any item to see the exact math.
+**Value Score = 45% protein-per-dollar + 40% calorie efficiency + 15%
+low-saturated-fat.** Every term asks the same question — *what does 50 g of
+protein cost you here?* — in dollars, in calories, and in saturated fat. Because
+all three are measured per 50 g, portion size cancels out: a 3-piece and a
+6-piece of the same thing score identically, as they should.
+
+Each term is scaled against the **95th percentile**, not against the single best
+item. That one detail matters more than the weights. Scaling to the best item
+lets a lone bargain set the ruler for everyone — a $1.99 Costco pizza slice at
+18.7 g protein per dollar once dragged the *median* item down to 22/100 on the
+heaviest term and won the whole board while scoring near-last on calories and
+saturated fat. Capping at a percentile (winsorizing, the standard treatment for a
+skewed indicator) still gives a standout full marks on its own term without
+flattening the field. Weights and the percentile live in `config/scoring.yaml`.
+On the page, tap any item to see the exact math.
+
+Total calories are deliberately *not* in the score. Whether 1,120 calories is a
+great deal or a dealbreaker depends on your day, so the page shows the number and
+lets you sort on it rather than guessing on your behalf.
 
 **Only web-verified items are ranked.** A row is scored only once its nutrition
 — including saturated fat — has been confirmed against the chain's own current

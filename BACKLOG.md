@@ -23,27 +23,15 @@ uplift and marks that item's price verified — but nothing uses it yet. Needed:
 This is now the biggest gap between what the page claims and what it knows.
 Effort: S–M.
 
-### Score normalization is outlier-sensitive — decide the policy
-**Status:** needs a decision
+### Flag Costco as membership-gated
+**Status:** not started · the one piece of the scoring problem still open
 
-Each score term is scaled against the best item on the board, so a single
-extreme item rescales that term for everyone. Adding Costco Food Court made this
-concrete: its $1.99 cheese pizza slice reaches 18.3 g protein per dollar, about
-2.4× the best non-Costco item. That compressed every other item's
-protein-per-dollar term — the 50%-weighted one — to roughly 41% of its former
-value, and **reordered the board**: Raising Cane's 6 Chicken Fingers fell from
-2nd to 6th without its own data changing at all.
-
-Three options, not mutually exclusive:
-
-1. Leave it. The figures are honest, and the leanness and saturated-fat terms
-   already pull the pizza down to a near-tie with El Pollo Loco's chicken breast.
-2. Flag Costco as membership-gated. Every other chain sells to anyone; Costco's
-   food court effectively requires a paid membership, so its prices don't belong
-   in the same column unqualified. A badge or filter would say so.
-3. Normalize against a high percentile rather than the raw maximum, so no single
-   outlier can compress a term. This is the general fix — the fragility recurs
-   with any future outlier, Costco or not.
+Score v3 fixed the math (see done section), but not the comparability issue.
+Every other chain on the board sells to anyone; Costco's food court has required
+a paid membership since April 2024, so its $1.99 and $6.99 prices exclude a
+~$65/yr fee that no other row carries. The prices are honest, the comparison
+isn't quite. Wants a badge on the chain, and probably a filter to exclude
+membership-gated chains. Effort: S.
 
 ### More chains
 **Status:** the original six are done; pick the next batch
@@ -53,8 +41,13 @@ Costco Food Court, Dutch Bros. Candidates for a next pass: Wingstop, Portillo's,
 Sweetgreen, Jimmy John's, Torchy's, and PNW grocery delis (WinCo, Fred Meyer).
 Each needs a `config/chains.yaml` entry plus web-verified items with `sat_fat_g`.
 
-### Finish the re-audit — 11 rows left, and 2 of them anchor the scoring
+### Finish the re-audit — 11 rows left
 **Status:** in progress · stopped early on a session limit, not on a conclusion
+
+Less urgent since Score v3: under v2 a single item set the scale for a whole
+term, so one bad row silently moved all 96 scores. Winsorizing removed that
+lever — the worst a wrong row can now do is misplace itself and nudge a
+percentile. It still needs finishing, but it is no longer load-bearing.
 
 Every previously-verified row that got re-audited needed correcting — **10 out of
 10** — so the untouched rows should be assumed wrong until checked, not trusted.
@@ -64,8 +57,8 @@ Still to re-audit:
 
 | Row | Why it matters |
 |---|---|
-| Chick-fil-A Grilled Nuggets (12 ct) | **Anchors the leanness term** at 76%, the board's maximum. Its 0.75 g sat fat was itself scaled from the 8-ct panel rather than read. |
-| Popeyes Blackened Tenders (5 pc) | **Anchors the saturated-fat term** at exactly 0.0 g, earning a perfect 100 on that term. Chicken tenderloin carries roughly 0.3–0.5 g sat fat per 100 g, so 0 is very likely label rounding, not a true zero. |
+| Chick-fil-A Grilled Nuggets (12 ct) | Best calorie efficiency on the board (263 cal per 50 g). Its 0.75 g sat fat was scaled from the 8-ct panel rather than read. |
+| Popeyes Blackened Tenders (5 pc) | Reports exactly 0.0 g saturated fat. Chicken tenderloin carries roughly 0.3–0.5 g per 100 g, so this is very likely label rounding rather than a true zero. |
 | KFC Original Recipe Chicken Breast | ranked top 10 |
 | Popeyes Fried Chicken Breast | ranked top 20 |
 | Panda Express Grilled Teriyaki Chicken (entree) | ranked top 10; a la carte price never confirmed against the bowl price |
@@ -74,10 +67,10 @@ Still to re-audit:
 | Jersey Mike's #7 Turkey Sub in a Tub | build ambiguity — same plain-vs-Mike's-Way trap that made the cold subs wrong |
 | Jamba Protein Berry Workout (16 oz) | the only row with **no `sat_fat_g` at all**; below the 25 g floor so it never scores, but the gap should be closed |
 
-Two of the four scoring anchors *were* audited and survived: the Costco cheese
-slice (three independent lenses) and Taco Bell's Grilled Cheese Burrito
-(confirmed against an official label exposing unrounded values). The other two
-are in the table above, so today's scores rest partly on unaudited maxima.
+The two rows that mattered most under the old scoring *were* audited and
+survived: the Costco cheese slice (three independent lenses) and Taco Bell's
+Grilled Cheese Burrito (confirmed against an official label exposing unrounded
+values).
 
 ### Re-verification cadence — official-first, and it decays
 **Status:** policy worth writing down
@@ -156,6 +149,17 @@ coarse. Possible companion: a per-chain `offers_url` link in the detail sheet.
   once corrected and dropped off the board — Wendy's 10-pc nuggets, Arby's Beef
   'n Cheddar, Jack in the Box Chicken Fajita Pita, Subway 6-inch Rotisserie, and
   Costco's hot dog combo at 24 g.
+- **Score v3 — fixed the normalization, not just the weights.** v2 scaled each
+  term against the single best item, which let one outlier set the ruler: the
+  Costco pizza slice pushed the *median* item to 22/100 on the heaviest-weighted
+  term and won the board while scoring near-last on calories and saturated fat.
+  Reweighting alone was simulated and did nothing — pizza stayed #1 under every
+  weighting that kept protein-per-dollar dominant. v3 winsorizes at the 95th
+  percentile instead (the textbook default; clips ~5% of items), reweights to
+  45/40/15, and restates every term as a cost per 50 g of protein so portion size
+  cancels out. "Leanness %" became "calories per 50 g protein" — same ranking,
+  readable. Top of the board went from cheese pizza to El Pollo Loco's chicken
+  breast; pizza sits at #18. Verified stable across percentiles 85–95.
 - **Adversarial re-audit of the ranked rows started** (and found plenty — see the
   open item above for what's left). Corrected: Chipotle's double bowl renamed with
   sat fat 7 → 11 g; Qdoba Chicken Protein Bowl 60 → 51 g; In-N-Out 3x3
@@ -171,9 +175,10 @@ coarse. Possible companion: a per-chain `offers_url` link in the detail sheet.
   stale 2024 launch marketing.
 - **"Off menu" state added** to the build and the page, so an item pulled from
   the menu no longer renders as merely "awaiting verification".
-- **Score v2 shipped.** Three-term score (50% protein-per-dollar / 30% leanness
-  / 20% low-sat-fat), verified-only hard rule enforced in `compute()`, new
-  `sat_fat_g` column, three-bar sheet breakdown, unranked states.
+- **Score v2** (superseded by v3, above). Introduced the three-term score, the
+  verified-only hard rule enforced in `compute()`, the `sat_fat_g` column, the
+  three-bar sheet breakdown and the unranked states. Its 50/30/20 weighting and
+  best-item normalization did not survive.
 - **App features shipped:** sort options (score/protein/$/lean/price), compare
   mode (two items side by side), budget mode (max protein for $X, optional
   chain), chain view ("Order this" + "see all from chain"), OG/Twitter cards +

@@ -20,10 +20,17 @@ calories`); the sat-fat term rewards less saturated fat per gram of protein.
 Each term is scaled so the best scored item = 100; weights live in
 `config/scoring.yaml`. On the page, tap any item to see the exact math.
 
-**Only web-verified items are ranked.** Rows still marked `seeded — verify` are
-listed but held out of the scoring until their nutrition (including saturated
-fat) is confirmed — so no unverified data reaches the numbers. The board grows
-as more items are verified.
+**Only web-verified items are ranked.** A row is scored only once its nutrition
+— including saturated fat — has been confirmed against the chain's own current
+source, so no unverified data reaches the numbers. Anything unconfirmed is listed
+but held out of the scoring. Items that have been pulled from a chain's menu keep
+their last published nutrition for reference and are listed as **off menu**,
+never scored.
+
+Because chains quietly reformulate and resize items — and third-party nutrition
+databases lag behind, sometimes by years — a `web-verified` stamp is a snapshot,
+not a guarantee. Ranked rows get re-audited against official sources rather than
+trusted indefinitely.
 
 The page also lets you **sort** (value, protein, per-dollar, leanest, price),
 **compare** any two items side by side, and run a **budget** ("most protein for
@@ -82,9 +89,12 @@ IP lookup, no permission prompt; pick manually anytime — the choice sticks in
 your browser). Rankings don't change by region: a uniform multiplier cancels
 out of the score normalization, so only displayed prices move. Sales tax and app deals are excluded. To correct one, edit
 `national_price_usd` in `data/items.csv`, or add a row to
-`data/manual_prices.csv` (used as-is, no uplift). Each chain's best pick was
-cross-checked against several nutrition databases and marked `web-verified`;
-remaining rows are `seeded — verify`.
+`data/manual_prices.csv` (used as-is, no uplift, and marked as a verified price).
+
+Nutrition is the firmer half: every ranked row has been cross-checked against
+the chain's own published data plus at least one independent source. Prices are
+the softer half — no row on the board has been confirmed at a register yet, so
+treat every figure as an estimate until it has a `manual_prices.csv` entry.
 
 ## 🌐 Hosting on GitHub Pages
 

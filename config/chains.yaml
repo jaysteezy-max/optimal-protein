@@ -1,4 +1,4 @@
-# The 20 chains in scope (top PNW fast food / fast casual).
+# The 26 chains in scope (top PNW fast food / fast casual).
 #
 # puller:
 #   auto    — pull_nutrition.py has a fetcher for this chain (best-effort;
@@ -87,4 +87,33 @@ chains:
   - slug: raising-canes
     name: Raising Cane's
     nutrition_url: https://www.raisingcanes.com/nutrition
+    puller: curated
+  - slug: panera
+    name: Panera Bread
+    nutrition_url: https://www.panerabread.com/en-us/menu/nutritious-eating/allergen-and-nutrition-information.html
+    puller: curated
+  - slug: firehouse-subs
+    name: Firehouse Subs
+    nutrition_url: https://www.firehousesubs.com/nutritional-information
+    puller: curated
+  - slug: el-pollo-loco
+    name: El Pollo Loco
+    nutrition_url: https://www.elpolloloco.com/nutrition/
+    puller: curated
+  - slug: shake-shack
+    name: Shake Shack
+    nutrition_url: https://shakeshack.com/nutritionandallergeninfo
+    puller: curated
+  - slug: costco-food-court
+    name: Costco Food Court
+    # Costco publishes food-court nutrition only on in-warehouse menu boards —
+    # there is no official page, so this mirror is the best available source.
+    # NOTE: since April 2024 a paid Costco membership is required to order at US
+    # food courts, so these prices exclude the ~$65/yr membership. Unlike every
+    # other chain here, the listed price is not what a non-member can pay.
+    nutrition_url: https://fastfoodnutrition.org/costco
+    puller: curated
+  - slug: dutch-bros
+    name: Dutch Bros
+    nutrition_url: https://www.dutchbros.com/website/menu/nutritional-guide.pdf
     puller: curated

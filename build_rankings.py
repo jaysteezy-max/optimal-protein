@@ -73,6 +73,10 @@ def load_items(chains):
         raw_sat = (it.get("sat_fat_g") or "").strip()
         it["sat_fat_g"] = float(raw_sat) if raw_sat else None
         it["verified"] = "web-verified" in (it.get("source") or "")
+        # An item pulled from the menu keeps its last published data for
+        # reference but can never be ranked. Tracked separately so the page
+        # doesn't imply it is merely waiting on verification.
+        it["off_menu"] = "off-menu" in (it.get("source") or "")
     return items
 
 
@@ -123,6 +127,7 @@ def compute(scoring, chains, items, overrides):
             "calories": it["calories"],
             "sat_fat_g": it["sat_fat_g"],
             "verified": it["verified"],
+            "off_menu": it["off_menu"],
             "price": price,
             "price_kind": price_kind,
             "price_national": price_national,
@@ -167,7 +172,9 @@ def compute(scoring, chains, items, overrides):
             r["lean_norm"] = None
             r["satfat_norm"] = None
             r["value_score"] = None
-            if not r["verified"] or r["sat_fat_g"] is None:
+            if r["off_menu"]:
+                r["unranked_reason"] = "off menu"
+            elif not r["verified"] or r["sat_fat_g"] is None:
                 r["unranked_reason"] = "awaiting verification"
             else:
                 r["unranked_reason"] = "no price"
@@ -205,8 +212,9 @@ def write_json(scoring, regions_cfg, rows, path):
             "protein_threshold_g": scoring["protein_threshold_g"],
             "pnw_uplift_pct": scoring["pnw_uplift_pct"],
             "hard_rule": ("Only web-verified rows with sat-fat data are "
-                          "scored; seeded rows are listed unranked as "
-                          "awaiting verification."),
+                          "scored. Unverified rows are listed unranked as "
+                          "awaiting verification; items pulled from the menu "
+                          "are listed unranked as off menu."),
             "caveat": ("Prices are national averages + regional uplift, not "
                        "till-verified. Sales tax excluded. App deals excluded. "
                        "Rankings are region-invariant; only displayed prices "
@@ -236,7 +244,8 @@ def write_markdown(scoring, rows, best, path):
         f"leanness (% calories from protein) + "
         f"{int(scoring['weights']['sat_fat']*100)}% low-saturated-fat, "
         "each scaled so the best scored item = 100. **Only web-verified items "
-        "are scored** — seeded rows are listed unranked until verified.",
+        "are scored** — unverified rows are listed unranked until verified, "
+        "and items pulled from the menu are listed unranked as off menu.",
         "",
         "## Best pick per chain",
         "",
@@ -589,6 +598,17 @@ const IOS_EASE = 'cubicBezier(.32,.72,0,1)';
 const TOTAL = DATA.items.filter(i => i.value_score != null).length;  // ranked count
 DATA.items.forEach((it, k) => it._id = k);
 
+/* Why an item isn't ranked: [list badge, sheet header, sheet explanation]. */
+const PEND = {
+  'no price': ['No price yet', 'Unranked · no price',
+    'Verified, but no confirmed price yet — it can\\u2019t be scored on value until one lands.'],
+  'off menu': ['Off menu', 'Unranked · off menu',
+    'This item has been pulled from the menu. Its last published nutrition is kept here for reference, but it can\\u2019t be ranked.'],
+  'awaiting verification': ['Awaiting verification', 'Unranked · awaiting verification',
+    'Only web-verified items are scored. This item\\u2019s nutrition and saturated fat haven\\u2019t been independently verified yet, so it\\u2019s listed but not ranked.'],
+};
+const pendOf = i => PEND[i.unranked_reason] || PEND['awaiting verification'];
+
 const chainSel = document.getElementById('chain');
 const q = document.getElementById('q');
 const list = document.getElementById('list');
@@ -686,7 +706,7 @@ function render(mode){
     const badge = idx === 0 && scored && byScore
       ? (slug ? '<div class="order-badge">Order this</div>' : '<div class="best">Best value</div>')
       : '';
-    const pend = scored ? '' : `<div class="pend">${i.unranked_reason === 'no price' ? 'No price yet' : 'Awaiting verification'}</div>`;
+    const pend = scored ? '' : `<div class="pend">${pendOf(i)[0]}</div>`;
     return `<button class="row cmp${idx===0&&scored&&byScore&&!slug?' top':''}${cmpSel.has(i._id)?' picked':''}" data-id="${i._id}">
       <span class="rk">${pos}</span>
       <span class="main">
@@ -757,11 +777,7 @@ function sheetHTML(i){
     </div>` : `
     <div class="panel">
       <div class="panel-h">Not ranked yet</div>
-      <div style="font-size:13.5px; color:var(--muted); line-height:1.5">${
-        i.unranked_reason === 'no price'
-          ? 'Verified, but no confirmed price yet — it can\\u2019t be scored on value until one lands.'
-          : 'Only web-verified items are scored. This item\\u2019s nutrition and saturated fat haven\\u2019t been independently verified yet, so it\\u2019s listed but not ranked.'
-      }</div>
+      <div style="font-size:13.5px; color:var(--muted); line-height:1.5">${pendOf(i)[2]}</div>
     </div>`;
 
   const derived = (rPrice!=null) ? `
@@ -780,7 +796,7 @@ function sheetHTML(i){
 
   const head = `
     <div class="sh-rank">${scored ? `#${i.rank} of ${TOTAL} · top ${pctTop}%`
-      : (i.unranked_reason === 'no price' ? 'Unranked · no price' : 'Unranked · awaiting verification')}</div>
+      : pendOf(i)[1]}</div>
     <div class="sh-name" id="sh-name">${esc(i.item)}</div>
     <button class="sh-ch sh-chlink" data-chain="${esc(i.chain)}">${esc(i.chain_name)}
       <span class="sh-chsee">See all ${CHEV}</span></button>
@@ -1066,9 +1082,15 @@ def write_html(scoring, regions_cfg, rows, path):
     n_chains = len({r["chain"] for r in rows})
     n_ranked = sum(1 for r in rows if r["rank"])
     n_pending = sum(1 for r in rows if r["unranked_reason"] == "awaiting verification")
+    n_offmenu = sum(1 for r in rows if r["unranked_reason"] == "off menu")
     top = rows[0]
-    subtitle = (f"{n_ranked} verified picks ranked · {n_pending} awaiting "
-                f"verification · {n_chains} chains · updated {today}")
+    parts = [f"{n_ranked} verified picks ranked"]
+    if n_pending:
+        parts.append(f"{n_pending} awaiting verification")
+    if n_offmenu:
+        parts.append(f"{n_offmenu} off menu")
+    parts += [f"{n_chains} chains", f"updated {today}"]
+    subtitle = " · ".join(parts)
     footer = (f"Top pick: {top['chain_name']} — {top['item']} "
               f"(score {top['value_score']}). Generated {today} from data/items.csv.")
     regions_payload = {

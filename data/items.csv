@@ -1,82 +1,108 @@
 chain,item,protein_g,calories,sat_fat_g,national_price_usd,source,pulled_date,notes
-chick-fil-a,Grilled Chicken Sandwich,28,390,,6.85,official nutrition (seeded — verify),2026-07-23,
-chick-fil-a,Spicy Chicken Sandwich,29,460,,5.95,official nutrition (seeded — verify),2026-07-23,
+chick-fil-a,Grilled Chicken Sandwich,28,390,2.5,6.49,web-verified 2026-07-27,2026-07-27,"was $6.85 when seeded; national-average sources 6.45-6.59"
+chick-fil-a,Spicy Chicken Sandwich,28,450,4,5.95,web-verified 2026-07-27,2026-07-27,"was 29g/460 cal when seeded; official now 28g/450"
 chick-fil-a,Grilled Nuggets (12 ct),38,200,0.75,9.09,web-verified 2026-07-24,2026-07-23,leanest item on menu; sat scaled from official 8-ct (0.5g)
-chick-fil-a,Chick-fil-A Nuggets (12 ct),40,380,,6.55,official nutrition (seeded — verify),2026-07-23,
-chick-fil-a,Grilled Cool Wrap,42,350,,9.75,official nutrition (seeded — verify),2026-07-23,no dressing
-chick-fil-a,Spicy Southwest Salad,33,450,,10.15,official nutrition (seeded — verify),2026-07-23,with grilled chicken; no dressing
-chipotle,Chicken Burrito Bowl,48,665,,9.60,official nutrition calculator (seeded — verify),2026-07-23,"chicken, white rice, black beans, fajita veg, salsa"
-chipotle,Double Chicken Burrito Bowl,81,760,7,13.10,web-verified 2026-07-24,2026-07-23,double-protein build (rice/beans/salsa); sat = 2x chicken (3g ea) + white rice (1g)
-chipotle,Chicken Burrito,54,975,,9.60,official nutrition calculator (seeded — verify),2026-07-23,same fillings + tortilla
-chipotle,Steak Burrito Bowl,38,640,,10.70,official nutrition calculator (seeded — verify),2026-07-23,"steak, rice, beans, fajita veg, salsa"
-chipotle,Chicken Salad Bowl,42,400,,9.60,official nutrition calculator (seeded — verify),2026-07-23,"supergreens, chicken, beans, salsa — no rice; no dressing"
-wendys,Dave's Single,30,590,,6.29,official nutrition (seeded — verify),2026-07-23,
-wendys,Dave's Double,48,810,,7.89,official nutrition (seeded — verify),2026-07-23,
-wendys,Grilled Chicken Sandwich,34,350,1.5,6.19,web-verified 2026-07-24,2026-07-23,lean pick
-wendys,Spicy Chicken Sandwich,28,500,,6.09,official nutrition (seeded — verify),2026-07-23,
-wendys,Baconator,57,950,,8.99,official nutrition (seeded — verify),2026-07-23,
-wendys,Crispy Chicken Nuggets (10 pc),27,470,,5.79,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,Quarter Pounder with Cheese,30,520,,6.29,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,Double Quarter Pounder with Cheese,48,740,,8.19,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,Big Mac,25,590,,5.99,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,McCrispy,26,470,,5.79,official nutrition (seeded — verify),2026-07-23,
-mcdonalds,Double Cheeseburger,25,450,11,3.99,web-verified 2026-07-24,2026-07-23,value-menu sleeper
-taco-bell,Chicken Quesadilla,27,510,,5.79,official nutrition (seeded — verify),2026-07-23,
-taco-bell,Grilled Cheese Burrito (Seasoned Beef),26,720,,5.49,official nutrition (seeded — verify),2026-07-23,
-taco-bell,Double Steak Grilled Cheese Burrito,40,910,17,7.49,web-verified 2026-07-24,2026-07-23,regular
-taco-bell,Power Menu Bowl (Chicken),26,470,,6.99,official nutrition (seeded — verify),2026-07-23,lean pick
-jamba,Protein Berry Workout (Whey; 16 oz),20,285,,8.29,web-verified 2026-07-23,2026-07-23,16oz falls below 25g threshold — only larger sizes qualify
-subway,Footlong Rotisserie-Style Chicken,58,700,3,11.29,web-verified 2026-07-24,2026-07-23,no cheese/sauce in base
-subway,Footlong Oven Roasted Turkey,36,540,,10.19,official nutrition (seeded — verify),2026-07-23,
-subway,Footlong Steak & Cheese,51,720,,11.49,official nutrition (seeded — verify),2026-07-23,
-subway,Footlong Meatball Marinara,42,960,,9.29,official nutrition (seeded — verify),2026-07-23,
-subway,6-inch Rotisserie-Style Chicken,29,360,,7.29,official nutrition (seeded — verify),2026-07-23,
+chick-fil-a,Chick-fil-A Nuggets (12 ct),40,380,3.5,7.49,web-verified 2026-07-27,2026-07-27,"price was $6.55 when seeded; ~$7.49 a la carte in 2026"
+chick-fil-a,Grilled Cool Wrap,42,350,5,8.49,web-verified 2026-07-27,2026-07-27,"no dressing; price was $9.75 when seeded"
+chick-fil-a,Spicy Southwest Salad,33,450,5,10.65,web-verified 2026-07-27,2026-07-27,with grilled chicken; no dressing
+chipotle,Chicken Burrito Bowl,45,565,4,9.79,web-verified 2026-07-27,2026-07-27,"chicken, white rice, black beans, fajita veg, salsa; was 48g/665 cal when seeded — official component sum is 45g/565"
+chipotle,Double High Protein Bowl,81,760,11,14.50,web-verified 2026-07-27,2026-07-27,"official High Protein Menu item; build = double adobo chicken, light white rice, black beans, fajita veg, tomato salsa, monterey jack, extra romaine; was tracked as a Double Chicken Burrito Bowl with 7g sat fat from a cheese-less build"
+chipotle,Chicken Burrito,53,885,4.5,9.79,web-verified 2026-07-27,2026-07-27,"same fillings + tortilla; was 54g/975 cal when seeded"
+chipotle,Steak Burrito Bowl,34,535,3.5,11.68,web-verified 2026-07-27,2026-07-27,"steak, rice, beans, fajita veg, salsa; was 38g/640 cal/$10.70 when seeded — official steak is 21g per serving"
+chipotle,Chicken Salad Bowl,41,350,3,9.79,web-verified 2026-07-27,2026-07-27,"supergreens, chicken, beans, salsa — no rice; no dressing; was 42g/400 cal when seeded"
+wendys,Dave's Single,29,570,13,6.29,web-verified 2026-07-27,2026-07-27,"was 590 cal/30g when seeded; current menu lists 570/29"
+wendys,Dave's Double,49,810,20,7.89,web-verified 2026-07-27,2026-07-27,protein was 48g when seeded; sources list 49g
+wendys,Grilled Chicken Sandwich,33,350,1.5,6.19,off-menu — last published values (checked 2026-07-27),2026-07-27,"discontinued in the US since 2023, replaced by the Grilled Chicken Wrap; the only current Grilled Chicken Sandwich is a UK item with different values"
+wendys,Spicy Chicken Sandwich,28,500,3.5,6.09,web-verified 2026-07-27,2026-07-27,
+wendys,Baconator,57,960,27,8.99,web-verified 2026-07-27,2026-07-27,was 950 cal when seeded; majority of sources list 960
+wendys,Crispy Chicken Nuggets (10 pc),23,430,6,5.79,web-verified 2026-07-27,2026-07-27,"was 470 cal/27g when seeded — materially wrong; at 23g it now falls below the 25g threshold"
+mcdonalds,Quarter Pounder with Cheese,30,520,12,6.29,web-verified 2026-07-27,2026-07-27,
+mcdonalds,Double Quarter Pounder with Cheese,48,740,20,8.19,web-verified 2026-07-27,2026-07-27,
+mcdonalds,Big Mac,25,590,11,5.99,web-verified 2026-07-27,2026-07-27,matches the 2026 Big Mac Index national average of $5.91
+mcdonalds,McCrispy,26,470,5,5.79,web-verified 2026-07-27,2026-07-27,
+mcdonalds,Double Cheeseburger,25,440,11,3.74,web-verified 2026-07-27,2026-07-27,value-menu sleeper; official is 440 cal and not the 450 on file
+taco-bell,Chicken Quesadilla,26,490,12,5.89,web-verified 2026-07-27,2026-07-27,"was 27g/510 cal when seeded; tacobell.com now lists 490 cal"
+taco-bell,Grilled Cheese Burrito (Seasoned Beef),25,690,15,5.69,web-verified 2026-07-27,2026-07-27,"was 26g/720 cal when seeded; official Nutritionix label is 690/25/15"
+taco-bell,Steak Grilled Cheese Burrito,28,680,14,7.19,web-verified 2026-07-27,2026-07-27,"the Double Steak version was a limited-time offer and is gone; this is the current steak item — the row previously tracked the double at 40g/910 cal"
+taco-bell,Power Menu Bowl (Chicken),26,470,6,6.99,off-menu — last published values (checked 2026-07-27),2026-07-27,"discontinued Mar 2024; replaced by the Cantina Chicken Bowl ($8.39, 530 cal, 25g)"
+jamba,Protein Berry Workout (Whey; 16 oz),20,285,,8.29,web-verified 2026-07-23,2026-07-23,16oz falls below the 25g threshold — only larger sizes qualify
+subway,Footlong Rotisserie-Style Chicken,46,610,4,11.29,off-menu — last published values (checked 2026-07-27),2026-07-27,"no longer a named menu item; the chicken portion was cut to 71g, so a plain footlong is 46g and not the 58g on file"
+subway,Footlong Oven Roasted Turkey,38,550,3,10.19,web-verified 2026-07-27,2026-07-27,"plain build: Artisan Italian + 2x turkey + veggies, no cheese/sauce; summed from official Jan-2026 components"
+subway,Footlong Steak & Cheese,50,640,10,11.49,off-menu — last published values (checked 2026-07-27),2026-07-27,"dropped from the 2025-26 menu; closest current item is the Footlong Steak Philly (~1020 cal, 56g, 18g sat)"
+subway,Footlong Meatball Marinara,40,930,16,9.29,web-verified 2026-07-27,2026-07-27,"was 42g/960 cal when seeded; plain build, no cheese, from official Jan-2026 components"
+subway,6-inch Rotisserie-Style Chicken,23,300,2,7.29,web-verified 2026-07-27,2026-07-27,"was 29g/360 cal when seeded — the chicken portion was cut to 71g; no longer a named menu item and now below the 25g threshold"
 panda-express,Grilled Teriyaki Chicken (entree),33,275,3,6.70,web-verified 2026-07-24,2026-07-23,a la carte entree (6 oz)
-panda-express,Grilled Teriyaki Chicken Bowl + Super Greens,42,430,,9.60,official nutrition (seeded — verify),2026-07-23,bowl combo; lean pick
-panda-express,Original Orange Chicken (entree),25,490,,6.70,official nutrition (seeded — verify),2026-07-23,a la carte medium entree
+panda-express,Grilled Teriyaki Chicken Bowl + Super Greens,39,365,3,9.40,web-verified 2026-07-27,2026-07-27,"bowl combo; lean pick; was 42g/430 cal when seeded — teriyaki entree 275 cal/33g + super greens 90 cal/6g"
+panda-express,Original Orange Chicken (entree),25,490,5,8.50,web-verified 2026-07-27,2026-07-27,a la carte medium entree; price was $6.70 when seeded — medium is now $8.50-9.20
 kfc,Original Recipe Chicken Breast,39,390,4,5.49,web-verified 2026-07-24,2026-07-23,single piece a la carte
-kfc,KFC Chicken Sandwich,34,650,,5.99,official nutrition (seeded — verify),2026-07-23,
-kfc,Tenders (3 pc),27,390,,5.99,official nutrition (seeded — verify),2026-07-23,
-kfc,Famous Bowl,26,740,,5.99,official nutrition (seeded — verify),2026-07-23,
-popeyes,Classic Chicken Sandwich,28,700,,5.49,official nutrition (seeded — verify),2026-07-23,
-popeyes,Blackened Chicken Sandwich,32,550,,5.99,official nutrition (seeded — verify),2026-07-23,
-popeyes,Blackened Tenders (5 pc),43,280,,8.49,official nutrition (seeded — verify),2026-07-23,not breaded — density standout
+kfc,KFC Chicken Sandwich,34,650,4.5,5.99,web-verified 2026-07-27,2026-07-27,
+kfc,Original Recipe Tenders (3 pc),33,510,1.5,5.99,web-verified 2026-07-27,2026-07-27,"seeded as Tenders (3 pc) at 27g/390 cal — that was the discontinued Extra Crispy Tenders; current item launched late 2024"
+kfc,Famous Bowl,31,590,5,5.99,web-verified 2026-07-27,2026-07-27,"was 26g/740 cal when seeded — that was the old recipe; current official is 590 cal/31g"
+popeyes,Classic Chicken Sandwich,28,700,14,5.99,web-verified 2026-07-27,2026-07-27,price up from the $5.49 seed
+popeyes,Blackened Chicken Sandwich,32,550,5,5.99,web-verified 2026-07-27,2026-07-27,
+popeyes,Blackened Tenders (5 pc),43,280,0,8.49,web-verified 2026-07-27,2026-07-27,not breaded — density standout; sources list 0g sat fat (3g total fat)
 popeyes,Fried Chicken Breast,35,380,8,4.99,web-verified 2026-07-24,2026-07-23,single piece a la carte
-arbys,Double Roast Beef,34,510,,7.19,official nutrition (seeded — verify),2026-07-23,
-arbys,Half Pound Roast Beef,48,610,12,8.79,web-verified 2026-07-24,2026-07-23,
-arbys,Classic Beef 'n Cheddar,26,450,,6.49,official nutrition (seeded — verify),2026-07-23,
-arbys,Roast Turkey Ranch & Bacon Sandwich,44,800,,8.99,official nutrition (seeded — verify),2026-07-23,
-arbys,Smokehouse Brisket Sandwich,32,600,,8.49,official nutrition (seeded — verify),2026-07-23,
-carls-jr,Super Star with Cheese,46,930,,8.99,official nutrition (seeded — verify),2026-07-23,
-carls-jr,Charbroiled Chicken Club,34,560,,8.49,official nutrition (seeded — verify),2026-07-23,
-carls-jr,Charbroiled BBQ Chicken Sandwich,33,400,,6.99,official nutrition (seeded — verify),2026-07-23,lean pick
+arbys,Double Roast Beef,38,510,9,7.29,web-verified 2026-07-27,2026-07-27,seeded 34g was low; official is 38g
+arbys,Half Pound Roast Beef,48,610,12,8.39,web-verified 2026-07-27,2026-07-27,"nutrition confirmed against Arby's official Jan-2026 PDF; price was 8.79 on file"
+arbys,Classic Beef 'n Cheddar,23,450,6,6.49,web-verified 2026-07-27,2026-07-27,"seeded 26g was high; official is 23g, which drops it below the 25g threshold"
+arbys,Roast Turkey Ranch & Bacon Sandwich,46,810,10,8.99,web-verified 2026-07-27,2026-07-27,"was 44g/800 cal when seeded; official is 46g/810"
+arbys,Smokehouse Brisket Sandwich,33,600,12,8.99,web-verified 2026-07-27,2026-07-27,price up from the $8.49 seed (PriceListo average $9.02)
+carls-jr,Double Famous Star with Cheese,48,940,23,9.79,web-verified 2026-07-27,2026-07-27,"seeded as Super Star with Cheese — renamed in 2022; official PDF is 940 cal/48g"
+carls-jr,Charbroiled Chicken Club,43,690,10,9.49,web-verified 2026-07-27,2026-07-27,"current official recipe is 690 cal/43g — the 560/34 seed was the older build"
+carls-jr,Charbroiled BBQ Chicken Sandwich,35,440,3,7.99,web-verified 2026-07-27,2026-07-27,lean pick; current official recipe is 440 cal/35g
 carls-jr,Big Carl,47,930,23,7.49,web-verified 2026-07-24,2026-07-23,
 jack-in-the-box,Double Jack,46,830,22,7.99,web-verified 2026-07-24,2026-07-23,
-jack-in-the-box,Chicken Fajita Pita,26,320,,6.79,official nutrition (seeded — verify),2026-07-23,classic lean pick
-jack-in-the-box,Sourdough Jack,30,730,,7.69,official nutrition (seeded — verify),2026-07-23,
-jack-in-the-box,Jumbo Jack,25,540,,5.99,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#7 Turkey & Provolone (Regular),33,590,,10.75,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#13 Original Italian (Regular),37,830,,11.25,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#17 Mike's Famous Philly (Regular),42,700,,11.95,official nutrition (seeded — verify),2026-07-23,
-jersey-mikes,#8 Club Sub (Regular),38,750,,12.25,official nutrition (seeded — verify),2026-07-23,
+jack-in-the-box,Chicken Fajita Pita,24,320,5,6.29,web-verified 2026-07-27,2026-07-27,"classic lean pick; without salsa; protein corrected 26 to 24, which drops it below the 25g threshold"
+jack-in-the-box,Sourdough Jack,35,660,15,7.49,web-verified 2026-07-27,2026-07-27,current recipe is 660 cal/35g — the 730/30 seed was pre-reformulation
+jack-in-the-box,Jumbo Jack,26,490,8,5.79,web-verified 2026-07-27,2026-07-27,no cheese; corrected to 490 cal/26g
+jersey-mikes,#7 Turkey & Provolone (Regular),44,780,11,10.75,web-verified 2026-07-27,2026-07-27,"regular, white bread, Mike's Way; the 590/33 seed was a plain no-dressing build — the oil blend adds ~200 cal"
+jersey-mikes,#13 Original Italian (Regular),45,940,15,11.25,web-verified 2026-07-27,2026-07-27,"regular, white bread, Mike's Way"
+jersey-mikes,#17 Mike's Famous Philly (Regular),45,710,15,11.95,web-verified 2026-07-27,2026-07-27,"regular, white bread, standard hot-sub build; hot subs are not served Mike's Way"
+jersey-mikes,#8 Club Sub (Regular),46,1120,17,12.25,web-verified 2026-07-27,2026-07-27,"regular, white bread, Mike's Way plus standard mayo and bacon; the 750/38 seed was a stripped-down build"
 jersey-mikes,#7 Turkey Sub in a Tub,30,490,10,10.75,web-verified 2026-07-24,2026-07-23,regular tub w/ toppings; order dry to cut cals; sat incl. oil dressing (490-cal build)
-qdoba,Chicken Burrito Bowl,45,700,,10.25,official nutrition (seeded — verify),2026-07-23,queso/guac included in price
-qdoba,Chicken Protein Bowl,60,700,9,12.10,web-verified 2026-07-24,2026-07-23,double protein build
-qdoba,Steak Burrito Bowl,36,700,,11.45,official nutrition (seeded — verify),2026-07-23,
-burgerville,Colossal Cheeseburger,35,640,,9.39,official nutrition (seeded ESTIMATE — verify),2026-07-23,PNW-only chain; data less standardized
-burgerville,Double Beef Cheeseburger,25,480,9,7.49,web-verified 2026-07-24,2026-07-23,was overstated when seeded
-burgerville,Turkey Burger,26,500,,8.29,official nutrition (seeded ESTIMATE — verify),2026-07-23,
-burgerville,Crispy Chicken Sandwich,26,560,,8.99,official nutrition (seeded ESTIMATE — verify),2026-07-23,
-in-n-out,Double-Double,37,670,,5.90,official nutrition (seeded — verify),2026-07-23,
-in-n-out,Double-Double Protein Style,33,520,,5.90,official nutrition (seeded — verify),2026-07-23,lettuce wrap; lean pick
-in-n-out,3x3,52,860,26,7.35,web-verified 2026-07-24,2026-07-23,not-so-secret menu
-five-guys,Hamburger,39,700,,10.99,official nutrition (seeded — verify),2026-07-23,two patties standard
-five-guys,Cheeseburger,43,840,,11.99,official nutrition (seeded — verify),2026-07-23,
+qdoba,Chicken Burrito Bowl,46,775,14,10.99,web-verified 2026-07-27,2026-07-27,"queso/guac included in price; official 2025 brochure component math; the 700-cal seed was low for this build"
+qdoba,Chicken Protein Bowl,51,700,9,14.25,web-verified 2026-07-27,2026-07-27,"double protein build; protein was 60g on file — Qdoba's Feb-2026 brochure supersedes the 2025 one (adobo chicken now 190 cal/19g per 3.5 oz)"
+qdoba,Steak Burrito Bowl,38,865,19.5,12.49,web-verified 2026-07-27,2026-07-27,"same build with grilled steak; the 700-cal seed was materially low — steak alone is 260 cal/8g sat per serving"
+burgerville,Colossal Burger (Single),28,500,8,8.46,web-verified 2026-07-27,2026-07-27,"seeded as Colossal Cheeseburger at 35g/640 cal, which matched no current variant; the 1/2-lb Double Colossal (~50g, $11.54) is the bigger order"
+burgerville,Double Cheeseburger,27,520,9,7.04,web-verified 2026-07-27,2026-07-27,"renamed on the official menu; the row was understated, not overstated — official is 520 cal/27g"
+burgerville,Best Coast Turkey Burger,26,380,2.5,8.13,off-menu — last published values (checked 2026-07-27),2026-07-27,"not on the official menu as of Jul 2026 — discontinued or limited; closest current lean pick is the Best Coast Grilled Chicken Sandwich (400 cal)"
+burgerville,Best Coast Crispy Chicken Sandwich,26,570,4,8.59,web-verified 2026-07-27,2026-07-27,renamed from Crispy Chicken Sandwich; official menu lists 570 cal (third-party 540)
+in-n-out,Double-Double,34,610,15,5.90,web-verified 2026-07-27,2026-07-27,"official site now lists 610 cal/34g/15g sat (with onion); the 37g/670 seed was legacy data still shown on third-party sites"
+in-n-out,Double-Double Protein Style,30,460,15,5.90,web-verified 2026-07-27,2026-07-27,lettuce wrap; lean pick; official is now 460 cal/30g/15g sat
+in-n-out,3x3,48,790,22,7.35,web-verified 2026-07-27,2026-07-27,"not-so-secret menu; In-N-Out publishes no 3x3 panel, so this is derived from the official Double-Double and Cheeseburger increments; the 52g/860 cal on file was legacy"
+five-guys,Hamburger,39,700,20,10.99,web-verified 2026-07-27,2026-07-27,two patties standard; plain with no toppings
+five-guys,Cheeseburger,47,840,27,11.99,web-verified 2026-07-27,2026-07-27,"two patties + 2 cheese slices, plain; seeded 43g was low — official is 47g"
 five-guys,Bacon Cheeseburger,47,1060,25,12.99,web-verified 2026-07-24,2026-07-23,two patties + bacon
-cava,Grilled Chicken Bowl,38,620,,12.35,official nutrition (seeded — verify),2026-07-23,"chicken, supergreens, rice, hummus"
-cava,Double Chicken Bowl,64,780,7,16.50,web-verified 2026-07-24,2026-07-23,double grilled chicken; sat = 2x chicken (3g ea) + sides (~1g)
-cava,Spicy Lamb Meatball Bowl,30,700,,13.05,official nutrition (seeded — verify),2026-07-23,
-cava,Grilled Steak Bowl,33,650,,13.55,official nutrition (seeded — verify),2026-07-23,
-raising-canes,Chicken Fingers (3 pc a la carte),39,390,,5.49,official nutrition (seeded ESTIMATE — verify),2026-07-23,~13g protein per finger
-raising-canes,The Box Combo (4 fingers),52,1250,,10.99,official nutrition (seeded ESTIMATE — verify),2026-07-23,combo incl. fries/toast/slaw/drink
+cava,Grilled Chicken Bowl,38,625,4,11.65,web-verified 2026-07-27,2026-07-27,"chicken, supergreens, rice, hummus; component math from the official PDF"
+cava,Double Chicken Bowl,64,825,7,16.50,web-verified 2026-07-27,2026-07-27,"build = super greens + saffron basmati rice + 2x grilled chicken; calories were 780 on file but official components sum to 825"
+cava,Spicy Lamb Meatball Bowl,34,675,9,13.85,web-verified 2026-07-27,2026-07-27,"meatballs, supergreens, rice, hummus; was 30g/700 cal when seeded"
+cava,Grilled Steak Bowl,33,535,4,13.85,web-verified 2026-07-27,2026-07-27,"steak, supergreens, rice, hummus; the 650-cal seed was high — components sum to 535"
+raising-canes,Chicken Fingers (3 pc a la carte),39,390,3,5.97,web-verified 2026-07-27,2026-07-27,~13g protein per finger; $1.99 per finger x3
+raising-canes,The Box Combo (4 fingers),61,1250,11,11.99,web-verified 2026-07-27,2026-07-27,"combo incl. fries/toast/slaw/sauce/drink; the 52g seed counted fingers only — the full combo is 61g"
 raising-canes,6 Chicken Fingers (a la carte),78,780,6,10.49,web-verified 2026-07-24,2026-07-23,~13g protein per finger; sat = 1g per finger
+panera,Toasted Frontega Chicken (Whole),45,800,10,12.19,web-verified 2026-07-27,2026-07-27,"chicken, mozzarella, chipotle mayo on black pepper focaccia"
+panera,Bacon Turkey Bravo (Whole),45,830,13,12.69,web-verified 2026-07-27,2026-07-27,"turkey, bacon, smoked gouda on tomato-basil bread"
+panera,Chipotle Chicken Avocado Melt (Whole),41,850,14,11.99,web-verified 2026-07-27,2026-07-27,"smoked pulled chicken, avocado, gouda, chipotle mayo"
+panera,Green Goddess Cobb Salad with Chicken (Whole),42,530,7,12.39,web-verified 2026-07-27,2026-07-27,lean pick
+firehouse-subs,Hook & Ladder (Medium),36,720,9,9.39,web-verified 2026-07-27,2026-07-27,"smoked turkey, honey ham, monterey jack; chain signature"
+firehouse-subs,Club on a Sub (Medium),40,760,10,9.64,web-verified 2026-07-27,2026-07-27,"turkey, ham, bacon, monterey jack; highest protein of the mediums"
+firehouse-subs,Firehouse Steak & Cheese (Medium),38,840,13,9.89,web-verified 2026-07-27,2026-07-27,"steak, provolone, sauteed onions and peppers"
+firehouse-subs,Smoked Turkey Breast (Medium),36,680,7,8.99,web-verified 2026-07-27,2026-07-27,lean pick
+el-pollo-loco,Double Chicken Bowl,65,860,10,12.69,web-verified 2026-07-27,2026-07-27,"2 servings fire-grilled chicken over rice, beans, salsa; best raw protein total at EPL"
+el-pollo-loco,Double Chicken Avocado Salad,48,370,5,10.99,web-verified 2026-07-27,2026-07-27,"lean pick; double fire-grilled chicken, avocado, greens, pico; no dressing"
+el-pollo-loco,"Fire-Grilled Chicken Breast (1 pc, a la carte)",34,200,2.5,4.39,web-verified 2026-07-27,2026-07-27,"lean pick; single fire-grilled breast; the current official 2026 guide gives 200 cal/34g"
+el-pollo-loco,Original Pollo Bowl,36,530,1.5,8.99,web-verified 2026-07-27,2026-07-27,"fire-grilled chicken, rice, pinto beans, salsa; lowest sat fat of any bowl"
+shake-shack,Double SmokeShack,58,870,24,11.49,web-verified 2026-07-27,2026-07-27,"double Angus patties, bacon, cherry peppers, ShackSauce"
+shake-shack,Double ShackBurger,51,790,20,10.29,web-verified 2026-07-27,2026-07-27,"double Angus patties, cheese, lettuce, tomato, ShackSauce"
+shake-shack,Double Hamburger,44,590,15,9.29,web-verified 2026-07-27,2026-07-27,lean pick for Shake Shack; two plain Angus patties
+shake-shack,Chick'n Shack,33,590,10,8.49,web-verified 2026-07-27,2026-07-27,"crispy chicken breast sandwich, herb mayo, pickles"
+costco-food-court,Chicken Bake,52,840,11,3.99,web-verified 2026-07-27,2026-07-27,"chicken, bacon, cheese and Caesar baked in bread; current panel (353g) — the 770 cal/46g on file was the 2021 panel; third-party protein claims span 46-61g, so treat as provisional; membership required"
+costco-food-court,Hot Turkey & Provolone Sandwich,43,740,12,6.99,web-verified 2026-07-27,2026-07-27,hot turkey and provolone on a toasted roll
+costco-food-court,Chicken Strips (5 ct),87,1120,8,6.99,web-verified 2026-07-27,2026-07-27,"5 breaded breast strips, no dipping sauce (17.3 oz); the viral 1,640 cal figure is WITH sauce (94g fat, 15g sat) — sauce adds 520 cal and 7g sat fat; sodium is very high but sources disagree (2,900-4,590mg); nationwide since mid-2026; membership required"
+costco-food-court,Cheese Pizza (slice),41,710,14,1.99,web-verified 2026-07-27,2026-07-27,"1/6 of an 18-inch pie (9.5 oz); current per-slice panel — the 760 cal/40g/16.5g on file was a 2021 whole-pie figure divided by 6; membership required"
+costco-food-court,Pepperoni Pizza (slice),34,650,11,1.99,web-verified 2026-07-27,2026-07-27,"1/6 of an 18-inch pie (8.6 oz); carries less cheese than the cheese slice, so it is lower in calories and sat fat; membership required"
+costco-food-court,All-Beef Hot Dog & Soda Combo,24,960,12,1.50,web-verified 2026-07-27,2026-07-27,"quarter-pound dog + 20oz soda; price fixed since 1985; at 24g it falls just below the 25g threshold"
+dutch-bros,"Protein Latte (Large, Hot)",42,360,6,8.20,web-verified 2026-07-27,2026-07-27,"espresso + protein milk, no syrup; highest-protein drink on the menu; read off page 12 of the official guide"
+dutch-bros,"Protein Latte (Medium, Hot)",36,310,5,6.95,web-verified 2026-07-27,2026-07-27,hot version — the iced medium drops to 26g
+dutch-bros,"Golden Eagle Protein Latte (Medium, Hot)",33,420,4.5,6.95,web-verified 2026-07-27,2026-07-27,vanilla and caramel with drizzle; the iced medium drops to 23g
+dutch-bros,"Vanilla Zero Sugar Added Protein Latte (Medium, Hot)",33,290,4.5,6.95,web-verified 2026-07-27,2026-07-27,lowest-calorie flavored option; the iced medium drops to 23g

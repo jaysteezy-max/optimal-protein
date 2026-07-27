@@ -14,6 +14,12 @@ week-to-week data updates.
   33–42 g; the "20 g" figure repeated across the web is stale 2024 launch
   marketing. Costco has no official nutrition page (food-court data lives on
   in-warehouse menu boards), which is noted in `config/chains.yaml`.
+- **Costco food-court Chicken Strips (5 ct)** — the new $6.99 item that rolled out
+  nationwide in mid-2026. At 87 g it is the highest-protein single order on the
+  board and lands at #4 overall. Tracked without the dipping sauce, consistent
+  with how the board treats dressings: the viral "1,640 calories" figure includes
+  the sauce, which alone accounts for 520 cal and 7 g of saturated fat; the strips
+  themselves are 1,120 cal / 8 g sat fat.
 - **"Off menu" unranked state.** An item pulled from a chain's menu keeps its
   last published nutrition for reference and is now labelled *off menu* in the
   list, the detail sheet and `RANKINGS.md`, instead of being lumped in with rows

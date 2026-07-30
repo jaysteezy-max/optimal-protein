@@ -2,10 +2,48 @@
 
 Durable roadmap for this repo, so it's visible across Claude Code sessions and
 on GitHub (the in-session task list is ephemeral — it does not persist here).
-Last updated 2026-07-27 (nutrition verification finished; 6 new chains added;
-re-audit of the ranked rows started).
+Last updated 2026-07-30 (shelf board added with per-category scoring; membership
+gating made a real field; two long-standing bugs fixed).
 
 ## 🔜 Open
+
+### Verify the shelf board — nothing on it is scored
+**Status:** blocked on network access, not on a decision · **the top item**
+
+All 13 shelf rows are seeded and unranked. The session that built the board had
+no outbound HTTPS (blocked at the gateway for every host), and search snippets
+were deliberately not treated as verification — undated third-party summaries are
+exactly how the stale figures documented below propagate.
+
+**[docs/shelf-probe.md](docs/shelf-probe.md) is the work order**: every official
+URL, the trap in each, the price-basis decision and the spread behind it. Highest
+value first:
+
+1. **Saturated fat for 8 of the 13 rows** — hard-blocks scoring on its own.
+2. **A convenience/gas-station single price for any product** — the top of the
+   pricing spread; nothing captured it, so the multipack-vs-single question is
+   still only half answered.
+3. **Kirkland US pricing and sat fat** — no brand site exists, so the Costco item
+   page is the only possible source.
+
+Two seeded figures should be treated as suspect until a panel confirms them:
+Core Power Elite's saturated fat reads *lower* than the 26 g line despite 16 g
+more protein, and the rotisserie chicken row rests on an estimated edible yield
+that must be stated rather than assumed.
+
+Effort: M, and it is all fetching and cross-checking — no code.
+
+### Shelf board follow-ons, once rows are verified
+**Status:** not started · cheap once the data lands
+
+- **Slate** clears the floor (30 g / 42 g SKUs; the widely-quoted 20 g is stale)
+  and should be seeded.
+- **Quest** needs the physical panel — its own product pages omit calories.
+- **Cottage cheese and deli turkey** were scoped and left out; revisit only if the
+  board looks thin, since both cluster on top of rows already present.
+- **The benchmark strip** on the shelf board (raw cross-board medians) is built
+  and wired but stays hidden until the board has scored rows. It'll light up on
+  its own — worth eyeballing when it does.
 
 ### Verified-price workflow — the last soft spot
 **Status:** not started · `data/manual_prices.csv` still has zero entries
@@ -23,23 +61,36 @@ uplift and marks that item's price verified — but nothing uses it yet. Needed:
 This is now the biggest gap between what the page claims and what it knows.
 Effort: S–M.
 
-### Flag Costco as membership-gated
-**Status:** not started · the one piece of the scoring problem still open
-
-Score v3 fixed the math (see done section), but not the comparability issue.
-Every other chain on the board sells to anyone; Costco's food court has required
-a paid membership since April 2024, so its $1.99 and $6.99 prices exclude a
-~$65/yr fee that no other row carries. The prices are honest, the comparison
-isn't quite. Wants a badge on the chain, and probably a filter to exclude
-membership-gated chains. Effort: S.
-
 ### More chains
 **Status:** the original six are done; pick the next batch
 
-Shipped this round: Panera Bread, Firehouse Subs, El Pollo Loco, Shake Shack,
-Costco Food Court, Dutch Bros. Candidates for a next pass: Wingstop, Portillo's,
-Sweetgreen, Jimmy John's, Torchy's, and PNW grocery delis (WinCo, Fred Meyer).
-Each needs a `config/chains.yaml` entry plus web-verified items with `sat_fat_g`.
+Shipped: Panera Bread, Firehouse Subs, El Pollo Loco, Shake Shack, Costco Food
+Court, Dutch Bros. Each new one needs a `config/chains.yaml` entry plus
+web-verified items with `sat_fat_g`.
+
+Worth doing, in order of insight per row:
+
+1. **More rows at chains already tracked** — the double-protein / add-a-patty /
+   a-la-carte builds: Chipotle's full High Protein menu, Panda double entree,
+   Cava and Qdoba double protein, Subway double meat, McDonald's add-a-patty.
+   This is the highest-value item on the whole list and it keeps getting skipped
+   in favour of new logos. No new sources, no new config, no positioning
+   question, and it serves the README's promise directly — the actionable finding
+   of this tool is "order the a-la-carte protein, not the sandwich", and there are
+   four rows proving it where there could be twenty.
+2. **WinCo / Fred Meyer deli hot bar** — the most on-mission item of the grocery
+   expansion: still a counter you order at, and the bridge between the two boards.
+3. **Wingstop** — real PNW footprint, a genuinely wings-shaped hole, lands
+   mid-table so it disturbs nothing.
+4. **Sweetgreen** — worth it for the negative result. At roughly 2.3 g protein per
+   dollar the healthy-looking salad chain is near the bottom of the board, which
+   is a finding.
+5. **Jimmy John's** — fine, on-mission, low insight. Four sub chains are already
+   present and they all cluster in the 20s–30s. Coverage, not learning.
+
+**Removed from this list: Portillo's and Torchy's.** Portillo's has no Washington
+or Oregon locations and Torchy's PNW footprint is thin at best — they were on the
+next-chains list of a *PNW* tracker by mistake.
 
 ### Finish the re-audit — 11 rows left
 **Status:** in progress · stopped early on a session limit, not on a conclusion
@@ -139,6 +190,38 @@ coarse. Possible companion: a per-chain `offers_url` link in the detail sheet.
 
 ## ✅ Decided / done (for context)
 
+- **Off-the-shelf board added, scored separately.** A `Shelf` tab with full
+  feature parity (search, sorts, compare, budget, swipe sheet, regional pricing,
+  motion), 13 seeded rows across 9 brands. The decision that mattered was *not*
+  merging it into the main board: winsorizing protects against one outlier, not
+  against a dominant population, because the percentile reference itself moves.
+  Shelf items beat fast food 3.5x on protein per dollar, 2.9x on calories per
+  50 g and 6.6x on saturated fat at the median; pooled, shakes alone took 8 of the
+  top 10 and the median score fell 44.1 → 33.3. Each category now normalizes
+  against itself, ranks restart per board, and every pre-existing restaurant score
+  is bit-identical (verified row-by-row as the gate on the change). Cross-board
+  comparison is done with the raw per-50 g figures, which are absolute; the
+  compare view warns when two picks span boards.
+- **Costco membership flagged — closes the old "flag Costco as membership-gated"
+  item.** It's now a real `membership_required` field on the vendor rather than a
+  YAML comment and free-text notes that nothing downstream could read, and it
+  drives a badge plus a filter. It covers the Kirkland shelf rows as well as the
+  food court, which is the widened scope the original item anticipated.
+- **The unit-of-comparison problem, resolved as disclosure rather than a score
+  term.** New `format` / `servings` / `purchase_price_usd` / `retailer` columns,
+  and the sheet states what the register charges next to what the score prices.
+  A convenience or effort weight was considered and **rejected**: it can't be
+  verified, so it would be a fourth term sourced from judgment alone on a board
+  whose credibility rests on being auditable. The 25 g floor was kept on both
+  boards by decision, accepting that some staples only clear it above their label
+  serving — which is why those rows must declare the unit.
+- **Two long-standing bugs fixed.** `pull_nutrition.py`'s hard-coded `FIELDS` had
+  drifted (missing `sat_fat_g`), so `upsert_items` raised `ValueError` any time it
+  had something to write — masked only because every curated chain exits early.
+  And `pnw_uplift_pct` never reached the page: `__UPLIFT__` was substituted into a
+  token that doesn't exist in the template, while `priceOf()` substituted the
+  region multiplier *for* the uplift, agreeing with the score only because the PNW
+  multiplier happened to equal it.
 - **Nutrition verification finished.** All 61 rows that were `seeded — verify`
   are now web-verified and carry `sat_fat_g`, so nothing is unranked for lack of
   verification. Notable corrections: Jersey Mike's cold subs were seeded as plain

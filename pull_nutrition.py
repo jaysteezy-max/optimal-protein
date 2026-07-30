@@ -208,11 +208,24 @@ def diff_pulls(prev: dict | None, cur: dict):
 # ------------------------------------------------------------- items.csv upsert
 
 ITEMS_CSV = ROOT / "data/items.csv"
-FIELDS = ["chain", "item", "protein_g", "calories", "national_price_usd",
-          "source", "pulled_date", "notes"]
+
+# The column set is read from items.csv itself rather than hard-coded. A
+# hard-coded list silently drifted out of date once already: it omitted
+# sat_fat_g (added in Score v2), so DictWriter raised ValueError on every write
+# that had something to save. Deriving it means new columns can be added to the
+# CSV without touching this file.
+FALLBACK_FIELDS = ["chain", "item", "protein_g", "calories", "sat_fat_g",
+                   "national_price_usd", "source", "pulled_date", "notes"]
+
+
+def items_fields() -> list[str]:
+    with ITEMS_CSV.open(newline="") as f:
+        header = next(csv.reader(f), None)
+    return [h for h in (header or []) if h] or FALLBACK_FIELDS
 
 
 def upsert_items(slug: str, pull: dict, threshold: float) -> tuple[int, int]:
+    fields = items_fields()
     with ITEMS_CSV.open(newline="") as f:
         rows = list(csv.DictReader(f))
     by_key = {(r["chain"], r["item"].strip().lower()): r for r in rows}
@@ -229,17 +242,21 @@ def upsert_items(slug: str, pull: dict, threshold: float) -> tuple[int, int]:
                 r["pulled_date"] = today
                 updated += 1
         elif it["protein_g"] >= threshold:
-            rows.append({"chain": slug, "item": it["item"],
-                         "protein_g": f"{it['protein_g']:g}",
-                         "calories": f"{it['calories']:g}",
-                         "national_price_usd": "",
-                         "source": pull["source_url"],
-                         "pulled_date": today,
-                         "notes": "NEW from nutrition pull — needs price"})
+            new = {k: "" for k in fields}
+            new.update({"chain": slug, "item": it["item"],
+                        "protein_g": f"{it['protein_g']:g}",
+                        "calories": f"{it['calories']:g}",
+                        "source": pull["source_url"],
+                        "pulled_date": today,
+                        "notes": "NEW from nutrition pull — needs price"})
+            rows.append(new)
             added += 1
     if updated or added:
         with ITEMS_CSV.open("w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=FIELDS)
+            # restval/extrasaction keep a column added to items.csv from
+            # crashing the writer if some in-memory row predates it
+            w = csv.DictWriter(f, fieldnames=fields, restval="",
+                               extrasaction="ignore")
             w.writeheader()
             w.writerows(rows)
     return updated, added

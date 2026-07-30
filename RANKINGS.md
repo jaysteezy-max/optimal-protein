@@ -1,42 +1,44 @@
 # Protein Value Rankings (PNW)
 
-Generated 2026-07-27. Prices are national averages + 10% PNW uplift, not till-verified — confirm in store. Sales tax and app deals excluded.
+Generated 2026-07-30. Prices are national averages + 10% PNW uplift, not till-verified — confirm in store. Sales tax and app deals excluded.
 
 Value Score = 45% protein-per-dollar + 40% calorie efficiency (calories per 50 g protein) + 15% low-saturated-fat. Each term is measured per 50 g of protein and scaled against the 95th percentile rather than the single best item, so one bargain outlier can't flatten everyone else's score. **Only web-verified items are scored** — unverified rows are listed unranked until verified, and items pulled from the menu are listed unranked as off menu.
 
-## Best pick per chain
+Two boards, scored **separately**: fast-food orders and off-the-shelf grocery items. Each is normalized against its own pool, so a score is only meaningful against other rows on the same board — retail beats restaurant food by 2–7x on every term at once, and a shared ruler would flatten the restaurant board. The raw per-50 g columns below *do* compare across boards; the Score column does not.
 
-| Chain | Order | Price | Protein | Score |
-|---|---|---|---|---|
-| El Pollo Loco | Fire-Grilled Chicken Breast (1 pc, a la carte) | $4.83 | 34 g | 100.0 |
-| Raising Cane's | 6 Chicken Fingers (a la carte) | $11.54 | 78 g | 94.7 |
-| KFC | Original Recipe Chicken Breast | $6.04 | 39 g | 90.5 |
-| Costco Food Court | Chicken Strips (5 ct) | $7.69 | 87 g | 87.2 |
-| Popeyes | Fried Chicken Breast | $5.49 | 35 g | 82.9 |
-| Chipotle | Double High Protein Bowl | $15.95 | 81 g | 75.9 |
-| Chick-fil-A | Chick-fil-A Nuggets (12 ct) | $8.24 | 40 g | 74.7 |
-| Dutch Bros | Protein Latte (Medium, Hot) | $7.65 | 36 g | 73.7 |
-| Panda Express | Grilled Teriyaki Chicken (entree) | $7.37 | 33 g | 73.6 |
-| Arby's | Half Pound Roast Beef | $9.23 | 48 g | 64.3 |
-| Carl's Jr. | Charbroiled BBQ Chicken Sandwich | $8.79 | 35 g | 57.0 |
-| In-N-Out | 3x3 | $8.09 | 48 g | 55.0 |
-| McDonald's | Double Cheeseburger | $4.11 | 25 g | 54.2 |
-| Wendy's | Dave's Double | $8.68 | 49 g | 53.5 |
-| Cava | Double Chicken Bowl | $18.15 | 64 g | 50.4 |
-| Shake Shack | Double Hamburger | $10.22 | 44 g | 49.5 |
-| Subway | Footlong Oven Roasted Turkey | $11.21 | 38 g | 45.7 |
-| Panera Bread | Green Goddess Cobb Salad with Chicken (Whole) | $13.63 | 42 g | 44.1 |
-| Qdoba | Chicken Protein Bowl | $15.68 | 51 g | 42.8 |
-| Jack in the Box | Double Jack | $8.79 | 46 g | 42.4 |
-| Jersey Mike's | #7 Turkey & Provolone (Regular) | $11.83 | 44 g | 34.6 |
-| Firehouse Subs | Smoked Turkey Breast (Medium) | $9.89 | 36 g | 32.7 |
-| Taco Bell | Chicken Quesadilla | $6.48 | 26 g | 27.5 |
-| Burgerville | Colossal Burger (Single) | $9.31 | 28 g | 25.2 |
-| Five Guys | Cheeseburger | $13.19 | 47 g | 23.6 |
+## Best pick per vendor
 
-## Full rankings
+| Board | Vendor | Pick | Price | Protein | Score |
+|---|---|---|---|---|---|
+| fast food | El Pollo Loco | Fire-Grilled Chicken Breast (1 pc, a la carte) | $4.83 | 34 g | 100.0 |
+| fast food | Raising Cane's | 6 Chicken Fingers (a la carte) | $11.54 | 78 g | 94.7 |
+| fast food | KFC | Original Recipe Chicken Breast | $6.04 | 39 g | 90.5 |
+| fast food | Costco Food Court | Chicken Strips (5 ct) | $7.69 | 87 g | 87.2 |
+| fast food | Popeyes | Fried Chicken Breast | $5.49 | 35 g | 82.9 |
+| fast food | Chipotle | Double High Protein Bowl | $15.95 | 81 g | 75.9 |
+| fast food | Chick-fil-A | Chick-fil-A Nuggets (12 ct) | $8.24 | 40 g | 74.7 |
+| fast food | Dutch Bros | Protein Latte (Medium, Hot) | $7.65 | 36 g | 73.7 |
+| fast food | Panda Express | Grilled Teriyaki Chicken (entree) | $7.37 | 33 g | 73.6 |
+| fast food | Arby's | Half Pound Roast Beef | $9.23 | 48 g | 64.3 |
+| fast food | Carl's Jr. | Charbroiled BBQ Chicken Sandwich | $8.79 | 35 g | 57.0 |
+| fast food | In-N-Out | 3x3 | $8.09 | 48 g | 55.0 |
+| fast food | McDonald's | Double Cheeseburger | $4.11 | 25 g | 54.2 |
+| fast food | Wendy's | Dave's Double | $8.68 | 49 g | 53.5 |
+| fast food | Cava | Double Chicken Bowl | $18.15 | 64 g | 50.4 |
+| fast food | Shake Shack | Double Hamburger | $10.22 | 44 g | 49.5 |
+| fast food | Subway | Footlong Oven Roasted Turkey | $11.21 | 38 g | 45.7 |
+| fast food | Panera Bread | Green Goddess Cobb Salad with Chicken (Whole) | $13.63 | 42 g | 44.1 |
+| fast food | Qdoba | Chicken Protein Bowl | $15.68 | 51 g | 42.8 |
+| fast food | Jack in the Box | Double Jack | $8.79 | 46 g | 42.4 |
+| fast food | Jersey Mike's | #7 Turkey & Provolone (Regular) | $11.83 | 44 g | 34.6 |
+| fast food | Firehouse Subs | Smoked Turkey Breast (Medium) | $9.89 | 36 g | 32.7 |
+| fast food | Taco Bell | Chicken Quesadilla | $6.48 | 26 g | 27.5 |
+| fast food | Burgerville | Colossal Burger (Single) | $9.31 | 28 g | 25.2 |
+| fast food | Five Guys | Cheeseburger | $13.19 | 47 g | 23.6 |
 
-| # | Chain | Item | Price | Protein | Cal | Sat fat | Prot/$ | Cal/50g | Score |
+## Fast food — full rankings
+
+| # | Vendor | Item | Price | Protein | Cal | Sat fat | Prot/$ | Cal/50g | Score |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | El Pollo Loco | Fire-Grilled Chicken Breast (1 pc, a la carte) | $4.83 | 34 g | 200 | 2.5 g | 7.04 | 294 | 100.0 |
 | 2 | Raising Cane's | 6 Chicken Fingers (a la carte) | $11.54 | 78 g | 780 | 6 g | 6.76 | 500 | 94.7 |
@@ -139,3 +141,23 @@ Value Score = 45% protein-per-dollar + 40% calorie efficiency (calories per 50 g
 | – | Subway | Footlong Rotisserie-Style Chicken | $12.42 | 46 g | 610 | 4 g | 3.7 | 663 | off menu |
 | – | Burgerville | Best Coast Turkey Burger | $8.94 | 26 g | 380 | 2.5 g | 2.91 | 731 | off menu |
 | – | Taco Bell | Power Menu Bowl (Chicken) | $7.69 | 26 g | 470 | 6 g | 3.38 | 904 | off menu |
+
+## Off the shelf — full rankings
+
+_Nothing here is scored yet._ Every row is seeded and awaiting verification against the product's own Nutrition Facts panel — see [docs/shelf-probe.md](docs/shelf-probe.md) for exactly what each row still needs. The hard rule applies to this board too: no score without verified nutrition including saturated fat.
+
+| # | Vendor | Item | Price | Protein | Cal | Sat fat | Prot/$ | Cal/50g | Score |
+|---|---|---|---|---|---|---|---|---|---|
+| – | StarKist | Chunk Light Tuna in Water (5 oz can) | $1.34 | 27 g | 110 | — | 20.15 | 204 | awaiting verification |
+| – | Fairlife | Nutrition Plan Chocolate (30 g) | $2.39 | 30 g | 150 | 1.5 g | 12.55 | 250 | awaiting verification |
+| – | Optimum Nutrition | Gold Standard 100% Whey (2 scoops) | $1.83 | 48 g | 240 | — | 26.23 | 250 | awaiting verification |
+| – | Muscle Milk | Pro Protein Shake (42 g) | $3.64 | 42 g | 220 | — | 11.54 | 262 | awaiting verification |
+| – | Premier Protein | Protein Shake Chocolate (30 g) | $2.08 | 30 g | 160 | 1 g | 14.42 | 267 | awaiting verification |
+| – | Kirkland Signature | Protein Shake Chocolate (30 g) | $1.30 | 30 g | 160 | — | 23.08 | 267 | awaiting verification |
+| – | Fairlife | Core Power Elite Chocolate (42 g) | $4.16 | 42 g | 230 | 2 g | 10.1 | 274 | awaiting verification |
+| – | Fage | Total 0% Plain (1.5 cups) | $2.33 | 33 g | 190 | — | 14.16 | 288 | awaiting verification |
+| – | OWYN | Pro Elite Chocolate (32 g) | $4.42 | 32 g | 200 | 1 g | 7.24 | 312 | awaiting verification |
+| – | Fairlife | Core Power Chocolate (26 g) | $3.11 | 26 g | 170 | 3 g | 8.36 | 327 | awaiting verification |
+| – | Fairlife | Core Power Vanilla (26 g) | $3.11 | 26 g | 170 | 2.5 g | 8.36 | 327 | awaiting verification |
+| – | Kirkland Signature | Rotisserie Chicken (1/4 bird, meat only) | $1.30 | 52 g | 363 | — | 40.0 | 349 | awaiting verification |
+| – | Kroger / Fred Meyer | Large Eggs (5) | $1.94 | 30 g | 350 | — | 15.46 | 583 | awaiting verification |

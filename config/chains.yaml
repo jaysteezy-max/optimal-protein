@@ -1,4 +1,24 @@
-# The 26 chains in scope (top PNW fast food / fast casual).
+# Every vendor in scope: 26 PNW fast-food / fast-casual chains, plus the
+# off-the-shelf retail brands that make up the second board.
+#
+# kind:
+#   restaurant — a counter you order at. The default when omitted, so none of
+#                the original 26 entries needed editing.
+#   retail     — a product you buy off a grocery shelf.
+#
+# `kind` decides which BOARD an item lands on and, critically, which pool its
+# score is normalized against. Restaurant and retail items are never scored
+# against each other: retail beats restaurant food by 2-7x on all three terms
+# at once, so a shared ruler would flatten the restaurant board (median score
+# 44.1 -> 33.3) and re-create the exact failure Score v3 was written to fix.
+# The raw per-50-g metrics stay directly comparable across boards; only the
+# 0-100 score is pool-relative. See config/scoring.yaml.
+#
+# membership_required: true
+#   The listed price needs a paid membership (Costco, ~$65/yr) that no other
+#   row carries. Previously this caveat lived only in a YAML comment and in
+#   free-text notes, so nothing downstream could act on it; it is now a real
+#   field that drives a badge and a filter.
 #
 # puller:
 #   auto    — pull_nutrition.py has a fetcher for this chain (best-effort;
@@ -108,12 +128,109 @@ chains:
     name: Costco Food Court
     # Costco publishes food-court nutrition only on in-warehouse menu boards —
     # there is no official page, so this mirror is the best available source.
-    # NOTE: since April 2024 a paid Costco membership is required to order at US
-    # food courts, so these prices exclude the ~$65/yr membership. Unlike every
-    # other chain here, the listed price is not what a non-member can pay.
+    # Since April 2024 a paid Costco membership is required to order at US food
+    # courts, so these prices exclude the ~$65/yr membership. Unlike every other
+    # chain here, the listed price is not what a non-member can pay — hence the
+    # membership_required flag below.
     nutrition_url: https://fastfoodnutrition.org/costco
     puller: curated
+    membership_required: true
   - slug: dutch-bros
     name: Dutch Bros
     nutrition_url: https://www.dutchbros.com/website/menu/nutritional-guide.pdf
+    puller: curated
+
+  # ------------------------------------------------------------------ retail
+  # Off-the-shelf vendors — the "Shelf" board. These are BRANDS, not stores:
+  # a Fairlife Core Power is the same product at Costco, Fred Meyer, Walmart,
+  # WinCo and Trader Joe's, so the brand is the vendor identity and the store
+  # the price came from is recorded per row in items.csv's `retailer` column.
+  # Store-brand commodities (eggs, tuna, rotisserie chicken) use the retailer's
+  # own label as the brand, which is what you actually look for on the shelf.
+  #
+  # Nutrition for a packaged food comes off its Nutrition Facts panel, which is
+  # a firmer source than a restaurant menu page — but the panel on the shelf is
+  # the authority, not the marketing copy. Several of these carry known-stale
+  # protein figures across the web (see docs/shelf-probe.md).
+
+  # --- ready-to-drink shake brands
+  - slug: fairlife
+    name: Fairlife
+    kind: retail
+    nutrition_url: https://fairlife.com/core-power/
+    puller: curated
+  - slug: premier-protein
+    name: Premier Protein
+    kind: retail
+    nutrition_url: https://www.premierprotein.com/products/protein-shakes
+    puller: curated
+  - slug: muscle-milk
+    name: Muscle Milk
+    kind: retail
+    # PepsiCo reformulated the entire line in spring 2026; distribution moved
+    # onto Gatorade/PepsiCo web properties, so pick the canonical page with care.
+    nutrition_url: https://www.musclemilk.com/products/
+    puller: curated
+  - slug: owyn
+    name: OWYN
+    kind: retail
+    nutrition_url: https://liveowyn.com/collections/pro-elite
+    puller: curated
+  - slug: quest-nutrition
+    name: Quest Nutrition
+    kind: retail
+    # Quest's own product pages deliberately omit calories ("See Nutrition Facts
+    # for Calorie Content"), so this one needs the physical panel or a PDF.
+    nutrition_url: https://www.questnutrition.com/collections/protein-shakes
+    puller: curated
+
+  # --- benchmark staples: these set the true scale of the shelf board
+  - slug: optimum-nutrition
+    name: Optimum Nutrition
+    kind: retail
+    nutrition_url: https://www.optimumnutrition.com/products/gold-standard-100-whey-protein-powder
+    puller: curated
+  - slug: fage
+    name: Fage
+    kind: retail
+    nutrition_url: https://usa.fage/products/yogurt/total-0/
+    puller: curated
+  - slug: starkist
+    name: StarKist
+    kind: retail
+    nutrition_url: https://starkist.com/products/chunk-light-tuna-in-water
+    puller: curated
+
+  # --- store brands, one per retailer named in the scouting scope
+  - slug: kirkland-signature
+    name: Kirkland Signature
+    kind: retail
+    # No brand site exists — the Costco item page is the only official source.
+    # Club pricing needs the same paid membership as the food court above.
+    nutrition_url: https://www.costco.com/grocery-household.html
+    puller: curated
+    membership_required: true
+  - slug: great-value
+    name: Great Value
+    kind: retail
+    nutrition_url: https://www.walmart.com/browse/food/great-value/976759
+    puller: curated
+  - slug: trader-joes
+    name: Trader Joe's
+    kind: retail
+    nutrition_url: https://www.traderjoes.com/home/products
+    puller: curated
+  - slug: kroger-brand
+    name: Kroger / Fred Meyer
+    kind: retail
+    # Fred Meyer is Kroger's PNW banner; nutrition and pricing come off the
+    # shared Kroger private-label panels.
+    nutrition_url: https://www.kroger.com/pl/kroger-brand/
+    puller: curated
+  - slug: winco-bulk
+    name: WinCo Bulk
+    kind: retail
+    # WinCo publishes no online nutrition; bulk-bin items need the in-store
+    # panel or the supplier's spec sheet.
+    nutrition_url: https://www.wincofoods.com/
     puller: curated

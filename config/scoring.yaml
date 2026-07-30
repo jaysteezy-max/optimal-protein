@@ -29,16 +29,79 @@ weights:
 # Lower it to clip harder; the top of the board is stable anywhere from 85 to 95.
 winsorize_pct: 95
 
+# PER-CATEGORY POOLS (added with the Shelf board).
+#
+# Winsorizing solved the single-outlier problem. It does NOT solve a dominant
+# sub-POPULATION, because the percentile reference itself moves. Off-the-shelf
+# retail beats restaurant food on all three terms at once — measured against
+# the real board, comparing medians:
+#
+#     protein per dollar   restaurant  4.18   shelf  14.57   (3.5x)
+#     calories per 50 g    restaurant   839   shelf    288   (2.9x)
+#     sat fat per 50 g     restaurant 11.73   shelf   1.79   (6.6x)
+#
+# Pooled together, 8 of the top 10 went to shakes on single-unit pricing alone,
+# the median score fell 44.1 -> 33.3, and the restaurant field lost 11.3 points
+# on average (worst row -28.4). That is a worse state than the Score v2 bug v3
+# was written to fix, and lowering winsorize_pct makes it worse still (at 85 and
+# below, a dozen items tie at 100 and the board stops discriminating).
+#
+# So each category is normalized against ITSELF: refs and ranks are computed per
+# category, and no score is ever comparable across the boundary. Restaurant
+# scores are therefore bit-identical to what they were before retail existed.
+#
+# The RAW metrics above stay directly comparable across boards — they are
+# absolute costs per 50 g of protein, not pool-relative. That is how the
+# cross-category comparison should be made and stated: with the raw numbers,
+# never by putting two 0-100 scores side by side.
+score_pools: category
+
 # HARD RULE (locked — see BACKLOG.md): only rows whose source is web-verified
 # AND that have sat_fat_g data are scored. Unverified rows appear unranked as
 # "awaiting verification"; items pulled from a menu appear as "off menu".
 
-# Items below this protein threshold are excluded from the rankings.
+# Items below this protein threshold are excluded from the rankings. Applies to
+# BOTH boards: a deliberate choice for consistency, accepting that several
+# grocery staples only clear it when priced as a whole package rather than a
+# single label serving (a cup of Greek yogurt is 22 g, four eggs 24 g, one whey
+# scoop 24 g). Rows that do this MUST declare `servings` and
+# `purchase_price_usd` in items.csv so the unit is disclosed, not hidden.
 protein_threshold_g: 25
 
 # Flat uplift applied to national-average prices to approximate PNW pricing.
 # Prices are NOT store-verified; this is a deliberate approximation.
-pnw_uplift_pct: 10
+#
+# Restaurant stays at 10%. Retail is lower because packaged goods price far more
+# nationally than prepared food: grocery chains run chain-wide price zones and
+# national promo calendars, and BEA publishes goods RPPs far more compressed
+# toward 1.00 than services RPPs, which carry nearly all the regional dispersion.
+# Applying a prepared-food uplift to a Fairlife bottle is not defensible.
+pnw_uplift_pct: 10           # restaurant default; kept for back-compat
+uplift_pct_by_kind:
+  restaurant: 10
+  retail: 4
 
-# Prepared-food sales tax is excluded from all prices (varies across the PNW:
-# WA taxes prepared food, OR has no sales tax).
+# How much of a region's multiplier applies to each kind, for DISPLAYED prices.
+# 1.0 = full regional swing (restaurant food, a local service). 0.4 damps the
+# swing for packaged goods, for the tradable-goods reason above.
+#
+# Safe now, but only because of score_pools above: a multiplier uniform WITHIN a
+# category cancels out of that category's normalization (percentile() is
+# scale-equivariant, so the winsorized fraction is unchanged). Per-kind
+# multipliers under a SHARED pool would have made rankings region-dependent and
+# broken the region-invariance claim outright.
+region_damping_by_kind:
+  restaurant: 1.0
+  retail: 0.4
+
+# Sales tax is excluded from all prices. This used to be a symmetric omission —
+# every row was prepared food, so a common factor cancelled out. With two
+# categories it is asymmetric and state-dependent: WA taxes prepared food
+# (~8.5-10.5%) but exempts food ingredients, so excluding tax understates
+# restaurant cost relative to grocery in WA, while OR (no sales tax) is a wash.
+# Contained rather than solved: within a category the omission is symmetric
+# again, which is a second reason the pools are separate.
+#
+# Note the exemption does not follow `kind` cleanly at the item level — a
+# non-dairy sweetened protein beverage is a taxable "soft drink" in WA, and
+# anything with a Supplement Facts panel is a taxable "dietary supplement".

@@ -114,7 +114,27 @@ capped at `max-width: 600px` and the caveat at `44ch` for a comfortable measure.
 
 - **Sticky controls** (`.controls`) — frosted bar: `backdrop-filter:
   saturate(1.8) blur(20px)` over an 82%-opaque `--bg`, `--line` bottom border.
-  Chain filter + search on one row, region selector spanning full width below.
+  Board switch spanning full width on top, then vendor filter + search on one
+  row, then the region selector spanning full width below.
+- **Board switch** (`.seg`) — iOS segmented control, `role="tablist"` with two
+  real `<button role="tab">`s over an absolutely-positioned `.seg-ind`. The
+  indicator slides via `transform` on `.seg[data-board="shelf"]` using the same
+  `cubic-bezier(.32,.72,0,1)` as the sheet, so board switching feels like the
+  rest of the app. Left/right arrows move between tabs.
+  **The track mixes toward `--bg`, not `--ink`** — mixing toward ink inverts in
+  dark mode and makes the track read *above* the raised indicator. Any new
+  recessed surface should do the same.
+- **Row flags** (`.flags` / `.flag`) — small muted chips under a row title that
+  *qualify* it without competing with the score: `.flag.mem` (uses `--warn`) for
+  a membership-gated price, plain `.flag` for the purchase format. Deliberately
+  quieter than `.best` and `.order-badge`, which are calls to action.
+- **Benchmark strip** (`.vs`) — three cards of raw cross-board metrics, shown
+  only on the shelf board and only when both boards have scored rows. Carries
+  raw per-50 g figures exclusively; never two value scores, which aren't
+  comparable across boards.
+- **Package disclosure** (`.pkg`) — a hairline-separated footnote inside the
+  nutrition panel stating what the register charges versus what the score prices
+  ("$4.99 buys 4 servings — the score uses $1.25 per serving").
 - **Inset-grouped list** (`.list` / `.row`) — single `--card` container,
   `--radius` corners, `--hair` dividers, last row borderless. Rows are real
   `<button>`s: hover/active tint via `color-mix`, `focus-visible` shows a
@@ -153,6 +173,7 @@ nothing under reduced motion or if the library didn't load):
 | Sheet open — content      | Head + panels stagger in, `stagger(55)`         | `easeOutQuart` |
 | Sheet open — score        | Number tween 0 → value over 900 ms              | `easeOutExpo` |
 | Sheet open — bars         | Left-to-right fill, one 5% overshoot, settle on the score; `stagger(90)` (CSS width transition disabled first so they don't fight) | `easeOutQuart` → `easeOutSine` |
+| Board switch              | Segmented indicator slides (CSS `transform`); the new list runs the standard render stagger | `cubic-bezier(.32,.72,0,1)` |
 
 The sheet's own rise stays a CSS transition because the drag-to-dismiss
 gesture manipulates that transform directly.

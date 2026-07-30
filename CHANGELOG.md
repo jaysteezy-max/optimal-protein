@@ -8,6 +8,55 @@ week-to-week data updates.
 ## [Unreleased]
 
 ### Added
+- **Second board: Off the shelf.** A `Shelf` tab alongside `Fast food`, for
+  grocery protein — RTD shakes (Fairlife, Premier, Muscle Milk, OWYN, Kirkland)
+  plus the benchmark staples that set the real scale: canned tuna, Costco
+  rotisserie chicken, bulk whey, Greek yogurt, eggs. 13 seeded rows across 9
+  brands. Full feature parity with the primary board: search, all five sorts,
+  compare, budget, the detail sheet with its swipe-to-dismiss gesture, regional
+  pricing, and the anime.js motion, all per-board.
+
+  **The boards are scored separately, and that's the load-bearing decision.**
+  Winsorizing fixed the single-outlier problem in v3; it does nothing about a
+  dominant *population*, because the percentile reference itself moves. Comparing
+  medians, shelf items beat fast food 3.5x on protein per dollar, 2.9x on
+  calories per 50 g, and 6.6x on saturated fat. Pooled together, shakes alone
+  took 8 of the top 10 on single-unit pricing, the median score fell 44.1 → 33.3,
+  and the restaurant field lost 11.3 points on average (worst row −28.4) — a
+  worse state than the v2 bug v3 was written to fix, with no single row to blame.
+  Lowering `winsorize_pct` makes it worse: at 85 and below a dozen items tie at
+  100 and the board stops discriminating.
+
+  So each category normalizes against itself, and ranks restart per board. Every
+  pre-existing restaurant score is therefore **bit-identical** — verified row by
+  row against the previous build as the gate on the change. What does cross the
+  boundary is the raw arithmetic: `protein_per_dollar`, `cal_per_50g` and
+  `satfat_per_50g` are absolute, and the shelf board carries a benchmark strip
+  built only from those. The compare view warns explicitly when the two items
+  picked sit on different boards.
+
+- **Vendor `kind` and `membership_required`** in `config/chains.yaml`. `kind`
+  (`restaurant` default, or `retail`) decides an item's board, so a row can never
+  disagree with its vendor about where it belongs. `membership_required` turns the
+  Costco caveat from a YAML comment and free-text notes — invisible to every
+  consumer of the data — into a real field driving a badge and a filter. It now
+  covers Kirkland shelf rows as well as the food court.
+
+- **Package-price disclosure.** New item columns `format`, `servings`,
+  `purchase_price_usd` and `retailer`. The score always prices one serving, so
+  the sheet now states both: *"$4.99 buys 4 servings — the score uses $1.25 per
+  serving."* A 12-pack that scores well per bottle still costs you the 12-pack.
+  This is the honest version of a "convenience" factor — a verifiable fact about
+  the purchase rather than a subjective effort rating, which is why no effort
+  term was added to the score. The build cross-checks
+  `purchase_price_usd / servings` against `national_price_usd` and fails if they
+  disagree by more than 2¢ or 3%.
+
+- **[docs/shelf-probe.md](docs/shelf-probe.md)** — every official URL the shelf
+  board still needs, the known trap in each, the price-basis decision and the
+  spread behind it, the unit choices the 25 g floor forces, and the categories
+  scoped then deliberately excluded.
+
 - **Score v3.** The Value Score is now 45% protein-per-dollar + 40% calorie
   efficiency + 15% low-saturated-fat, and every term is expressed as a cost per
   50 g of protein, so portion size cancels out — a 3-piece and a 6-piece of the
@@ -80,6 +129,19 @@ week-to-week data updates.
 - `CHANGELOG.md` — this file.
 
 ### Changed
+- **Per-kind pricing.** The 10% PNW uplift is calibrated on prepared food, so
+  retail now carries 4% and feels only 40% of the regional swing — packaged goods
+  price far more nationally (chain-wide price zones, national promo calendars,
+  BEA goods RPPs compressed toward 1.00). Safe only *because* the pools are
+  separate: a multiplier uniform within a category still cancels out of that
+  category's normalization, so region-invariance survives. A per-kind *regional*
+  multiplier under a shared pool would have made rankings region-dependent, and
+  was rejected for that reason.
+- Sales-tax caveats now state what's omitted for whom. The exclusion used to be
+  symmetric because every row was prepared food; across categories it isn't — WA
+  taxes prepared food but exempts food ingredients, so the board understates
+  restaurant cost relative to grocery there, while Oregon is a wash.
+- `RANKINGS.md` splits into per-board tables; the CLI reports per board.
 - **Nutrition verification finished.** All 61 rows previously marked
   `seeded — verify` are now web-verified with saturated fat, each checked against
   the chain's own published data plus at least one independent source, so nothing
@@ -91,6 +153,19 @@ week-to-week data updates.
   breakdown.
 
 ### Fixed
+- **`pull_nutrition.py` crashed on every write.** `FIELDS` was hard-coded and had
+  drifted out of date — it omitted `sat_fat_g`, added back in Score v2 — so
+  `csv.DictWriter` raised `ValueError: dict contains fields not in fieldnames`
+  any time `upsert_items` actually had something to save. It was masked only
+  because every `curated` chain exits early for lack of a `_curated.json`. The
+  column set is now read from `items.csv` itself, so it can't drift again.
+- **`pnw_uplift_pct` never reached the page.** `__UPLIFT__` was substituted in
+  `write_html` but the token appears nowhere in the template, and `priceOf()`
+  recomputed displayed prices as `price_national × regionMult()` — substituting
+  the region multiplier *for* the uplift rather than compounding it. The two
+  agreed only by coincidence, because the PNW multiplier happened to equal the
+  uplift. Rows now carry the basis the score was computed on, and displayed
+  prices scale from it.
 Verification corrected a lot of seeded data. The material ones:
 
 - **Items that had been seeded as the wrong build.** Jersey Mike's cold subs were

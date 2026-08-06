@@ -1,6 +1,6 @@
 # Protein Value Rankings (PNW)
 
-Generated 2026-08-03. Prices are national averages + 10% PNW uplift, not till-verified — confirm in store. Sales tax and app deals excluded.
+Generated 2026-08-06. Prices are national averages + 10% PNW uplift, not till-verified — confirm in store. Sales tax and app deals excluded.
 
 Value Score = 45% protein-per-dollar + 40% calorie efficiency (calories per 50 g protein) + 15% low-saturated-fat. Each term is measured per 50 g of protein and scaled against the 95th percentile rather than the single best item, so one bargain outlier can't flatten everyone else's score. **Only web-verified items are scored** — unverified rows are listed unranked until verified, and items pulled from the menu are listed unranked as off menu.
 

@@ -32,7 +32,7 @@ On the page, tap any item to see the exact math.
 
 Total calories are deliberately *not* in the score. Whether 1,120 calories is a
 great deal or a dealbreaker depends on your day, so the page shows the number and
-lets you sort on it rather than guessing on your behalf.
+gives calorie efficiency its own board rather than guessing on your behalf.
 
 **Only web-verified items are ranked.** A row is scored only once its nutrition
 — including saturated fat — has been confirmed against the chain's own current
@@ -46,9 +46,12 @@ databases lag behind, sometimes by years — a `web-verified` stamp is a snapsho
 not a guarantee. Ranked rows get re-audited against official sources rather than
 trusted indefinitely.
 
-The page also lets you **sort** (value, protein, per-dollar, leanest, price),
-**compare** any two items side by side, and run a **budget** ("most protein for
-$X, optionally at one chain").
+The page has four **boards**, one per intent: **Value** (the blended score),
+**Per $** (raw protein per dollar), **Lean** (fewest calories per 50 g of
+protein), and **Budget** — a target board that answers either "most protein for
+$X" or "cheapest way to hit N g", as a single item or a same-chain combo whose
+combined nutrition opens in the same detail sheet. You can also **compare** any
+two items side by side.
 
 ## 🗂️ How it works
 

@@ -8,6 +8,25 @@ week-to-week data updates.
 ## [Unreleased]
 
 ### Added
+- **Intent boards.** The sort dropdown is now a segmented control of four
+  boards, one per intent: **Value** (the blended score), **Per $** (raw protein
+  per dollar), **Lean** (fewest calories per 50 g of protein), and **Budget**.
+  The big right-hand number follows the board — sorting by protein per dollar
+  now *shows* protein per dollar. Ratio boards stay single-item on purpose: a
+  combo's ratio is a weighted average of its parts, so it can never beat its
+  own best member; combos live on the target board instead. The board choice
+  persists, and the "Most protein" / "Lowest price" sorts and the standalone
+  Budget button retire.
+- **Budget board, two directions.** The old budget modal is now a full board
+  with a direction toggle sharing one solver: *I have $X* (most protein within
+  a budget) and *I need N g* (cheapest single item or same-chain combo that
+  clears a protein target). The solver is exact over every 1–3-item same-chain
+  combo of distinct, currently-orderable items — off-menu items are never
+  recommended.
+- **Tappable budget picks.** Both budget cards open the standard detail sheet;
+  a combo opens as one synthetic item showing combined totals (protein,
+  calories, sat fat, region-adjusted price) with a per-item price/protein
+  breakdown in the notes strip.
 - **Score v3.** The Value Score is now 45% protein-per-dollar + 40% calorie
   efficiency + 15% low-saturated-fat, and every term is expressed as a cost per
   50 g of protein, so portion size cancels out — a 3-piece and a 6-piece of the
@@ -57,12 +76,14 @@ week-to-week data updates.
   data** — unverified rows are listed but unranked. New `sat_fat_g` column in
   `data/items.csv`. Its 50/30/20 weighting and best-item normalization were both
   replaced by v3.
-- **Sort options.** Sort the list by value score, most protein, protein per
-  dollar, leanest, or lowest price (control in the list header).
+- **Sort options** (superseded by Intent boards above before release). Sort the
+  list by value score, most protein, protein per dollar, leanest, or lowest
+  price (control in the list header).
 - **Compare mode.** Tap "Compare", pick any two items, and see their metrics
   side by side with the better value highlighted on each row.
-- **Budget mode.** Enter a dollar amount (and optionally a chain) to get the
-  single item and the best same-chain combo that maximize protein within it.
+- **Budget mode** (superseded by the Budget board above before release). Enter
+  a dollar amount (and optionally a chain) to get the single item and the best
+  same-chain combo that maximize protein within it.
 - **Chain view.** Filtering to one chain marks its top pick "Order this"; the
   chain name in an item's detail sheet is now a tappable "see all from this
   chain" shortcut.

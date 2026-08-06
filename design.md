@@ -114,7 +114,24 @@ capped at `max-width: 600px` and the caveat at `44ch` for a comfortable measure.
 
 - **Sticky controls** (`.controls`) — frosted bar: `backdrop-filter:
   saturate(1.8) blur(20px)` over an 82%-opaque `--bg`, `--line` bottom border.
-  Chain filter + search on one row, region selector spanning full width below.
+  Board switcher on top (full width), chain filter + search on one row, region
+  selector spanning full width below.
+- **Board switcher** (`.seg` / `#board`) — iOS segmented control: track is
+  `color-mix(in srgb, var(--ink) 6%, transparent)` at radius **14**, the
+  selected segment is a `--card` pill at radius **12** with `--shadow` (2px
+  padding keeps the radii concentric — both values are on the ladder). Segments
+  are `role="tab"` buttons, 13px/590, selection via `aria-selected`. One board
+  per *intent*: Value, Per $, Lean (ratio boards, single items) and Budget (a
+  target board — the only place combos appear, because a combo's ratio can
+  never beat its own best member). The list's big right-hand metric column
+  always shows the active board's metric, and the global rank + "Best value"
+  badge appear only on the Value board. Choice persists as `pv_board`.
+- **Budget board pane** (`.bpane`) — replaces the list on the Budget board: a
+  direction mini-segment ("I have $" / "I need g") beside a centered number
+  input, results as `.b-pick` cards (tappable buttons that open the detail
+  sheet; a combo opens as one synthetic combined-totals item). Search and
+  Compare hide via `body.board-budget`; the chain filter stays and scopes the
+  solver.
 - **Inset-grouped list** (`.list` / `.row`) — single `--card` container,
   `--radius` corners, `--hair` dividers, last row borderless. Rows are real
   `<button>`s: hover/active tint via `color-mix`, `focus-visible` shows a

@@ -433,7 +433,9 @@ HTML_TEMPLATE = """<!doctype html>
   .backdrop{position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.36);
     opacity:0; transition:opacity .28s ease; -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px)}
   .backdrop.open{opacity:1}
-  .sheet{position:fixed; left:0; right:0; bottom:0; z-index:41; margin:0 auto; max-width:600px;
+  /* z-index sits above .m-sheet (45) so a detail sheet opened from the budget
+     modal stacks on top of it instead of behind */
+  .sheet{position:fixed; left:0; right:0; bottom:0; z-index:46; margin:0 auto; max-width:600px;
     background:var(--bg); border-radius:22px 22px 0 0; box-shadow:0 -8px 40px rgba(0,0,0,.28);
     max-height:90vh; display:flex; flex-direction:column; touch-action:none;
     transform:translateY(100%); transition:transform .32s cubic-bezier(.32,.72,0,1)}
@@ -501,12 +503,24 @@ HTML_TEMPLATE = """<!doctype html>
   /* ---- toolbar: count + sort + actions ---- */
   .listbar{display:flex; align-items:center; gap:10px; padding:14px 6px 8px}
   .listbar .count{padding:0; flex:1; min-width:0}
-  .sortwrap{position:relative; flex:none}
-  #sort{font-size:12px; font-weight:590; color:var(--ink); background:transparent;
-    border:0; box-shadow:none; padding:4px 20px 4px 8px; width:auto; border-radius:8px;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8' fill='none' stroke='%2386868b' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:right 6px center}
-  #sort:focus{outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 20%,transparent)}
+  /* ---- board switcher — iOS segmented control (radii 14/12, on the ladder) ---- */
+  .seg{display:flex; gap:2px; padding:2px; border-radius:14px;
+    background:color-mix(in srgb,var(--ink) 6%,transparent)}
+  #board{grid-column:1/-1}
+  .seg-btn{flex:1; font:inherit; font-size:13px; font-weight:590; letter-spacing:-.01em;
+    color:var(--muted); background:transparent; border:0; border-radius:12px; padding:7px 2px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; transition:color .15s ease}
+  .seg-btn[aria-pressed="true"]{color:var(--ink); background:var(--card); box-shadow:var(--shadow)}
+  .seg-btn:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+  /* ---- budget board pane ---- */
+  .b-row{display:flex; gap:8px; margin-bottom:12px}
+  .b-row .seg{flex:1}
+  .b-row input{width:92px; flex:none; padding:10px 12px; border:1px solid var(--line);
+    border-radius:12px; background:var(--card); color:var(--ink); font-size:16px;
+    font-family:inherit; text-align:center; -webkit-appearance:none; appearance:none}
+  body.board-budget #q{display:none}
+  body.board-budget #chain{grid-column:1/-1}
+  body.board-budget .actions{display:none}
   .actions{display:flex; gap:8px; padding:0 6px 14px}
   .act{flex:1; font:inherit; font-size:13px; font-weight:590; letter-spacing:-.01em;
     color:var(--blue); background:var(--blue-soft); border:0; border-radius:11px;
@@ -546,14 +560,6 @@ HTML_TEMPLATE = """<!doctype html>
   .cmp-metric .cm-l{font-size:11px; color:var(--muted2); font-weight:500}
   .cmp-metric .cm-v{font-size:16px; font-weight:600; letter-spacing:-.01em}
   .cmp-metric.win .cm-v{color:var(--good)}
-  .fld{margin-bottom:14px}
-  .fld label{display:block; font-size:12px; font-weight:600; letter-spacing:.02em;
-    text-transform:uppercase; color:var(--muted2); margin-bottom:7px}
-  .fld input,.fld select{width:100%; padding:11px 13px; border:1px solid var(--line);
-    border-radius:12px; background:var(--card); color:var(--ink); font-size:16px;
-    font-family:inherit; -webkit-appearance:none; appearance:none}
-  .fld input:focus,.fld select:focus{outline:none; border-color:var(--blue);
-    box-shadow:0 0 0 3.5px color-mix(in srgb,var(--blue) 22%,transparent)}
   .b-result{margin-top:4px}
   .b-pick{background:var(--card); border:1px solid var(--hair); border-radius:14px;
     padding:15px; margin-bottom:10px; display:grid; grid-template-columns:1fr auto; gap:10px;
@@ -565,6 +571,12 @@ HTML_TEMPLATE = """<!doctype html>
   .b-pick .bp-c{font-size:12px; color:var(--muted); margin-top:3px}
   .b-pick .bp-p{font-size:22px; font-weight:600; letter-spacing:-.02em; text-align:right}
   .b-pick .bp-pl{font-size:10.5px; color:var(--muted2); text-align:right}
+  .b-pick .bp-sub{font-size:11.5px; color:var(--muted2); margin-top:7px; line-height:1.4;
+    font-variant-numeric:tabular-nums}
+  button.b-pick{width:100%; font:inherit; color:inherit; text-align:left; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; transition:transform .12s ease}
+  button.b-pick:active{transform:scale(.99)}
+  button.b-pick:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
   .b-empty{color:var(--muted); font-size:14px; text-align:center; padding:24px 0; line-height:1.5}
   @media (prefers-reduced-motion:reduce){
     .sheet,.backdrop,.bar i,.m-sheet{transition:none}
@@ -582,29 +594,33 @@ HTML_TEMPLATE = """<!doctype html>
   the full breakdown.</div>
 </header>
 <div class="controls">
+  <div class="seg" id="board" role="group" aria-label="Scoreboard">
+    <button class="seg-btn" data-board="value" aria-pressed="true">Value</button>
+    <button class="seg-btn" data-board="ppd" aria-pressed="false">Per $</button>
+    <button class="seg-btn" data-board="lean" aria-pressed="false">Lean</button>
+    <button class="seg-btn" data-board="budget" aria-pressed="false">Budget</button>
+  </div>
   <select id="chain" aria-label="Filter by chain"><option value="">All chains</option></select>
   <input id="q" type="search" placeholder="Search items…" aria-label="Search items">
   <select id="region" aria-label="Pricing region"></select>
 </div>
 <div class="listbar">
   <div class="count" id="count"></div>
-  <div class="sortwrap">
-    <select id="sort" aria-label="Sort by">
-      <option value="score">Sort: Value score</option>
-      <option value="protein">Sort: Most protein</option>
-      <option value="ppd">Sort: Protein per $</option>
-      <option value="lean">Sort: Leanest</option>
-      <option value="price">Sort: Lowest price</option>
-    </select>
-  </div>
 </div>
 <div class="actions">
   <button class="act" id="cmpBtn" aria-pressed="false">
     <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 1v14M3 5l-2 3 2 3M13 5l2 3-2 3"/></svg>
     Compare</button>
-  <button class="act" id="budgetBtn">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v14M11 4H6.5a2.5 2.5 0 000 5h3a2.5 2.5 0 010 5H4"/></svg>
-    Budget</button>
+</div>
+<div class="bpane" id="bpane" hidden>
+  <div class="b-row">
+    <div class="seg" id="bDir" role="group" aria-label="Budget direction">
+      <button class="seg-btn" data-dir="have" aria-pressed="true">I have $</button>
+      <button class="seg-btn" data-dir="need" aria-pressed="false">I need g</button>
+    </div>
+    <input id="bVal" type="number" inputmode="decimal" min="1" step="1" value="12" aria-label="Budget in dollars or protein target in grams">
+  </div>
+  <div class="b-result" id="bResult"></div>
 </div>
 <div class="list" id="list"></div>
 <p class="empty" id="empty" hidden>No items match.</p>
@@ -653,6 +669,9 @@ const PEND = {
     'This item has been pulled from the menu. Its last published nutrition is kept here for reference, but it can\\u2019t be ranked.'],
   'awaiting verification': ['Awaiting verification', 'Unranked · awaiting verification',
     'Only web-verified items are scored. This item\\u2019s nutrition and saturated fat haven\\u2019t been independently verified yet, so it\\u2019s listed but not ranked.'],
+  // synthetic reason — only ever set on the combo built by budgetSolve()
+  'combo': ['Combined totals', 'Combo · combined totals',
+    'A combo isn’t ranked: Value Scores are per item. Everything below is the total across the items in this combo.'],
 };
 const pendOf = i => PEND[i.unranked_reason] || PEND['awaiting verification'];
 
@@ -670,6 +689,7 @@ let compareMode = false;
 
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 const money = n => n == null ? null : '$' + n.toFixed(2);
+const num = n => +n.toFixed(1);   // drops float-sum noise: 82.30000000000001 -> 82.3
 
 /* ---------------- regional pricing ----------------
    A region multiplier scales displayed prices only. Rankings and Value
@@ -717,18 +737,35 @@ const CHEV = '<svg class="chev" viewBox="0 0 8 14" fill="none" stroke="currentCo
 const TICK = '<span class="tick"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5l3.5 3.5L12 3.5"/></svg></span>';
 
 // sort keys: scored items always sort ahead of pending ones
-const SORTS = {
-  score:   {label:'ranked by value',   key:i => i.value_score,        dir:-1},
-  protein: {label:'most protein',      key:i => i.protein_g,          dir:-1},
-  ppd:     {label:'protein per dollar',key:i => ppdOf(i),             dir:-1},
-  lean:    {label:'leanest',           key:i => i.cal_per_50g,        dir:+1},
-  price:   {label:'lowest price',      key:i => priceOf(i),           dir:+1},
+/* Boards — each is an intent. `key`/`fmt` drive the big right-hand number
+   (the metric column follows the board); `rank` gates the global #N + badge
+   treatment (value board only). Budget is a target board rendered as a pane. */
+const BOARDS = {
+  value: {label:'ranked by value',    key:i => i.value_score, fmt:v => v.toFixed(1),          dir:-1, rank:true},
+  ppd:   {label:'protein per dollar', key:i => ppdOf(i),      fmt:v => v.toFixed(1) + ' g/$', dir:-1},
+  lean:  {label:'fewest calories per 50 g protein', key:i => i.cal_per_50g, fmt:v => v + ' cal', dir:+1},
 };
-const sortSel = document.getElementById('sort');
+const boardSeg = document.getElementById('board');
+let board = localStorage.getItem('pv_board');
+if (board !== 'budget' && !Object.hasOwn(BOARDS, board)) board = 'value';   // hasOwn: 'constructor' etc. must not pass
+function setBoard(b){
+  board = b; localStorage.setItem('pv_board', b);
+  boardSeg.querySelectorAll('.seg-btn').forEach(x =>
+    x.setAttribute('aria-pressed', String(x.dataset.board === b)));
+  document.body.classList.toggle('board-budget', b === 'budget');
+  if (b === 'budget' && compareMode) setCompareMode(false);
+  render();
+}
+boardSeg.addEventListener('click', e => {
+  const t = e.target.closest('.seg-btn'); if(!t) return;
+  setBoard(t.dataset.board);
+});
 
 function render(mode){
+  bpane.hidden = board !== 'budget';
+  if (board === 'budget'){ list.hidden = true; empty.hidden = true; renderBudget(); return; }
   const slug = chainSel.value, term = q.value.trim().toLowerCase();
-  const sort = SORTS[sortSel.value] || SORTS.score;
+  const sort = BOARDS[board] || BOARDS.value;
   const rows = DATA.items.filter(i =>
     (!slug || i.chain === slug) &&
     (!term || (i.item + ' ' + i.chain_name).toLowerCase().includes(term)));
@@ -744,9 +781,10 @@ function render(mode){
   });
   count.textContent = rows.length + (rows.length === 1 ? ' item' : ' items')
     + (slug ? ' · ' + chainSel.options[chainSel.selectedIndex].text : ' · ' + sort.label);
-  const byScore = sortSel.value === 'score';
+  const byScore = !!sort.rank;
   list.innerHTML = rows.map((i, idx) => {
     const scored = i.value_score != null;
+    const mv = sort.key(i);   // the board's metric — the big number follows the board
     const pos = scored ? (byScore && !slug ? i.rank : idx + 1) : '·';
     const price = money(priceOf(i)) || 'no price';
     // top of an all-chains value sort = best value; top of a single-chain view = order this
@@ -761,7 +799,7 @@ function render(mode){
         <span class="ch">${esc(i.chain_name)} · ${i.protein_g}g · <span class="pr">${price}</span></span>
         ${badge}${pend}
       </span>
-      <span class="sc${scored?'':' no'}">${scored ? i.value_score.toFixed(1) : '—'}</span>
+      <span class="sc${scored?'':' no'}">${mv != null ? sort.fmt(mv) : '—'}</span>
       ${TICK}${CHEV}
     </button>`;
   }).join('');
@@ -788,7 +826,7 @@ function render(mode){
 const backdrop = document.getElementById('backdrop');
 const sheet = document.getElementById('sheet');
 const sheetBody = document.getElementById('sheetBody');
-let lastFocus = null;
+let lastFocus = null, mLastFocus = null;
 
 function sheetHTML(i){
   const scored = i.value_score != null;
@@ -823,7 +861,7 @@ function sheetHTML(i){
         &nbsp;=&nbsp; <b>${i.value_score.toFixed(1)}</b></div>
     </div>` : `
     <div class="panel">
-      <div class="panel-h">Not ranked yet</div>
+      <div class="panel-h">${pendOf(i)[0]}</div>
       <div style="font-size:13.5px; color:var(--muted); line-height:1.5">${pendOf(i)[2]}</div>
     </div>`;
 
@@ -873,8 +911,9 @@ function sheetHTML(i){
 
 function idxIsBest(i){ return i.rank === 1; }
 
-function openSheet(id){
-  const i = DATA.items[id];
+// takes the item itself, not an index — budget combos are synthetic and
+// have no slot in DATA.items
+function openSheet(i){
   if(!i) return;
   lastFocus = document.activeElement;
   const c = sheetHTML(i);
@@ -917,27 +956,30 @@ function openSheet(id){
   document.body.style.overflow = 'hidden';
 }
 function closeSheet(){
-  backdrop.classList.remove('open'); sheet.classList.remove('open');
-  document.body.style.overflow = '';
-  const done = () => { backdrop.hidden = true; sheet.hidden = true; sheet.removeEventListener('transitionend', done); };
+  // the compare/budget modal may be open underneath — leave the backdrop and
+  // the scroll lock alone if so, that modal still owns them
+  const keep = mSheet.classList.contains('open');
+  sheet.classList.remove('open');
+  if (!keep){ backdrop.classList.remove('open'); document.body.style.overflow = ''; }
+  const done = () => { if(!keep) backdrop.hidden = true; sheet.hidden = true; sheet.removeEventListener('transitionend', done); };
   sheet.addEventListener('transitionend', done);
   if (matchMedia('(prefers-reduced-motion:reduce)').matches) done();
-  if (lastFocus) lastFocus.focus();
+  if (lastFocus && lastFocus.isConnected) lastFocus.focus();   // the pane may have re-rendered underneath
 }
 
 list.addEventListener('click', e => {
   const row = e.target.closest('.row'); if(!row) return;
   const id = +row.dataset.id;
   if (compareMode){ toggleCompare(id, row); return; }
-  openSheet(id);
+  openSheet(DATA.items[id]);
 });
 backdrop.addEventListener('click', () => { if(!sheet.hidden) closeSheet(); if(!mSheet.hidden) closeModal(); });
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 // tapping the chain name in the sheet → filter the list to that chain (best-to-worst)
 document.getElementById('sheetHead').addEventListener('click', e => {
   const link = e.target.closest('.sh-chlink'); if(!link) return;
-  chainSel.value = link.dataset.chain; sortSel.value = 'score';
-  closeSheet(); render(); window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'});
+  chainSel.value = link.dataset.chain;
+  closeSheet(); setBoard('value'); window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'});
 });
 document.addEventListener('keydown', e => {
   if(e.key !== 'Escape') return;
@@ -949,7 +991,7 @@ const mSheet = document.getElementById('mSheet');
 const mBody = document.getElementById('mBody');
 const mTitle = document.getElementById('mTitle');
 function openModal(title, html){
-  lastFocus = document.activeElement;
+  mLastFocus = document.activeElement;
   mTitle.textContent = title;
   mBody.innerHTML = html;
   backdrop.hidden = false; mSheet.hidden = false;
@@ -958,12 +1000,13 @@ function openModal(title, html){
   document.body.style.overflow = 'hidden';
 }
 function closeModal(){
-  backdrop.classList.remove('open'); mSheet.classList.remove('open');
-  document.body.style.overflow = '';
-  const done = () => { backdrop.hidden = true; mSheet.hidden = true; mSheet.removeEventListener('transitionend', done); };
+  const keep = sheet.classList.contains('open');   // detail sheet stacked on top
+  mSheet.classList.remove('open');
+  if (!keep){ backdrop.classList.remove('open'); document.body.style.overflow = ''; }
+  const done = () => { if(!keep) backdrop.hidden = true; mSheet.hidden = true; mSheet.removeEventListener('transitionend', done); };
   mSheet.addEventListener('transitionend', done);
   if (RM) done();
-  if (lastFocus) lastFocus.focus();
+  if (mLastFocus && mLastFocus.isConnected) mLastFocus.focus();
 }
 document.getElementById('mClose').addEventListener('click', closeModal);
 
@@ -1013,57 +1056,132 @@ function showCompare(){
     <p class="b-empty" style="padding-top:16px">Green marks the better value on each row. Prices shown for ${esc(regionByCode[regionSel.value].name)}.</p>`);
 }
 
-/* ---------------- budget mode ---------------- */
-const budgetBtn = document.getElementById('budgetBtn');
-budgetBtn.addEventListener('click', showBudget);
-function showBudget(){
-  const chainOpts = [...new Map(DATA.items.map(i => [i.chain, i.chain_name])).entries()]
-    .sort((a,b) => a[1].localeCompare(b[1]))
-    .map(([s,n]) => `<option value="${s}">${esc(n)}</option>`).join('');
-  openModal('Budget', `
-    <div class="fld"><label for="bAmt">Budget</label>
-      <input id="bAmt" type="number" inputmode="decimal" min="1" step="0.50" value="10" placeholder="10.00"></div>
-    <div class="fld"><label for="bChain">Chain (optional)</label>
-      <select id="bChain"><option value="">Any chain</option>${chainOpts}</select></div>
-    <div class="b-result" id="bResult"></div>`);
-  const amt = document.getElementById('bAmt'), ch = document.getElementById('bChain'), res = document.getElementById('bResult');
-  const run = () => { res.innerHTML = budgetSolve(parseFloat(amt.value), ch.value); };
-  amt.addEventListener('input', run); ch.addEventListener('change', run); run();
+/* ---------------- budget board ---------------- */
+const bpane = document.getElementById('bpane');
+const bResult = document.getElementById('bResult');
+const bVal = document.getElementById('bVal');
+const bDirSeg = document.getElementById('bDir');
+let bDir = 'have';                    // 'have' = most protein for $X · 'need' = cheapest to hit N g
+const bMem = {have:'12', need:'50'};  // each direction remembers its last input
+let comboItem = null;                 // the synthetic combined-totals item, when a combo is showing
+function renderBudget(){
+  count.textContent = (bDir === 'need' ? 'cheapest way to hit a protein target'
+                                       : 'most protein for your money')
+    + (chainSel.value ? ' · ' + chainSel.options[chainSel.selectedIndex].text : '');
+  bResult.innerHTML = budgetSolve(parseFloat(bVal.value), chainSel.value, bDir);
 }
-// pick the single item, and the best 1–3 item combo, that maximize protein within budget
-function budgetSolve(budget, chainSlug){
-  if (!(budget > 0)) return '<p class="b-empty">Enter a budget to see the most protein you can get.</p>';
-  const pool = DATA.items.filter(i => (!chainSlug || i.chain === chainSlug) && priceOf(i) != null && priceOf(i) <= budget);
-  if (!pool.length) return `<p class="b-empty">Nothing on the menu fits ${money(budget)}${chainSlug?' at that chain':''}. Try a bigger budget.</p>`;
-  const single = pool.slice().sort((a,b) => b.protein_g - a.protein_g)[0];
-  // greedy combo: repeatedly add the highest-protein item that still fits (same chain if one is set)
-  let best = null;
-  const comber = (startChain) => {
-    const items = DATA.items.filter(i => i.chain === startChain && priceOf(i) != null);
-    let spent = 0, prot = 0, picks = [];
-    const avail = items.slice().sort((a,b) => (b.protein_g/priceOf(b)) - (a.protein_g/priceOf(a)));
-    for (let n=0; n<3; n++){
-      const nxt = avail.find(i => spent + priceOf(i) <= budget);
-      if (!nxt) break;
-      picks.push(nxt); spent += priceOf(nxt); prot += nxt.protein_g;
-      avail.splice(avail.indexOf(nxt), 1);
-    }
-    return picks.length ? {picks, spent, prot} : null;
+bDirSeg.addEventListener('click', e => {
+  const t = e.target.closest('.seg-btn'); if(!t || t.dataset.dir === bDir) return;
+  bMem[bDir] = bVal.value; bDir = t.dataset.dir; bVal.value = bMem[bDir];
+  bDirSeg.querySelectorAll('.seg-btn').forEach(x =>
+    x.setAttribute('aria-pressed', String(x.dataset.dir === bDir)));
+  renderBudget();
+});
+bVal.addEventListener('input', renderBudget);
+// tapping a pick opens its detail sheet — a real item for the single pick,
+// the synthetic combined-totals item for the combo
+bResult.addEventListener('click', e => {
+  const t = e.target.closest('[data-id],[data-combo]'); if(!t) return;
+  openSheet(t.hasAttribute('data-combo') ? comboItem : DATA.items[+t.dataset.id]);
+});
+// Fold a combo into one item-shaped object so the normal detail sheet can render
+// its combined totals. price_national stays null so priceOf() hands back `price`
+// as-is — best.spent is already region-adjusted (comber summed priceOf()).
+function comboAsItem(best){
+  const picks = best.picks;
+  const prot = picks.reduce((s,p) => s + p.protein_g, 0);
+  const cal = picks.reduce((s,p) => s + p.calories, 0);
+  const sat = picks.every(p => p.sat_fat_g != null) ? picks.reduce((s,p) => s + p.sat_fat_g, 0) : null;
+  return {
+    item: picks.map(p => p.item).join(' + '),
+    chain: picks[0].chain, chain_name: picks[0].chain_name,
+    protein_g: num(prot), calories: num(cal), sat_fat_g: sat == null ? null : num(sat),
+    cal_per_50g: Math.round(cal / prot * 50),
+    price: best.spent, price_national: null, price_fixed: false,
+    price_kind: `${picks.length} item prices added up`,
+    value_score: null, unranked_reason: 'combo',
+    notes: picks.map(p => `${p.item} — ${money(priceOf(p))}, ${num(p.protein_g)} g protein`).join(' · '),
   };
-  const chains = chainSlug ? [chainSlug] : [...new Set(pool.map(i => i.chain))];
-  for (const c of chains){ const r = comber(c); if (r && (!best || r.prot > best.prot)) best = r; }
+}
+// One knapsack, two directions, solved exactly over every ≤3-item same-chain
+// combo of distinct items (menus are small — n ≤ ~12 ⇒ ≤ ~300 combos a chain):
+//   'have' — maximize protein subject to  Σprice ≤ amount
+//   'need' — minimize price   subject to  Σprotein ≥ amount
+// ponytail: the 3-item cap and the distinct-items rule (no "2× slice") are the
+// remaining ceilings; lift the cap or allow multiples if users ask.
+function budgetSolve(amount, chainSlug, dir){
+  const need = dir === 'need';
+  if (!(amount > 0)) return `<p class="b-empty">${need
+    ? 'Enter a protein target to see the cheapest way to hit it.'
+    : 'Enter a budget to see the most protein you can get.'}</p>`;
+  // off-menu items keep their data in the list for reference, but must never
+  // be recommended as something to go buy
+  const orderable = DATA.items.filter(i => !i.off_menu && priceOf(i) != null);
+  const priced = orderable.filter(i => !chainSlug || i.chain === chainSlug);
 
-  const singleCard = `<div class="b-pick"><div><div class="bp-h">Best single item</div>
+  // best single item for the direction
+  const single = (need
+    ? priced.filter(i => i.protein_g >= amount).sort((a,b) => priceOf(a) - priceOf(b))
+    : priced.filter(i => priceOf(i) <= amount).sort((a,b) => b.protein_g - a.protein_g))[0] || null;
+
+  // best same-chain combo, exhaustively — greedy produced real counterexamples
+  // in both directions (false "nothing reaches N g", 28% protein left on the
+  // table at the default budget), and exact is ~300 evaluations a chain
+  const comber = (chain) => {
+    const av = orderable.filter(i => i.chain === chain);
+    let top = null;
+    const consider = picks => {
+      const spent = picks.reduce((s,p) => s + priceOf(p), 0);
+      const prot = picks.reduce((s,p) => s + p.protein_g, 0);
+      if (need ? prot < amount : spent > amount) return;   // infeasible
+      if (!top
+        || (need ? spent < top.spent || (spent === top.spent && prot > top.prot)
+                 : prot > top.prot || (prot === top.prot && spent < top.spent)))
+        top = {picks, spent, prot};
+    };
+    for (let a = 0; a < av.length; a++){
+      consider([av[a]]);
+      for (let b = a + 1; b < av.length; b++){
+        consider([av[a], av[b]]);
+        for (let c = b + 1; c < av.length; c++) consider([av[a], av[b], av[c]]);
+      }
+    }
+    return top;
+  };
+  const chains = chainSlug ? [chainSlug] : [...new Set(priced.map(i => i.chain))];
+  let best = null;
+  for (const c of chains){
+    const r = comber(c);
+    if (r && (!best || (need ? r.spent < best.spent : r.prot > best.prot))) best = r;
+  }
+
+  if (!single && !best) return `<p class="b-empty">${need
+    ? `Nothing on the menu${chainSlug ? ' at that chain' : ''} reaches ${num(amount)} g, even as a 3-item combo. Try a lower target.`
+    : `Nothing on the menu fits ${money(amount)}${chainSlug ? ' at that chain' : ''}. Try a bigger budget.`}</p>`;
+
+  // the big number answers the question asked: protein when maximizing
+  // protein, price when minimizing price
+  let singleCard = '';
+  if (single){
+    const sp = priceOf(single);
+    singleCard = `<button class="b-pick" data-id="${single._id}"><div><div class="bp-h">${need ? 'Cheapest single item' : 'Best single item'}</div>
       <div class="bp-n">${esc(single.item)}</div>
-      <div class="bp-c">${esc(single.chain_name)} · ${money(priceOf(single))}</div></div>
-      <div><div class="bp-p">${single.protein_g} g</div><div class="bp-pl">protein</div></div></div>`;
+      <div class="bp-c">${esc(single.chain_name)} · ${need ? num(single.protein_g) + ' g protein' : money(sp)}</div>
+      <div class="bp-sub">${single.calories} cal · ${single.sat_fat_g != null ? single.sat_fat_g + ' g sat fat' : 'sat fat n/a'} — tap for full nutrition</div></div>
+      <div><div class="bp-p">${need ? money(sp) : num(single.protein_g) + ' g'}</div><div class="bp-pl">${need ? 'total' : 'protein'}</div></div></button>`;
+  }
   let comboCard = '';
-  if (best && best.picks.length > 1 && best.prot > single.protein_g){
-    const names = best.picks.map(p => esc(p.item)).join(' + ');
-    comboCard = `<div class="b-pick combo"><div><div class="bp-h">Most protein · ${best.picks.length} items, one chain</div>
-      <div class="bp-n">${names}</div>
-      <div class="bp-c">${esc(best.picks[0].chain_name)} · ${money(best.spent)}</div></div>
-      <div><div class="bp-p">${best.prot} g</div><div class="bp-pl">protein</div></div></div>`;
+  comboItem = null;
+  const comboWins = best && best.picks.length > 1 &&
+    (need ? (!single || best.spent < priceOf(single))
+          : (!single || best.prot > single.protein_g));
+  if (comboWins){
+    comboItem = comboAsItem(best);
+    comboCard = `<button class="b-pick combo" data-combo><div><div class="bp-h">${need ? 'Cheapest combo' : 'Most protein'} · ${best.picks.length} items, one chain</div>
+      <div class="bp-n">${esc(comboItem.item)}</div>
+      <div class="bp-c">${esc(comboItem.chain_name)} · ${need ? num(best.prot) + ' g protein' : money(best.spent)}</div>
+      <div class="bp-sub">Combo total: ${num(comboItem.calories)} cal · ${comboItem.sat_fat_g != null ? num(comboItem.sat_fat_g) + ' g sat fat' : 'sat fat n/a'} — tap for the full combined breakdown</div></div>
+      <div><div class="bp-p">${need ? money(best.spent) : num(best.prot) + ' g'}</div><div class="bp-pl">${need ? 'total' : 'protein'}</div></div></button>`;
   }
   return singleCard + comboCard;
 }
@@ -1116,8 +1234,7 @@ function budgetSolve(budget, chainSlug){
 
 chainSel.onchange = () => render();
 q.oninput = () => render();
-sortSel.onchange = () => render();
-render();
+setBoard(board);   // restores the saved board and does the first render
 </script>
 </body>
 </html>
